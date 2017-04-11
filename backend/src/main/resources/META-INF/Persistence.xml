@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<persistence version="2.0" xmlns="http://java.sun.com/xml/ns/persistence"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://java.sun.com/xml/ns/persistence
+   http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd">
+
+
+    <persistence-unit name="applicationBidStorePU" transaction-type="JTA">
+        <provider>org.hibernate.ejb.HibernatePersistence</provider>
+        <jta-data-source>java:/mysql-datasource</jta-data-source>
+        <mapping-file>META-INF/listeners.xml</mapping-file>
+        <!--<class >gigi.persistence.entity.Employee</class>-->
+        <!--<class>gigi.persistence.entity.Musician</class>-->
+        <!--<class>gigi.persistence.entity.CD</class>-->
+        <exclude-unlisted-classes>false</exclude-unlisted-classes>
+        <properties>
+            <property name="hibernate.dialect" value="org.hibernate.dialect.MySQLDialect"/>
+            <property name="hibernate.hbm2ddl.auto" value="update"/>
+            <property name="hibernate.show_sql" value="true"/>
+            <property name="hibernate.format_sql" value="false"/>
+            <property name="hibernate.archive.autodetection" value="class, hbm"/>
+            <property name="hibernate.transaction.jta.platform" value="org.hibernate.service.jta.platform.internal.JBossAppServerJtaPlatform"/>
+            <!--<property name="hibernate.transaction.manager_lookup_class" value="org.hibernate.transaction.TransactionManagerLookup"/>-->
+        </properties>
+    </persistence-unit>
+</persistence>
