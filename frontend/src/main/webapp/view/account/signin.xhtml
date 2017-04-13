@@ -1,0 +1,39 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+                template="/resources/scaffold/template.xhtml">
+
+    <ui:define name="title">Signin to Caveat Emptor</ui:define>
+
+    <ui:define name="body">
+
+        <div class="row">
+            <div class="col-md-4"></div>
+            <div class="col-md-4">
+                <h:form class="form-signin">
+                    <h4 class="form-signin-heading">Welcome to Caveat Emptor</h4>
+                    <label for="inputLogin" class="sr-only">Login</label>
+                    <h:inputText id="inputLogin" class="form-control" pt:placeholder="Username"
+                                 pt:required="true" pt:autofocus="true" value="#{userAccount.userAuth.username}"/>
+                    <label for="inputPassword" class="sr-only">Password</label>
+                    <h:inputText id="inputPassword" pt:type="password" class="form-control" pt:placeholder="Password"
+                                 pt:required="true" value="#{userAccount.userAuth.password}"/>
+
+                    <!--<div class="checkbox">-->
+                        <!--<label>-->
+                            <!--<h:selectBooleanCheckbox value="#{userAccount.rememberMe}"/> Remember Me-->
+                        <!--</label>-->
+                    <!--</div>-->
+                    <h:commandButton styleClass="btn btn-lg btn-primary btn-block" value="Sign in"
+                                     action="#{userAccount.signIn}"/>
+                    <h:link styleClass="btn btn-link" value="Register" outcome="signup"/>
+                    <br/>
+                    <h:link styleClass="btn btn-link" value="Forgot your password" outcome="forgot"/>
+                </h:form>
+            </div>
+            <div class="col-md-4"></div>
+        </div>
+
+    </ui:define>
+</ui:composition>

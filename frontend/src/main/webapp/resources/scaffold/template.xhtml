@@ -5,14 +5,13 @@
       xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
       xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
       xmlns:p="http://primefaces.org/ui">
-<f:view contentType="text/html" encoding="UTF-8">
 
+<f:view contentType="text/html" encoding="UTF-8">
     <!--HEAD-->
     <h:head>
         <meta charset="utf-8"/>
         <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
         <meta name="viewport" content="width=device-width, initial-scale=1"/>
-
         <meta name="description" content=""/>
         <meta name="author" content=""/>
         <link rel="icon" href="./resources/favicon.ico"/>
@@ -58,7 +57,7 @@
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </button>
-                    <h:link class="navbar-brand" outcome="/main.xhtml" value="Home"/>
+                    <!--<h:link class="navbar-brand" outcome="/faces/view/main.xhtml" value="Home"/>-->
                 </div>
                 <div id="navbar" class="navbar-collapse collapse">
                     <!--<h:form>-->
@@ -66,7 +65,7 @@
                             <!--<li><h:link outcome="/shopping/showShoppingCart.xhtml" value="Shopping cart"-->
                                         <!--rendered="#{!shoppingCartBean.shoppingCartIsEmpty()}"/></li>-->
                             <!--&lt;!&ndash;<li><h:link outcome="/admin/main.xhtml" value="Admin"/></li>&ndash;&gt;-->
-                            <!--<li><h:link outcome="/admin/main.xhtml" value="Admin" rendered="#{accountBean.admin}"/></li>-->
+                            <!--<li><h:link outcome="/admin/main.xhtml" value="Admin" rendered="#{userAccount.admin}"/></li>-->
                         <!--</ul>-->
                     <!--</h:form>-->
                     <h:form class="navbar-form navbar-right">
@@ -76,28 +75,28 @@
                         <!--<h:commandButton type="submit" class="btn btn-success"-->
                                          <!--action="/shopping/searchItems.xhtml?faces-redirect=true&amp;includeViewParams=true"-->
                                          <!--value="Search"/>-->
-                        <h:panelGroup layout="block" class="form-group" rendered="#{!accountBean.loggedIn}">
+                        <h:panelGroup layout="block" class="form-group" rendered="#{!userAccount.loggedIn}">
                             <ul class="nav navbar-nav navbar-right">
                                 <li class="dropdown active">
                                     <h:link outcome="/account/signin.xhtml" value="Login"/>
                                 </li>
                             </ul>
                         </h:panelGroup>
-                        <h:panelGroup layout="block" class="form-group" rendered="#{accountBean.loggedIn}">
+                        <h:panelGroup layout="block" class="form-group" rendered="#{userAccount.loggedIn}">
                             <ul class="nav navbar-nav navbar-right">
                                 <li class="dropdown active">
                                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
-                                       aria-haspopup="true" aria-expanded="false">#{accountBean.user.firstName} <span
+                                       aria-haspopup="true" aria-expanded="false">#{userAccount.user.firstName} <span
                                             class="caret"></span></a>
-                                    <!--<ul class="dropdown-menu">-->
+                                    <ul class="dropdown-menu">
                                         <!--<li><h:link outcome="/account/profile.xhtml" value="Profile"/></li>-->
                                         <!--<li>-->
-                                            <!--<h:link outcome="/account/chat.xhtml" value="Need some help" rendered="#{!accountBean.admin}"/>-->
-                                            <!--<h:link outcome="/account/chat.xhtml" value="Help customers" rendered="#{accountBean.admin}"/>-->
+                                            <!--<h:link outcome="/account/chat.xhtml" value="Need some help" rendered="#{!userAccount.admin}"/>-->
+                                            <!--<h:link outcome="/account/chat.xhtml" value="Help customers" rendered="#{userAccount.admin}"/>-->
                                         <!--</li>-->
                                         <!--<li role="separator" class="divider"></li>-->
-                                        <!--<li><h:commandLink action="#{accountBean.doLogout}" value="Logout"/></li>-->
-                                    <!--</ul>-->
+                                        <li><h:commandLink action="#{userAccount.doLogout}" value="Logout" /></li>
+                                    </ul>
                                 </li>
                             </ul>
                         </h:panelGroup>
@@ -124,7 +123,7 @@
             <hr/>
 
             <footer>
-                <p><a href="http://www.fortech.ro">fortech.ro</a></p>
+                <p><a href="http://www.fortech.ro">Fortech.ro</a></p>
             </footer>
         </div>
         <!-- /container -->

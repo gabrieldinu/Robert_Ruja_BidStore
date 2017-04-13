@@ -67,7 +67,7 @@
                             <li><h:link outcome="/shopping/showShoppingCart.xhtml" value="Shopping cart"
                                         rendered="#{!shoppingCartBean.shoppingCartIsEmpty()}"/></li>
                             <!--<li><h:link outcome="/admin/main.xhtml" value="Admin"/></li>-->
-                            <li><h:link outcome="/admin/main.xhtml" value="Admin" rendered="#{accountBean.admin}"/></li>
+                            <li><h:link outcome="/admin/main.xhtml" value="Admin" rendered="#{userAccount.admin}"/></li>
                         </ul>
                     </h:form>
                     <h:form class="navbar-form navbar-right">
@@ -77,23 +77,23 @@
                         <h:commandButton type="submit" class="btn btn-success"
                                          action="/shopping/searchItems.xhtml?faces-redirect=true&amp;includeViewParams=true"
                                          value="Search"/>
-                        <h:panelGroup layout="block" class="form-group" rendered="#{!accountBean.loggedIn}">
+                        <h:panelGroup layout="block" class="form-group" rendered="#{!userAccount.loggedIn}">
                             <ul class="nav navbar-nav navbar-right">
                                 <li class="dropdown active">
                                     <h:link outcome="/account/signin.xhtml" value="Connexion"/>
                                 </li>
                             </ul>
                         </h:panelGroup>
-                        <h:panelGroup layout="block" class="form-group" rendered="#{accountBean.loggedIn}">
+                        <h:panelGroup layout="block" class="form-group" rendered="#{userAccount.loggedIn}">
                             <ul class="nav navbar-nav navbar-right">
                                 <li class="dropdown active">
                                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
-                                       aria-haspopup="true" aria-expanded="false">#{accountBean.user.fullName} <span
+                                       aria-haspopup="true" aria-expanded="false">#{userAccount.user.fullName} <span
                                             class="caret"></span></a>
                                     <ul class="dropdown-menu">
                                         <li><h:link outcome="/account/profile.xhtml" value="Profile"/></li>
                                         <li role="separator" class="divider"></li>
-                                        <li><h:commandLink action="#{accountBean.doLogout}" value="Logout"/></li>
+                                        <li><h:commandLink action="#{userAccount.doLogout}" value="Logout"/></li>
                                     </ul>
                                 </li>
                             </ul>
