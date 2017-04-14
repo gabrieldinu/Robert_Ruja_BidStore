@@ -1,4 +1,4 @@
-package ro.fortech.application.bidstore.backend.service;
+package ro.fortech.application.bidstore.backend.service.account;
 
 import ro.fortech.application.bidstore.backend.exception.AccountActivationException;
 import ro.fortech.application.bidstore.backend.exception.AccountException;
@@ -12,6 +12,7 @@ import javax.ejb.Stateful;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import java.sql.Timestamp;
 import java.util.UUID;
 
 
@@ -29,7 +30,7 @@ public class UserAccountServiceImpl implements UserAccountService {
     @Override
     public User getUserDetails(User user) {
 
-        return userDAO.getUser(user);
+        return userDAO.getUserDetails(user);
     }
 
     public boolean isAuthenticUser(UserAuth userAuthInput){
@@ -58,7 +59,8 @@ public class UserAccountServiceImpl implements UserAccountService {
         //DigestUserPassword
         userAuth.setPassword(PasswordDigest.digestPassword(userAuth.getPassword()));
         userAuth.setUuid(uuid.toString());
-        userDAO.saveUser(userAuth,user);
+        userAuth.setRequestDate(new Timestamp(System.currentTimeMillis()));
+        userDAO.saveUserDetails(userAuth,user);
         return uuid;
     }
 
@@ -79,10 +81,15 @@ public class UserAccountServiceImpl implements UserAccountService {
     }
 
     @Override
-    public void activateAccount(String pathUUID) throws AccountActivationException{
+    public void activateAccount(String uuid) throws AccountActivationException {
 
-        if(!pathUUID.equals("qqqq")){
-            throw new AccountActivationException("Failed activating UUID: " + pathUUID);
-        }
+        UserAuth userAuth = userDAO.getUserAuthenticationByUUID(uuid);
+
+        if(userAuth == null)
+            throw new AccountActivationException("Failed activating user with UUID: " + uuid);
+
+        userAuth.setUuid(null);
+        userAuth.setRequestDate(null);
+        userDAO.saveUserAuthentication(userAuth);
     }
 }

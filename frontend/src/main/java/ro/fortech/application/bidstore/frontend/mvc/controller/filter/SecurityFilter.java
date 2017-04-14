@@ -1,6 +1,6 @@
-package ro.fortech.application.bidstore.mvc.controller.filter;
+package ro.fortech.application.bidstore.frontend.mvc.controller.filter;
 
-import ro.fortech.application.bidstore.mvc.model.managed.UserAccount;
+import ro.fortech.application.bidstore.frontend.mvc.model.managed.UserAccount;
 
 import javax.inject.Inject;
 import javax.servlet.*;

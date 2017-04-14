@@ -8,10 +8,8 @@ import ro.fortech.application.bidstore.backend.model.UserRole;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Past;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
-import java.util.Date;
 
 @Entity
 @Table(name = "user")
@@ -42,18 +40,13 @@ public class User implements Serializable {
     @Column(name = "role")
     private UserRole role;
 
-    @Column(name = "date_of_birth")
-    @Temporal(TemporalType.DATE)
-    @Past
-    private Date dateOfBirth;
-
-    public User(String username, String firstName, String lastName, String email, UserRole role, Date dateOfBirth) {
+    public User(String username, String firstName, String lastName, String email, UserRole role) {
         this.username = username;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.role = role;
-        this.dateOfBirth = dateOfBirth;
+
     }
 
     public User() {
@@ -100,14 +93,6 @@ public class User implements Serializable {
         this.role = role;
     }
 
-    public Date getDateOfBirth() {
-        return dateOfBirth;
-    }
-
-    public void setDateOfBirth(Date dateOfBirth) {
-        this.dateOfBirth = dateOfBirth;
-    }
-
     @Override
     public String toString() {
         return "User{" +
@@ -116,7 +101,6 @@ public class User implements Serializable {
                 ", lastName='" + lastName + '\'' +
                 ", email='" + email + '\'' +
                 ", role=" + role +
-                ", dateOfBirth=" + dateOfBirth +
                 '}';
     }
 }

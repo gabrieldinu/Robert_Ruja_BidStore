@@ -8,6 +8,7 @@ import java.util.Base64;
  */
 public class PasswordDigest {
     public static String digestPassword(String plainTextPassword) {
+
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-256");
             md.update(plainTextPassword.getBytes("UTF-8"));

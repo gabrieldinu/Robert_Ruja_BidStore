@@ -1,4 +1,4 @@
-package ro.fortech.application.bidstore.mvc.model;
+package ro.fortech.application.bidstore.frontend.mvc.model;
 
 
 /**
@@ -9,6 +9,7 @@ public class Email {
     private String from;
     private String to;
     private String emailText;
+    private String subject;
 
     public String getFrom() {
         return from;
@@ -32,5 +33,23 @@ public class Email {
 
     public void setEmailText(String emailText) {
         this.emailText = emailText;
+    }
+
+    public String getSubject() {
+        return this.subject;
+    }
+
+    public void setSubject(String subject) {
+        this.subject = subject;
+    }
+
+    @Override
+    public String toString() {
+        return "Email{" +
+                "from='" + from + '\'' +
+                ", to='" + to + '\'' +
+                ", emailText='" + emailText + '\'' +
+                ", subject='" + subject + '\'' +
+                '}';
     }
 }

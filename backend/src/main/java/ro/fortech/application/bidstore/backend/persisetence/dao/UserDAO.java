@@ -11,8 +11,11 @@ public interface UserDAO {
 
     UserAuth getUserAuthentication(String username);
 
-    User getUser(User user);
+    User getUserDetails(User user);
 
-    void saveUser(UserAuth userAuth, User user);
+    void saveUserDetails(UserAuth userAuth, User user);
 
+    UserAuth getUserAuthenticationByUUID(String uuid);
+
+    void saveUserAuthentication(UserAuth userAuth);
 }

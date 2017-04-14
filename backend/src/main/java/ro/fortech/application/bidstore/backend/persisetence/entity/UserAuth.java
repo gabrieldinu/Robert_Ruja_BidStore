@@ -3,6 +3,7 @@ package ro.fortech.application.bidstore.backend.persisetence.entity;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.sql.Timestamp;
 import java.util.UUID;
 
 /**
@@ -11,11 +12,14 @@ import java.util.UUID;
 
 @Entity
 @Table(name= "user_auth")
-@NamedQueries({@NamedQuery(name = UserAuth.FIND_BY_USERNAME, query= "Select u FROM UserAuth u WHERE u.username = :username")})
+@NamedQueries({
+        @NamedQuery(name = UserAuth.FIND_BY_USERNAME, query= "Select u FROM UserAuth u WHERE u.username = :username"),
+        @NamedQuery(name = UserAuth.FIND_BY_UUID, query = "Select u FROM UserAuth u WHERE u.uuid = :uuid" )})
 public class UserAuth {
 
 
     public static final String FIND_BY_USERNAME = "UserAuth.findByUsername";
+    public static final String FIND_BY_UUID = "UserAuth.findByUUID";
 
     @Id
     @NotNull
@@ -30,6 +34,10 @@ public class UserAuth {
     @Column(name="token",length = 256)
     @Size(min = 1, max = 256)
     private String uuid;
+
+    @Column(name="request_date")
+//    @Temporal(TemporalType.TIMESTAMP)
+    private Timestamp requestDate;
 
     public UserAuth() {
     }
@@ -62,5 +70,13 @@ public class UserAuth {
 
     public void setUuid(String uuid) {
         this.uuid = uuid;
+    }
+
+    public Timestamp getRequestDate() {
+        return requestDate;
+    }
+
+    public void setRequestDate(Timestamp requestDate) {
+        this.requestDate = requestDate;
     }
 }

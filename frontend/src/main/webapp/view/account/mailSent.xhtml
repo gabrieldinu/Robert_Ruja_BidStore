@@ -4,7 +4,7 @@
                 xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
                 template="/resources/scaffold/template.xhtml">
 
-    <ui:define name="title">Forgot password</ui:define>
+    <ui:define name="title">Mail sent</ui:define>
 
     <ui:define name="body">
 
@@ -13,6 +13,7 @@
             <div class="col-md-4">
                 <h1></h1>
                 <h2 class="form-forgot-heading">A confirmation email has been sent to #{userAccount.user.email}.</h2>
+                <h:link styleClass="btn btn-link" value="Go to Sign In page" outcome="signin"/>
             </div>
             <div class="col-md-4"></div>
         </div>

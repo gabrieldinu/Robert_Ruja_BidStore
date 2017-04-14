@@ -36,7 +36,7 @@
 
     <filter>
         <filter-name>LoginFilter</filter-name>
-        <filter-class>ro.fortech.application.bidstore.mvc.controller.filter.SecurityFilter</filter-class>
+        <filter-class>ro.fortech.application.bidstore.frontend.mvc.controller.filter.SecurityFilter</filter-class>
     </filter>
 
     <filter-mapping>

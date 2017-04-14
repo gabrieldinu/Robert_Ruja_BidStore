@@ -15,7 +15,6 @@ import javax.transaction.Transactional;
  */
 
 @Named
-@Transactional
 public class UserDAOImpl implements UserDAO {
 
     @Inject
@@ -35,7 +34,7 @@ public class UserDAOImpl implements UserDAO {
         }
     }
 
-    public User getUser(User userInput){
+    public User getUserDetails(User userInput){
         User user;
         TypedQuery<User> query = em.createNamedQuery(User.FIND_BY_USERNAME, User.class);
         query.setParameter("username", userInput.getUsername());
@@ -49,10 +48,31 @@ public class UserDAOImpl implements UserDAO {
     }
 
     @Override
-    public void saveUser(UserAuth userAuth, User user) {
+    @Transactional
+    public void saveUserDetails(UserAuth userAuth, User user) {
 
-            em.persist(user);
-            em.persist(userAuth);
+        em.persist(user);
+        em.persist(userAuth);
     }
 
+    @Override
+    public UserAuth getUserAuthenticationByUUID(String uuid) {
+        UserAuth userAuth;
+        TypedQuery<UserAuth> query = em.createNamedQuery(UserAuth.FIND_BY_UUID, UserAuth.class);
+        query.setParameter("uuid", uuid);
+
+        try {
+            userAuth = query.getSingleResult();
+            return userAuth;
+        }catch(NoResultException ex){
+            return null;
+        }
+    }
+
+    @Override
+    @Transactional
+    public void saveUserAuthentication(UserAuth userAuth) {
+
+        em.persist(userAuth);
+    }
 }

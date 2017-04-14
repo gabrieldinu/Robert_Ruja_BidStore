@@ -1,4 +1,4 @@
-package ro.fortech.application.bidstore.mvc.model.managed;
+package ro.fortech.application.bidstore.frontend.mvc.model.managed;
 
 
 import ro.fortech.application.bidstore.backend.exception.AccountException;
@@ -6,7 +6,8 @@ import ro.fortech.application.bidstore.backend.model.UserRegistration;
 import ro.fortech.application.bidstore.backend.model.UserRole;
 import ro.fortech.application.bidstore.backend.persisetence.entity.User;
 import ro.fortech.application.bidstore.backend.persisetence.entity.UserAuth;
-import ro.fortech.application.bidstore.backend.service.UserAccountService;
+import ro.fortech.application.bidstore.backend.service.account.UserAccountService;
+import ro.fortech.application.bidstore.frontend.util.MailSender;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
@@ -21,6 +22,7 @@ import javax.inject.Named;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.Properties;
 import java.util.UUID;
 
 /**
@@ -48,6 +50,10 @@ public class UserAccount implements Serializable{
 
     @Inject
     BeanManager beanManager;
+
+    @Inject
+    ExternalContext externalContext;
+
 
     @PostConstruct
     public void init(){
@@ -106,12 +112,24 @@ public class UserAccount implements Serializable{
             case UNREGISTERED:
                 try {
                     user.setUsername(userAuth.getUsername());
-                    user.setRole(UserRole.USER);
+                    user.setRole(UserRole.ADMIN);
                     UUID uuid = userAccountService.insertNewUser(userAuth, user);
+
+                    Properties properties = new Properties();
+
+                    //TODO: think to a better approach
+                    properties.load(externalContext.getResourceAsStream("config/mail_config.properties"));
+
+                    new MailSender(properties).sendConfirmationEmail(user,uuid);
                     context.addMessage(null,
-                            new FacesMessage(FacesMessage.SEVERITY_INFO, "Hi " + user.getFirstName(), "Welcome to bid store website"));
+                            new FacesMessage(FacesMessage.SEVERITY_INFO, "Success",
+                                    "mail sent"));
                     return "/view/account/mailSent";
                 }catch(AccountException ex){
+                    context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error",
+                            "An internal error occured"));
+                    return null;
+                } catch (IOException e) {
                     context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error",
                             "An internal error occured"));
                     return null;

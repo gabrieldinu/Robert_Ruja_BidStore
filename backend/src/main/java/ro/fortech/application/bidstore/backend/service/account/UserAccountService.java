@@ -1,4 +1,4 @@
-package ro.fortech.application.bidstore.backend.service;
+package ro.fortech.application.bidstore.backend.service.account;
 
 import ro.fortech.application.bidstore.backend.exception.AccountActivationException;
 import ro.fortech.application.bidstore.backend.exception.AccountException;
