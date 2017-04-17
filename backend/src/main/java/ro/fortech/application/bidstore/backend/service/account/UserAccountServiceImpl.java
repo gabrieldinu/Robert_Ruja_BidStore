@@ -59,8 +59,9 @@ public class UserAccountServiceImpl implements UserAccountService {
         //DigestUserPassword
         userAuth.setPassword(PasswordDigest.digestPassword(userAuth.getPassword()));
         userAuth.setUuid(uuid.toString());
-        userAuth.setRequestDate(new Timestamp(System.currentTimeMillis()));
-        userDAO.saveUserDetails(userAuth,user);
+        //set expiration date of the account to 24h
+        userAuth.setExpiringDate(new Timestamp(System.currentTimeMillis()+15000)); //86400000
+        userDAO.saveUserInfo(userAuth,user);
         return uuid;
     }
 
@@ -81,15 +82,22 @@ public class UserAccountServiceImpl implements UserAccountService {
     }
 
     @Override
-    public void activateAccount(String uuid) throws AccountActivationException {
+    public void activateAccount(String uuid) throws AccountException {
 
-        UserAuth userAuth = userDAO.getUserAuthenticationByUUID(uuid);
+        UserAuth userAuth;
+            try {
+                userAuth = userDAO.getUserAuthenticationByUUID(uuid);
+            } catch(Exception ex) {
+                throw new AccountException(ex);
+            }
 
-        if(userAuth == null)
-            throw new AccountActivationException("Failed activating user with UUID: " + uuid);
+            if (userAuth != null){
+                userAuth.setUuid(null);
+                userAuth.setExpiringDate(null);
+                userDAO.saveUserAuthentication(userAuth);
+            }else{
+                throw new AccountActivationException("Failed activating user with UUID: " + uuid);
+            }
 
-        userAuth.setUuid(null);
-        userAuth.setRequestDate(null);
-        userDAO.saveUserAuthentication(userAuth);
     }
 }

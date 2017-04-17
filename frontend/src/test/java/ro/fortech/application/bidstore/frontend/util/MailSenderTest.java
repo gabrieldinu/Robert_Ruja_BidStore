@@ -22,12 +22,12 @@ public class MailSenderTest{
 
     @Before
     public void setUp() {
-        Properties properties = new Properties();
-        try {
-            properties.load(new InputStreamReader(MailSender.class.getResourceAsStream("mail_config.properties")));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+//        Properties properties = new Properties();
+//        try {
+//            properties.load(new InputStreamReader(MailSender.class.getResourceAsStream("mail_config.properties")));
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
 //        properties.put("mail.server.address", "smtp.gmail.com");
 //        properties.put("mail.server.port", "465");
 //        properties.put("mail.from","caveat-emptor@fortech.ro");
@@ -39,9 +39,9 @@ public class MailSenderTest{
     @Test
     public void TestSendEmail(){
         //not an actual test
-        mailSender.sendConfirmationEmail(
-                new User("gigi","gigi","gigi","robert.ruja@fortech.ro", UserRole.ADMIN),
-                UUID.randomUUID()
-        );
+//        mailSender.sendConfirmationEmail(
+//                new User("gigi","gigi","gigi","robert.ruja@fortech.ro", UserRole.ADMIN),
+//                UUID.randomUUID()
+//        );
     }
 }

@@ -57,7 +57,7 @@
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </button>
-                    <!--<h:link class="navbar-brand" outcome="/faces/view/main.xhtml" value="Home"/>-->
+                    <h:link class="navbar-brand" outcome="/faces/view/main.xhtml" value="Home" rendered="#{userAccount.loggedIn}"/>
                 </div>
                 <div id="navbar" class="navbar-collapse collapse">
                     <!--<h:form>-->
@@ -75,13 +75,13 @@
                         <!--<h:commandButton type="submit" class="btn btn-success"-->
                                          <!--action="/shopping/searchItems.xhtml?faces-redirect=true&amp;includeViewParams=true"-->
                                          <!--value="Search"/>-->
-                        <h:panelGroup layout="block" class="form-group" rendered="#{!userAccount.loggedIn}">
-                            <ul class="nav navbar-nav navbar-right">
-                                <li class="dropdown active">
-                                    <h:link outcome="/account/signin.xhtml" value="Login"/>
-                                </li>
-                            </ul>
-                        </h:panelGroup>
+                        <!--<h:panelGroup layout="block" class="form-group" rendered="#{!userAccount.loggedIn}">-->
+                            <!--<ul class="nav navbar-nav navbar-right">-->
+                                <!--<li class="dropdown active">-->
+                                    <!--<h:link outcome="/account/signin.xhtml" value="Login"/>-->
+                                <!--</li>-->
+                            <!--</ul>-->
+                        <!--</h:panelGroup>-->
                         <h:panelGroup layout="block" class="form-group" rendered="#{userAccount.loggedIn}">
                             <ul class="nav navbar-nav navbar-right">
                                 <li class="dropdown active">

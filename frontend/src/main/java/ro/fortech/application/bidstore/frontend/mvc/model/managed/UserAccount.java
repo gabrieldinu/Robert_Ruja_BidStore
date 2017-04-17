@@ -120,10 +120,10 @@ public class UserAccount implements Serializable{
                     //TODO: think to a better approach
                     properties.load(externalContext.getResourceAsStream("config/mail_config.properties"));
 
-                    new MailSender(properties).sendConfirmationEmail(user,uuid);
+                    //new MailSender(properties).sendConfirmationEmail(user,uuid);
                     context.addMessage(null,
                             new FacesMessage(FacesMessage.SEVERITY_INFO, "Success",
-                                    "mail sent"));
+                                    "mail sent " +uuid));
                     return "/view/account/mailSent";
                 }catch(AccountException ex){
                     context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error",

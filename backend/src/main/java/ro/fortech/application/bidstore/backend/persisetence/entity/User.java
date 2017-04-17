@@ -10,6 +10,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
+import java.sql.Timestamp;
 
 @Entity
 @Table(name = "user")
@@ -37,8 +38,16 @@ public class User implements Serializable {
     private String email;
 
     @Enumerated
+    @NotNull
     @Column(name = "role")
     private UserRole role;
+
+    @Column(name="token",length = 256)
+    @Size(min = 1, max = 256)
+    private String uuid;
+
+    @Column(name="exp_date")
+    private Timestamp expiringDate;
 
     public User(String username, String firstName, String lastName, String email, UserRole role) {
         this.username = username;

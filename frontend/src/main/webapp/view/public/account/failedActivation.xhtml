@@ -1,0 +1,23 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+                template="/resources/scaffold/template.xhtml">
+
+    <ui:define name="title">Activation failed</ui:define>
+
+    <ui:define name="body">
+
+        <div class="row">
+            <div class="col-md-4"></div>
+            <div class="col-md-4">
+                <h2 class="form-forgot-heading">Your activation link has expired or is incorrect. You can singup for a new account
+                    <h:link styleClass="btn btn-link" value="here." outcome="signup"/>
+                </h2>
+            </div>
+            <div class="col-md-4"></div>
+        </div>
+
+    </ui:define>
+
+</ui:composition>

@@ -7,13 +7,14 @@ import ro.fortech.application.bidstore.backend.persisetence.entity.User;
 import ro.fortech.application.bidstore.backend.persisetence.entity.UserAuth;
 
 import javax.ejb.Local;
+import java.io.Serializable;
 import java.util.UUID;
 
 /**
  * Created by robert.ruja on 10-Apr-17.
  */
 @Local
-public interface UserAccountService {
+public interface UserAccountService extends Serializable {
 
     User getUserDetails(User user);
 
@@ -23,5 +24,5 @@ public interface UserAccountService {
 
     UserRegistration getRegisterStatus(UserAuth userAuth);
 
-    void activateAccount(String pathUUID) throws AccountActivationException;
+    void activateAccount(String pathUUID) throws AccountException;
 }

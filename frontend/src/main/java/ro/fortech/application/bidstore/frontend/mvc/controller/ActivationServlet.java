@@ -1,6 +1,7 @@
 package ro.fortech.application.bidstore.frontend.mvc.controller;
 
 import ro.fortech.application.bidstore.backend.exception.AccountActivationException;
+import ro.fortech.application.bidstore.backend.exception.AccountException;
 import ro.fortech.application.bidstore.backend.service.account.UserAccountService;
 
 import javax.inject.Inject;
@@ -27,15 +28,17 @@ public class ActivationServlet extends HttpServlet{
         if(sUUID != null){
 
             try {
-
                 service.activateAccount(sUUID);
-                response.sendRedirect("/BidStore/view/account/confirmActivation.xhtml");
+                response.sendRedirect("/BidStore/view/public/account/confirmActivation.xhtml");
 
-            }catch(AccountActivationException ex){
-                response.sendRedirect("/BidStore/view/account/signin.xhtml");
+            } catch(AccountActivationException ex){
+                response.sendRedirect("/BidStore/view/public/account/failedActivation.xhtml");
+
+            } catch (AccountException e) {
+                response.sendRedirect("/BidStore/view/public/error.xhtml");
             }
         } else {
-            response.sendRedirect("/BidStore/view/account/signin.xhtml");
+            response.sendRedirect("/BidStore/view/public/account/signin.xhtml");
         }
     }
 }

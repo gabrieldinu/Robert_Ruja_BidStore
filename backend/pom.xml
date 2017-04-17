@@ -35,6 +35,6 @@
     </dependencies>
 
     <build>
-        <finalName>BiddingApp-backend</finalName>
+        <finalName>BidStore-backend</finalName>
     </build>
 </project>

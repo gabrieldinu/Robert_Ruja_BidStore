@@ -14,12 +14,14 @@ import java.util.UUID;
 @Table(name= "user_auth")
 @NamedQueries({
         @NamedQuery(name = UserAuth.FIND_BY_USERNAME, query= "Select u FROM UserAuth u WHERE u.username = :username"),
-        @NamedQuery(name = UserAuth.FIND_BY_UUID, query = "Select u FROM UserAuth u WHERE u.uuid = :uuid" )})
+        @NamedQuery(name = UserAuth.FIND_BY_UUID, query = "Select u FROM UserAuth u WHERE u.uuid = :uuid" ),
+        @NamedQuery(name = UserAuth.DELETE_BY_EXPIRING_DATE, query ="delete from UserAuth u WHERE u.uuid is not null and u.expiringDate < :date ")})
 public class UserAuth {
 
 
     public static final String FIND_BY_USERNAME = "UserAuth.findByUsername";
     public static final String FIND_BY_UUID = "UserAuth.findByUUID";
+    public static final String DELETE_BY_EXPIRING_DATE = "UserAuth.deleteByExpiringDate";
 
     @Id
     @NotNull
@@ -35,9 +37,8 @@ public class UserAuth {
     @Size(min = 1, max = 256)
     private String uuid;
 
-    @Column(name="request_date")
-//    @Temporal(TemporalType.TIMESTAMP)
-    private Timestamp requestDate;
+    @Column(name="exp_date")
+    private Timestamp expiringDate;
 
     public UserAuth() {
     }
@@ -72,11 +73,12 @@ public class UserAuth {
         this.uuid = uuid;
     }
 
-    public Timestamp getRequestDate() {
-        return requestDate;
+    public Timestamp getExpiringDate() {
+        return expiringDate;
     }
 
-    public void setRequestDate(Timestamp requestDate) {
-        this.requestDate = requestDate;
+    public void setExpiringDate(Timestamp expiringDate) {
+        this.expiringDate = expiringDate;
     }
+
 }

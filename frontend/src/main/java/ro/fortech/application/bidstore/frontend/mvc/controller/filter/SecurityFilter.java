@@ -29,9 +29,7 @@ public class SecurityFilter implements Filter{
 
         String path = request.getRequestURI().substring(request.getContextPath().length());
 
-        boolean allowedPages = path.contains("/account/signin") ||
-                               path.contains("/account/signup") ||
-                               path.contains("/account/confirmActivation");
+        boolean allowedPages = path.contains("/view/public/") || path.contains("/activate?");
 
         if(userAccount.isLoggedIn()){
             if(allowedPages) {
@@ -40,12 +38,11 @@ public class SecurityFilter implements Filter{
             }
         }else{
             if(!allowedPages) {
-                response.sendRedirect("/BidStore/view/account/signin.xhtml");
+                response.sendRedirect("/BidStore/view/public/account/signin.xhtml");
                 return;
             }
         }
         filterChain.doFilter(servletRequest,servletResponse);
-
     }
 
     @Override

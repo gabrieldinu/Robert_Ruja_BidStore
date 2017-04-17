@@ -7,8 +7,10 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
+import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
+import java.util.Date;
 
 /**
  * Created by robert.ruja on 10-Apr-17.
@@ -49,10 +51,9 @@ public class UserDAOImpl implements UserDAO {
 
     @Override
     @Transactional
-    public void saveUserDetails(UserAuth userAuth, User user) {
-
-        em.persist(user);
+    public void saveUserInfo(UserAuth userAuth, User user) {
         em.persist(userAuth);
+        em.persist(user);
     }
 
     @Override
@@ -74,5 +75,13 @@ public class UserDAOImpl implements UserDAO {
     public void saveUserAuthentication(UserAuth userAuth) {
 
         em.persist(userAuth);
+    }
+
+    @Override
+    @Transactional
+    public void deleteUserWithExpiredDate(Date date) {
+        Query query = em.createNamedQuery(UserAuth.DELETE_BY_EXPIRING_DATE);
+        query.setParameter("date",date);
+        query.executeUpdate();
     }
 }
