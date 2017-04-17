@@ -14,7 +14,7 @@ public class AccountCheckerService {
     private UserDAO userDAO;
 
     //every 30 minute
-   @Schedule(hour="*",minute="*/2",second = "*",persistent = false)
+   @Schedule(hour="*",minute="*/30",second = "*",persistent = false)
     private void checkAccounts() {
        userDAO.deleteUserWithExpiredDate(new Timestamp(System.currentTimeMillis()));
    }

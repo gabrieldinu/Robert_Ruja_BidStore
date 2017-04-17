@@ -11,6 +11,13 @@ public class Email {
     private String emailText;
     private String subject;
 
+    public Email(String from, String to, String emailText, String subject) {
+        this.from = from;
+        this.to = to;
+        this.emailText = emailText;
+        this.subject = subject;
+    }
+
     public String getFrom() {
         return from;
     }

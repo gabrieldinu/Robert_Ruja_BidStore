@@ -61,17 +61,4 @@ public class MailSender implements Serializable {
         }
     }
 
-    public void sendConfirmationEmail(User user, UUID uuid) {
-        Email email = new Email();
-        email.setFrom(from);
-        email.setTo(user.getEmail());
-        email.setSubject("Account Activation");
-        email.setEmailText(buildConfirmationTextMessage(uuid.toString()));
-        sendMail(email);
-    }
-
-    private String buildConfirmationTextMessage(String uuid) {
-
-        return "Hi, your activation link is http://192.168.215.156:8080/BidStore/activate?activationId=" + uuid;
-    }
 }

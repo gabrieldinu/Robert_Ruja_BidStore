@@ -60,7 +60,7 @@ public class UserAccountServiceImpl implements UserAccountService {
         userAuth.setPassword(PasswordDigest.digestPassword(userAuth.getPassword()));
         userAuth.setUuid(uuid.toString());
         //set expiration date of the account to 24h
-        userAuth.setExpiringDate(new Timestamp(System.currentTimeMillis()+15000)); //86400000
+        userAuth.setExpiringDate(new Timestamp(System.currentTimeMillis()+86400000));
         userDAO.saveUserInfo(userAuth,user);
         return uuid;
     }

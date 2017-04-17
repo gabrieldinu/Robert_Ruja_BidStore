@@ -7,6 +7,9 @@ import javax.enterprise.inject.spi.InjectionPoint;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
 import java.util.logging.Logger;
 
 /**
@@ -35,5 +38,18 @@ public class ResourceProvider {
     @ApplicationScoped
     private ExternalContext produceExternalContext() {
         return FacesContext.getCurrentInstance().getExternalContext();
+    }
+
+    @Produces
+    @ApplicationScoped
+    private Properties getMailProperties(){
+        Properties properties = new Properties();
+        InputStream is = FacesContext.getCurrentInstance().getExternalContext().getResourceAsStream("config/mail_config.properties");
+        try {
+            properties.load(is);
+            return properties;
+        } catch (IOException e) {
+            return null;
+        }
     }
 }

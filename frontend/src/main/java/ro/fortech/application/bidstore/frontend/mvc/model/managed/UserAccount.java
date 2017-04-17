@@ -7,6 +7,7 @@ import ro.fortech.application.bidstore.backend.model.UserRole;
 import ro.fortech.application.bidstore.backend.persisetence.entity.User;
 import ro.fortech.application.bidstore.backend.persisetence.entity.UserAuth;
 import ro.fortech.application.bidstore.backend.service.account.UserAccountService;
+import ro.fortech.application.bidstore.frontend.util.EmailBuilder;
 import ro.fortech.application.bidstore.frontend.util.MailSender;
 
 import javax.annotation.PostConstruct;
@@ -54,6 +55,8 @@ public class UserAccount implements Serializable{
     @Inject
     ExternalContext externalContext;
 
+    @Inject
+    Properties emailProperties;
 
     @PostConstruct
     public void init(){
@@ -70,7 +73,7 @@ public class UserAccount implements Serializable{
                 destroyContext();
                 context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Internal error",
                        "An error occured during user access" ));
-                return "/view/error.xhtml";
+                return "/view/public/error.xhtml";
             }
 
             if(userAccountService.getRegisterStatus(userAuth) == UserRegistration.PENDING) {
@@ -105,8 +108,7 @@ public class UserAccount implements Serializable{
         switch(status){
 
             case REGISTERED:
-                context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error",
-                    "Account name already exists"));
+                context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error","Account name already exists"));
                 return null;
 
             case UNREGISTERED:
@@ -114,38 +116,44 @@ public class UserAccount implements Serializable{
                     user.setUsername(userAuth.getUsername());
                     user.setRole(UserRole.ADMIN);
                     UUID uuid = userAccountService.insertNewUser(userAuth, user);
-
-                    Properties properties = new Properties();
-
-                    //TODO: think to a better approach
-                    properties.load(externalContext.getResourceAsStream("config/mail_config.properties"));
-
-                    //new MailSender(properties).sendConfirmationEmail(user,uuid);
+                    sendConfirmationEmail(user,uuid);
                     context.addMessage(null,
-                            new FacesMessage(FacesMessage.SEVERITY_INFO, "Success",
-                                    "mail sent " +uuid));
-                    return "/view/account/mailSent";
+                            new FacesMessage(FacesMessage.SEVERITY_INFO, "Success","mail sent "));
+                    return "/view/public/account/mailSent";
+
                 }catch(AccountException ex){
-                    context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error",
-                            "An internal error occured"));
-                    return null;
-                } catch (IOException e) {
-                    context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error",
-                            "An internal error occured"));
+
+                    context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error","An internal error occured"));
                     return null;
                 }
 
             case PENDING:
-                context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error",
-                        "You already have an account, but it is not activated! Check your email!"));
+
+                context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error","You already have an account, but it is not activated! Check your email!"));
                 return null;
 
             default:
-                context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error",
-                        "An internal error occured"));
+
+                context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "An internal error occured"));
                 return null;
         }
 
+    }
+
+    private void sendConfirmationEmail(User user, UUID uuid) throws AccountException {
+
+        if(this.emailProperties != null) {
+            new MailSender(emailProperties).sendMail(
+                    EmailBuilder.getEmailBuilder()
+                            .withFrom("caveat-emptor@fortech.ro")
+                            .withTo(user.getEmail())
+                            .withSubject("Caveat Emptor account activation for " + user.getFirstName() + " " + user.getLastName())
+                            .withText("Hi, your activation link is http://192.168.215.156:8080/BidStore/activate?activationId=" + uuid)
+                            .build()
+            );
+        }else {
+            throw new AccountException("Unable to fetch mail configuration properties");
+        }
     }
 
     private void destroyContext() {
@@ -160,7 +168,7 @@ public class UserAccount implements Serializable{
         destroyContext();
         context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Log out",
                 "You have been logged out successfully"));
-        return "/view/account/signin";
+        return "/view/public/account/signin";
     }
     public void checkLoggedIn() throws IOException {
         if (isLoggedIn()) {

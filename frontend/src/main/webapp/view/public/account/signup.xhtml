@@ -37,7 +37,11 @@
 
                         <div class="col-sm-8">
                             <h:inputText class="form-control" id="inputEmail" value="#{userAccount.user.email}"
-                                         label="Email address:" style="display:block;width:177px"/>
+                                         label="Email address:" style="display:block;width:177px">
+                                <f:ajax event="blur" render="emailMessage" />
+                                <f:validator binding="#{mailValidator}" />
+                            </h:inputText>
+                            <h:message for="inputEmail" id="emailMessage" style="color:red" />
                         </div>
                     </div>
                     <div class="form-group">
