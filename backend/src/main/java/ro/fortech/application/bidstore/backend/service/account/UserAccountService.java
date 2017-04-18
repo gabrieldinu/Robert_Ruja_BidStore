@@ -1,6 +1,5 @@
 package ro.fortech.application.bidstore.backend.service.account;
 
-import ro.fortech.application.bidstore.backend.exception.AccountActivationException;
 import ro.fortech.application.bidstore.backend.exception.AccountException;
 import ro.fortech.application.bidstore.backend.model.UserRegistration;
 import ro.fortech.application.bidstore.backend.persisetence.entity.User;
@@ -25,4 +24,12 @@ public interface UserAccountService extends Serializable {
     UserRegistration getRegisterStatus(UserAuth userAuth);
 
     void activateAccount(String pathUUID) throws AccountException;
+
+    String resetPassword(User user) throws AccountException;
+
+    UserAuth getRequestChangePassowrd(String token);
+
+    void changeUserAuthentication(UserAuth userAuth) throws AccountException;
+
+    UserAuth getAuthenticationByUUID(String cookieValue);
 }

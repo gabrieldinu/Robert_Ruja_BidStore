@@ -14,10 +14,14 @@ import java.sql.Timestamp;
 
 @Entity
 @Table(name = "user")
-@NamedQueries({@NamedQuery(name = User.FIND_BY_USERNAME, query= "Select u FROM User u WHERE u.username = :username")})
+@NamedQueries({
+        @NamedQuery(name = User.FIND_BY_USERNAME, query= "Select u FROM User u WHERE u.username = :username"),
+        @NamedQuery(name = User.FIND_BY_EMAIL, query= "Select u FROM User u  WHERE u.email = :email")
+        })
 public class User implements Serializable {
 
     public static final java.lang.String FIND_BY_USERNAME = "User.findByUsername" ;
+    public static final java.lang.String FIND_BY_EMAIL = "User.findByEmail";
     @Id
     @NotNull
     @Size(min = 1, max = 30)

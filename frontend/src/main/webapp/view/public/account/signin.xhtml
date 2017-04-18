@@ -19,12 +19,11 @@
                     <label for="inputPassword" class="sr-only">Password</label>
                     <h:inputText id="inputPassword" pt:type="password" class="form-control" pt:placeholder="Password"
                                  pt:required="true" value="#{userAccount.userAuth.password}"/>
-
-                    <!--<div class="checkbox">-->
-                        <!--<label>-->
-                            <!--<h:selectBooleanCheckbox value="#{userAccount.rememberMe}"/> Remember Me-->
-                        <!--</label>-->
-                    <!--</div>-->
+                    <div class="checkbox">
+                        <label>
+                            <h:selectBooleanCheckbox value="#{userAccount.rememberMe}"/> Remember Me
+                        </label>
+                    </div>
                     <h:commandButton styleClass="btn btn-lg btn-primary btn-block" value="Sign in"
                                      action="#{userAccount.signIn}"/>
                     <h:link styleClass="btn btn-link" value="Register" outcome="signup"/>

@@ -15,11 +15,17 @@ public interface UserDAO {
 
     User getUserDetails(User user);
 
-    void saveUserInfo(UserAuth userAuth, User user);
+    boolean saveUserInfo(UserAuth userAuth, User user);
 
-    UserAuth getUserAuthenticationByUUID(String uuid);
+    UserAuth getUserAuthenticationByActivationToken(String uuid);
 
     void saveUserAuthentication(UserAuth userAuth);
 
     void deleteUserWithExpiredDate(Date date);
+
+    User getByEmail(User user);
+
+    UserAuth getUserAuthenticationByResetToken(String s);
+
+    UserAuth getUserAuthenticationByUUID(String cookieValue);
 }

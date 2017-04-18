@@ -51,16 +51,21 @@ public class UserDAOImpl implements UserDAO {
 
     @Override
     @Transactional
-    public void saveUserInfo(UserAuth userAuth, User user) {
-        em.persist(userAuth);
-        em.persist(user);
+    public boolean saveUserInfo(UserAuth userAuth, User user) {
+        try {
+            em.persist(userAuth);
+            em.persist(user);
+            return true;
+        } catch(Exception ex){
+            return false;
+        }
     }
 
     @Override
-    public UserAuth getUserAuthenticationByUUID(String uuid) {
+    public UserAuth getUserAuthenticationByActivationToken(String activationTokenUUID) {
         UserAuth userAuth;
-        TypedQuery<UserAuth> query = em.createNamedQuery(UserAuth.FIND_BY_UUID, UserAuth.class);
-        query.setParameter("uuid", uuid);
+        TypedQuery<UserAuth> query = em.createNamedQuery(UserAuth.FIND_BY_ACTIVATION_TOKEN, UserAuth.class);
+        query.setParameter("activationToken", activationTokenUUID);
 
         try {
             userAuth = query.getSingleResult();
@@ -73,8 +78,7 @@ public class UserDAOImpl implements UserDAO {
     @Override
     @Transactional
     public void saveUserAuthentication(UserAuth userAuth) {
-
-        em.persist(userAuth);
+        em.merge(userAuth);
     }
 
     @Override
@@ -83,5 +87,38 @@ public class UserDAOImpl implements UserDAO {
         Query query = em.createNamedQuery(UserAuth.DELETE_BY_EXPIRING_DATE);
         query.setParameter("date",date);
         query.executeUpdate();
+    }
+
+    @Override
+    public User getByEmail(User user) {
+        TypedQuery<User> query = em.createNamedQuery(User.FIND_BY_EMAIL, User.class);
+        query.setParameter("email", user.getEmail());
+        try {
+         return query.getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        }
+    }
+
+    @Override
+    public UserAuth getUserAuthenticationByResetToken(String token) {
+        TypedQuery<UserAuth> query = em.createNamedQuery(UserAuth.FIND_BY_RESET_TOKEN, UserAuth.class);
+        query.setParameter("token", token);
+        try {
+            return query.getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        }
+    }
+
+    @Override
+    public UserAuth getUserAuthenticationByUUID(String cookieValue) {
+        TypedQuery<UserAuth> query = em.createNamedQuery(UserAuth.FIND_BY_UUID, UserAuth.class);
+        query.setParameter("uuid", cookieValue);
+        try {
+            return query.getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        }
     }
 }

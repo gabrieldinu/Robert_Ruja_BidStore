@@ -14,14 +14,18 @@ import java.util.UUID;
 @Table(name= "user_auth")
 @NamedQueries({
         @NamedQuery(name = UserAuth.FIND_BY_USERNAME, query= "Select u FROM UserAuth u WHERE u.username = :username"),
-        @NamedQuery(name = UserAuth.FIND_BY_UUID, query = "Select u FROM UserAuth u WHERE u.uuid = :uuid" ),
-        @NamedQuery(name = UserAuth.DELETE_BY_EXPIRING_DATE, query ="delete from UserAuth u WHERE u.uuid is not null and u.expiringDate < :date ")})
+        @NamedQuery(name = UserAuth.FIND_BY_ACTIVATION_TOKEN, query = "Select u FROM UserAuth u WHERE u.activationToken = :activationToken" ),
+        @NamedQuery(name = UserAuth.DELETE_BY_EXPIRING_DATE, query ="delete from UserAuth u WHERE u.activationToken is not null and u.expiringDate < :date "),
+        @NamedQuery(name = UserAuth.FIND_BY_RESET_TOKEN, query = "Select u FROM UserAuth u WHERE u.resetToken = :token"),
+        @NamedQuery(name = UserAuth.FIND_BY_UUID, query = "Select u FROM UserAuth u WHERE u.uuid = :uuid")})
+
 public class UserAuth {
 
-
     public static final String FIND_BY_USERNAME = "UserAuth.findByUsername";
-    public static final String FIND_BY_UUID = "UserAuth.findByUUID";
+    public static final String FIND_BY_ACTIVATION_TOKEN = "UserAuth.findByUUID";
     public static final String DELETE_BY_EXPIRING_DATE = "UserAuth.deleteByExpiringDate";
+    public static final String FIND_BY_RESET_TOKEN = "UserAuth.findByResetToken";
+    public static final String FIND_BY_UUID = "UserAuth.findByUUID";
 
     @Id
     @NotNull
@@ -33,20 +37,27 @@ public class UserAuth {
     @Size(min = 1, max = 256)
     private String password;
 
-    @Column(name="token",length = 256)
+    @Column(name="activ_token",length = 256)
     @Size(min = 1, max = 256)
-    private String uuid;
+    private String activationToken;
 
     @Column(name="exp_date")
     private Timestamp expiringDate;
 
+    @Column(name = "reset_token")
+    private String resetToken;
+
+    @Column(length = 256)
+    @Size(min = 1, max = 256)
+    private String uuid;
+
     public UserAuth() {
     }
 
-    public UserAuth(String username, String password, UUID uuid) {
+    public UserAuth(String username, String password, UUID activationToken) {
         this.username = username;
         this.password = password;
-        this.uuid = uuid.toString();
+        this.activationToken = activationToken.toString();
     }
 
     public String getUsername() {
@@ -65,12 +76,12 @@ public class UserAuth {
         this.password = password;
     }
 
-    public String getUuid() {
-        return uuid;
+    public String getActivationToken() {
+        return activationToken;
     }
 
-    public void setUuid(String uuid) {
-        this.uuid = uuid;
+    public void setActivationToken(String activationToken) {
+        this.activationToken = activationToken;
     }
 
     public Timestamp getExpiringDate() {
@@ -81,4 +92,19 @@ public class UserAuth {
         this.expiringDate = expiringDate;
     }
 
+    public String getResetToken() {
+        return resetToken;
+    }
+
+    public void setResetToken(String resetToken) {
+        this.resetToken = resetToken;
+    }
+
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
+    }
 }

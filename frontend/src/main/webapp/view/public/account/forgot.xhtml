@@ -12,9 +12,9 @@
             <div class="col-md-4"></div>
             <div class="col-md-4">
                 <h:form class="form-forgot">
-                    <h2 class="form-forgot-heading">An email will be sent with your new password</h2>
-                    <label for="inputEmail" class="sr-only">Email address</label>
-                    <h:inputText id="inputEmail" pt:type="email" class="form-control" pt:placeholder="Email address"
+                    <h2 class="form-forgot-heading">Enter your email</h2>
+                    <label for="emailText" class="sr-only">Email address</label>
+                    <h:inputText id="emailText" pt:type="email" class="form-control" pt:placeholder="Email address"
                                  pt:required="true" pt:autofocus="true" value="#{userAccount.user.email}"/>
                     <br/>
                     <h:commandButton styleClass="btn btn-lg btn-primary btn-block" value="Send email"
