@@ -1,4 +1,4 @@
-package ro.fortech.application.bidstore.frontend.mvc.model.managed;
+package ro.fortech.application.bidstore.frontend.mvc.managed.validation;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;

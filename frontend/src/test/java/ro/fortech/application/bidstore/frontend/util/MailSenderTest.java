@@ -24,7 +24,7 @@ public class MailSenderTest{
     public void setUp() {
 //        Properties properties = new Properties();
 //        try {
-//            properties.load(new InputStreamReader(MailSender.class.getResourceAsStream("mail_config.properties")));
+//            properties.load(new InputStreamReader(MailSender.class.getResourceAsStream("config.properties")));
 //        } catch (IOException e) {
 //            e.printStackTrace();
 //        }

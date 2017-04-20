@@ -151,4 +151,16 @@ public class UserAccountServiceImpl implements UserAccountService {
         return userDAO.getUserAuthenticationByUUID(cookieValue);
     }
 
+    @Override
+    public void enableUser(String managedUsername) throws AccountException {
+        if(!userDAO.setUserEnabled(managedUsername,true))
+            throw new AccountException("Error while enabling the user");
+    }
+
+    @Override
+    public void disableUser(String managedUsername) throws AccountException {
+        if(!userDAO.setUserEnabled(managedUsername,false))
+            throw new AccountException("Error while disabling the user");
+    }
+
 }

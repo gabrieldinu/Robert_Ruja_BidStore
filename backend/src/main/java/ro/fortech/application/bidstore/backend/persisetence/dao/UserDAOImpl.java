@@ -121,4 +121,17 @@ public class UserDAOImpl implements UserDAO {
             return null;
         }
     }
+
+    @Override
+    @Transactional
+    public boolean setUserEnabled(String managedUsername, boolean b) {
+        try {
+            User user = getUserDetails(new User(managedUsername, null, null, null, null,null));
+            user.setEnabled(b);
+            em.merge(user);
+        }catch(Exception ex){
+            return false;
+        }
+        return true;
+    }
 }

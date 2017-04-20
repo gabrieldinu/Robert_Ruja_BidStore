@@ -2,7 +2,7 @@ package ro.fortech.application.bidstore.frontend.mvc.controller;
 
 import ro.fortech.application.bidstore.backend.persisetence.entity.UserAuth;
 import ro.fortech.application.bidstore.backend.service.account.UserAccountService;
-import ro.fortech.application.bidstore.frontend.mvc.model.managed.UserAccount;
+import ro.fortech.application.bidstore.frontend.mvc.managed.account.UserAccount;
 
 import javax.inject.Inject;
 import javax.servlet.annotation.WebServlet;

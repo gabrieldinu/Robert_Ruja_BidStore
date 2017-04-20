@@ -1,0 +1,87 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets" xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core" xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+                template="/resources/scaffold/template.xhtml">
+
+    <ui:define name="title">User management</ui:define>
+
+    <ui:define name="message">User Management</ui:define>
+
+    <ui:define name="body">
+        <f:event type="preRenderView" listener="#{userAccount.checkAdminPermissions}"/>
+        <div class="row" style="width:100%;">
+                <h:form id="form" style="width:100%;">
+                    <p:dataTable var="user" value="#{userMgt.lazyModel}" paginator="true" rows="10"
+                                 paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+                                 rowsPerPageTemplate="5,10,15" selectionMode="single" id="userTable" lazy="true">
+                        <p:ajax event="rowSelect" listener="#{userMgt.onRowSelect}" update=":form:userDetail" oncomplete="PF('userDialog').show()" />
+                        <p:column headerText="Account" sortBy="#{user.username}" filterBy="#{user.username}">
+                            <h:outputText value="#{user.username}" />
+                        </p:column>
+                        <p:column headerText="First Name" sortBy="#{user.firstName}" filterBy="#{user.firstName}">
+                            <h:outputText value="#{user.firstName}" />
+                        </p:column>
+                        <p:column headerText="Last Name" sortBy="#{user.lastName}" filterBy="#{user.lastName}">
+                            <h:outputText value="#{user.lastName}" />
+                        </p:column>
+                        <p:column headerText="Email" sortBy="#{user.email}" filterBy="#{user.email}">
+                            <h:outputText value="#{user.email}" />
+                        </p:column>
+                        <p:column headerText="Placed" sortBy="#{user.itemsPlaced}" filterBy="#{user.itemsPlaced}">
+                            <h:outputText value="#{user.itemsPlaced}" />
+                        </p:column>
+                        <p:column headerText="Sold" sortBy="#{user.itemsSold}" filterBy="#{user.itemsSold}">
+                            <h:outputText value="#{user.itemsSold}" />
+                        </p:column>
+                        <p:column headerText="Bought" sortBy="#{user.itemsBought}" filterBy="#{user.itemsBought}">
+                            <h:outputText value="#{user.itemsBought}" />
+                        </p:column>
+                        <p:column headerText="Admin" sortBy="#{user.admin}" filterBy="#{user.admin}">
+                            <h:graphicImage value="/resources/true.png" rendered="#{user.admin}"/>
+                            <h:graphicImage value="/resources/false.png" rendered="#{!user.admin}"/>
+                        </p:column>
+                        <p:column headerText="Enabled" sortBy="#{user.enabled}" filterBy="#{user.enabled}">
+                            <h:graphicImage value="/resources/true.png" rendered="#{user.enabled}"/>
+                            <h:graphicImage value="/resources/false.png" rendered="#{!user.enabled}"/>
+                        </p:column>
+                        <p:column headerText="">
+                            <h:commandButton styleClass="btn-block" value="Disable"
+                                             action="#{userMgt.disable}" rendered="#{user.enabled}">
+                                <f:setPropertyActionListener target="#{userMgt.managedUsername}" value="#{user.username}"/>
+                            </h:commandButton>
+                            <h:commandButton styleClass="btn-block" value="Enable"
+                                             action="#{userMgt.enable}" rendered="#{!user.enabled}">
+                                <f:setPropertyActionListener target="#{userMgt.managedUsername}" value="#{user.username}"/>
+                            </h:commandButton>
+                        </p:column>
+                    </p:dataTable>
+                    <p:dialog header="User detail" widgetVar="userDialog" modal="true" showEffect="fade" hideEffect="fade" resizable="false">
+                        <p:outputPanel id="userDetail" style="text-align:center;">
+                            <p:panelGrid  columns="2" rendered="#{not empty userMgt.selectedUser}" columnClasses="label,value">
+                                <f:facet name="header">
+                                    <h:outputText value="#{userMgt.selectedUser.username}"/>
+                                </f:facet>
+
+                                <h:outputText value="First name:" style="color:black;"/>
+                                <h:outputText value="#{userMgt.selectedUser.firstName}" />
+
+                                <h:outputText value="Last name:" style="color:black;"/>
+                                <h:outputText value="#{userMgt.selectedUser.lastName}" />
+
+                                <h:outputText value="Email" style="color:black;"/>
+                                <h:outputText value="#{userMgt.selectedUser.email}" />
+
+                                <h:outputText value="Enable status" style="color:black;"/>
+                                <h:graphicImage value="/resources/true.png" rendered="#{userMgt.selectedUser.enabled}"/>
+                                <h:graphicImage value="/resources/false.png" rendered="#{!userMgt.selectedUser.enabled}"/>
+
+                            </p:panelGrid>
+                        </p:outputPanel>
+                    </p:dialog>
+                </h:form>
+        </div>
+
+    </ui:define>
+
+</ui:composition>

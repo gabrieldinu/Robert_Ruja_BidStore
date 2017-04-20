@@ -32,4 +32,8 @@ public interface UserAccountService extends Serializable {
     void changeUserAuthentication(UserAuth userAuth) throws AccountException;
 
     UserAuth getAuthenticationByUUID(String cookieValue);
+
+    void enableUser(String managedUsername) throws AccountException;
+
+    void disableUser(String managedUsername) throws AccountException;
 }

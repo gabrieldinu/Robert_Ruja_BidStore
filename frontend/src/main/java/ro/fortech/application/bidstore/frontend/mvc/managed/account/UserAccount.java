@@ -1,4 +1,4 @@
-package ro.fortech.application.bidstore.frontend.mvc.model.managed;
+package ro.fortech.application.bidstore.frontend.mvc.managed.account;
 
 
 import ro.fortech.application.bidstore.backend.exception.AccountEmailException;
@@ -19,6 +19,7 @@ import javax.enterprise.inject.spi.BeanManager;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
+import javax.faces.event.ComponentSystemEvent;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.servlet.http.Cookie;
@@ -60,7 +61,7 @@ public class UserAccount implements Serializable{
     ExternalContext externalContext;
 
     @Inject
-    Properties emailProperties;
+    Properties configProperties;
 
     @Inject
     HttpServletRequest request;
@@ -178,13 +179,13 @@ public class UserAccount implements Serializable{
 
     private void sendConfirmationEmail(User user, UUID uuid) throws AccountException {
 
-        if(this.emailProperties != null) {
-            new MailSender(emailProperties).sendMail(
+        if(this.configProperties != null) {
+            new MailSender(configProperties).sendMail(
                     EmailBuilder.getEmailBuilder()
                             .withFrom("caveat-emptor@fortech.ro")
                             .withTo(user.getEmail())
                             .withSubject("Caveat Emptor account activation for " + user.getFirstName() + " " + user.getLastName())
-                            .withText("Hi, your activation link is http://192.168.215.156:8080/BidStore/activate?activationId=" + uuid)
+                            .withText("Hi, your activation link is " + configProperties.getProperty("application.url") + "/BidStore/activate?activationId=" + uuid)
                             .build()
             );
         }else {
@@ -218,13 +219,14 @@ public class UserAccount implements Serializable{
         try {
             String resetToken = userAccountService.resetPassword(user);
 
-            if(this.emailProperties != null) {
-                new MailSender(emailProperties).sendMail(
+            if(this.configProperties != null) {
+
+                new MailSender(configProperties).sendMail(
                         EmailBuilder.getEmailBuilder()
                                 .withFrom("caveat-emptor@fortech.ro")
                                 .withTo(user.getEmail())
                                 .withSubject("Caveat Emptor password reset link")
-                                .withText("Hi, to reset you password follow this link: http://192.168.215.156:8080/BidStore/resetPassword?token=" + resetToken)
+                                .withText("Hi, to reset you password follow this link: " + configProperties.getProperty("application.url") + "/BidStore/resetPassword?token=" + resetToken)
                                 .build()
                 );
             }else {
@@ -289,6 +291,14 @@ public class UserAccount implements Serializable{
 
     public void setUserAccountService(UserAccountService userAccountService) {
         this.userAccountService = userAccountService;
+    }
+
+    public void checkAdminPermissions(ComponentSystemEvent event) throws IOException {
+        FacesContext fc = FacesContext.getCurrentInstance();
+        if(!admin){
+            context.getExternalContext().redirect(context.getExternalContext().getRequestContextPath()+"/view/main.xhtml");
+        }
+        return;
     }
 
     public User getUser() {

@@ -60,14 +60,14 @@
                     <h:link class="navbar-brand" outcome="/view/main" value="Home" />
                 </div>
                 <div id="navbar" class="navbar-collapse collapse">
-                    <!--<h:form>-->
-                        <!--<ul class="nav navbar-nav">-->
-                            <!--<li><h:link outcome="/shopping/showShoppingCart.xhtml" value="Shopping cart"-->
-                                        <!--rendered="#{!shoppingCartBean.shoppingCartIsEmpty()}"/></li>-->
-                            <!--&lt;!&ndash;<li><h:link outcome="/admin/main.xhtml" value="Admin"/></li>&ndash;&gt;-->
+                    <h:form rendered="#{userAccount.loggedIn}">
+                        <ul class="nav navbar-nav">
+                            <li><h:link outcome="/view/account/userManagement.xhtml" value="User management" class="navbar-brand"
+                                        rendered="#{userAccount.admin}"/></li>
+                            <!--<li><h:link outcome="/admin/main.xhtml" value="Admin"/></li>-->
                             <!--<li><h:link outcome="/admin/main.xhtml" value="Admin" rendered="#{userAccount.admin}"/></li>-->
-                        <!--</ul>-->
-                    <!--</h:form>-->
+                        </ul>
+                    </h:form>
                     <h:form class="navbar-form navbar-right">
                         <!--<div class="form-group">-->
                             <!--<h:inputText pt:placeholder="Search" class="form-control" value="#{catalogBean.keyword}"/>-->

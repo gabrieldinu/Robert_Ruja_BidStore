@@ -28,4 +28,6 @@ public interface UserDAO {
     UserAuth getUserAuthenticationByResetToken(String s);
 
     UserAuth getUserAuthenticationByUUID(String cookieValue);
+
+    boolean setUserEnabled(String managedUsername, boolean b);
 }
