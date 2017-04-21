@@ -17,6 +17,7 @@
     </modules>
 
     <properties>
+        <version.wildfly>10.0.0.Final</version.wildfly>
         <version.javaee7>1.0.3.Final</version.javaee7>
         <version.lorem>2.0</version.lorem>
         <version.bootstrap>3.3.6</version.bootstrap>
@@ -68,11 +69,11 @@
                 <version>${version.primefaces.theme}</version>
             </dependency>
             <dependency>
-                <groupId>org.jboss.spec</groupId>
-                <artifactId>jboss-javaee-7.0</artifactId>
-                <version>${version.javaee7}</version>
+                <groupId>org.wildfly</groupId>
+                <artifactId>wildfly-spec-api</artifactId>
+                <version>${version.wildfly}</version>
                 <type>pom</type>
-                <scope>compile</scope>
+                <scope>provided</scope>
             </dependency>
             <dependency>
                 <groupId>org.jboss.resteasy</groupId>

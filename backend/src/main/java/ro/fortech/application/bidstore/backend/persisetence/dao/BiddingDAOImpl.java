@@ -2,16 +2,18 @@ package ro.fortech.application.bidstore.backend.persisetence.dao;
 
 import org.hibernate.Criteria;
 import org.hibernate.Session;
-import org.hibernate.criterion.DetachedCriteria;
-import org.hibernate.criterion.ProjectionList;
+import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
+import org.hibernate.criterion.Restrictions;
 import ro.fortech.application.bidstore.backend.model.UserEnabled;
 import ro.fortech.application.bidstore.backend.model.UserRole;
 import ro.fortech.application.bidstore.backend.persisetence.entity.BiddingUser;
 import ro.fortech.application.bidstore.backend.persisetence.provider.HibernateSessionProvider;
+import ro.fortech.application.bidstore.backend.util.HibernateUtil;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -24,110 +26,90 @@ public class BiddingDAOImpl implements BiddingDAO{
     private UserDAO userDAO;
 
     @Inject
-    HibernateSessionProvider hibernateProvider;
+    private HibernateSessionProvider hibernateProvider;
 
-    List<BiddingUser> temporaryBiddingUserList;
+    private List<BiddingUser> temporaryBiddingUserList;
 
     @Override
     public List<BiddingUser> queryForBiddingUsers(int first, int pageSize, String sortField, String sortOrder, Map<String, Object> filters) {
-        temporaryBiddingUserList = new ArrayList<>();
-        Session session = hibernateProvider.getSession();
-        Criteria criteria = session.createCriteria(BiddingUser.class);
-        ProjectionList pl = Projections.projectionList();
-        pl.add(Projections.groupProperty("firstName"));
-        pl.add(Projections.groupProperty("lastName"));
-        pl.add(Projections.groupProperty("username"));
-        pl.add(Projections.groupProperty("email"));
-        pl.add(Projections.groupProperty("role"));
-        pl.add(Projections.groupProperty("userEnabled"));
-        pl.add(Projections.sum("itemsPlaced"));
-        pl.add(Projections.sum("itemsSold"));
-        pl.add(Projections.sum("itemsBought"));
-        criteria.setProjection(pl);
+
+        temporaryBiddingUserList = new LinkedList<>();
+
+        Criteria criteria = buildCriteriaForBiddingUser();
+        criteria.setFirstResult(first);
+        criteria.setMaxResults(pageSize);
+
+
+        //sorting
+        if(sortField != null) {
+            sortField = "bu." + sortField;
+            criteria.addOrder(
+                    sortOrder.equals("ASC") ?
+                            Order.asc(sortField) :
+                            Order.desc(sortField)
+            );
+        }
+        //filtering
+        if(filters!=null && !filters.isEmpty()){
+            for(Map.Entry<String,Object> entry: filters.entrySet()) {
+                criteria.add(Restrictions.sqlRestriction("{alias}." +
+                        HibernateUtil.getColumNameFromField(BiddingUser.class,entry.getKey()) + " LIKE '%" + entry.getValue() + "%' "
+                        ));
+                //criteria.add(Restrictions.like(entry.getKey(),"%" + entry.getValue() + "%"));
+            }
+        }
 
         for(Object o:criteria.list()) {
             Object[] elements = (Object[])o;
-            temporaryBiddingUserList.add(new BiddingUser(
-                    (String)elements[0],
-                    (String)elements[0],
-                    (String)elements[0],
-                    (String)elements[0],
-                    (UserRole) elements[0],
-                    (UserEnabled) elements[0],
-                    (Long)elements[0],
-                    (Long)elements[0],
-                    (Long)elements[0]
-
-            ));
+            temporaryBiddingUserList.add(
+                    buildBiddingUserFromProjections(elements)
+            );
         }
 
-        //dummy
-//        if(this.list == null) {
-//            List<BiddingUser> list = new ArrayList<BiddingUser>() {{
-//                BiddingUser user = new BiddingUser();
-//                user.setEmail("email");
-//                user.setUsername("username");
-//                user.setUserEnabled(UserEnabled.ENABLED);
-//                user.setFirstName("first name");
-//                user.setLastName("last");
-//                user.setRole(UserRole.USER);
-//                user.setItemsBought(10);
-//                user.setItemsPlaced(15);
-//                user.setItemsSold(5);
-//                add(user);
-//                user = new BiddingUser();
-//                user.setEmail("email1");
-//                user.setUsername("username1");
-//                user.setUserEnabled(UserEnabled.ENABLED);
-//                user.setFirstName("first name1");
-//                user.setLastName("last1");
-//                user.setRole(UserRole.USER);
-//                user.setItemsBought(103);
-//                user.setItemsPlaced(125);
-//                user.setItemsSold(53);
-//                add(user);
-//                user = new BiddingUser();
-//                user.setEmail("email2");
-//                user.setUsername("username2");
-//                user.setUserEnabled(UserEnabled.ENABLED);
-//                user.setFirstName("first name2");
-//                user.setLastName("last2");
-//                user.setRole(UserRole.USER);
-//                user.setItemsBought(410);
-//                user.setItemsPlaced(135);
-//                user.setItemsSold(52);
-//                add(user);
-//                user = new BiddingUser();
-//                user.setEmail("email3");
-//                user.setUsername("username3");
-//                user.setUserEnabled(UserEnabled.DISABLED);
-//                user.setFirstName("first name3");
-//                user.setLastName("last3");
-//                user.setRole(UserRole.USER);
-//                user.setItemsBought(2);
-//                user.setItemsPlaced(15);
-//                user.setItemsSold(45);
-//                add(user);
-//            }};
-//            this.list = list;
-        //       }
-        //       return list;
         return temporaryBiddingUserList;
     }
 
     @Override
     public BiddingUser getSingleBiddingUser(String rowKey) {
-        //                user = new BiddingUser();
-//                user.setEmail("email3");
-//                user.setUsername("username3");
-//                user.setUserEnabled(UserEnabled.DISABLED);
-//                user.setFirstName("first name3");
-//                user.setLastName("last3");
-//                user.setRole(UserRole.USER);
-//                user.setItemsBought(2);
-//                user.setItemsPlaced(15);
-//                user.setItemsSold(45);
-//                add(user);
-        return null;
+        Criteria criteria = buildCriteriaForBiddingUser();
+        BiddingUser user;
+        try {
+             Object[] elements = (Object[])criteria.add(Restrictions.eq("username",rowKey))
+                     .uniqueResult();
+
+             return buildBiddingUserFromProjections(elements);
+
+        } catch(Exception ex) {
+            return null;
+        }
+    }
+
+    private Criteria buildCriteriaForBiddingUser() {
+        Session session = hibernateProvider.getSession();
+        return session.createCriteria(BiddingUser.class,"bu")
+                .setProjection(Projections.projectionList()
+                .add(Projections.groupProperty("firstName"))
+                .add(Projections.groupProperty("lastName"))
+                .add(Projections.groupProperty("username"))
+                .add(Projections.groupProperty("email"))
+                .add(Projections.groupProperty("role"))
+                .add(Projections.groupProperty("userEnabled"))
+                .add(Projections.sum("itemsPlaced"),"bu.itemsPlaced")
+                .add(Projections.sum("itemsSold"),"bu.itemsSold")
+                .add(Projections.sum("itemsBought"),"bu.itemsBought")
+        );
+    }
+
+    private BiddingUser buildBiddingUserFromProjections(Object[] elements){
+        return new BiddingUser(
+                (String)elements[2],
+                (String)elements[0],
+                (String)elements[1],
+                (String)elements[3],
+                (UserRole) elements[4],
+                (UserEnabled) elements[5],
+                (Long)elements[6],
+                (Long)elements[7],
+                (Long)elements[8]);
     }
 }

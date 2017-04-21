@@ -61,9 +61,11 @@ public class User implements Serializable {
     private Timestamp expiringDate;
 
     @Transient
+    @Column(name="role")
     private boolean admin;
 
     @Transient
+    @Column(name="enabled")
     private boolean enabled;
 
     public User(String username, String firstName, String lastName, String email, UserRole role, UserEnabled enabled) {

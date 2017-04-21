@@ -39,16 +39,24 @@ public class LazyUserDataModel extends LazyDataModel<BiddingUser> {
             break;
             default: sort = null;
         }
+        if(sortField != null)
+            switch (sortField){
+                case "admin": sortField = "role";
+                    break;
+                case "enabled": sortField = "userEnabled";
+                    break;
+                default:
+            }
+       this.tempList = service.getBiddingUsers(first,pageSize, sortField, sort, null);
 
-        this.tempList = service.getBiddingUsers(first,pageSize, sortField,sort,filters);
+            //TODO: implement better filtering
+
+        for(BiddingUser user: tempList) {
+
+        }
 
         this.setRowCount(tempList.size());
-//        this.datasource = service.getBiddingUsers();
-//        try {
-//            return datasource.subList(first, first + pageSize);
-//        }catch( IndexOutOfBoundsException ex) {
-//            return datasource.subList(first, first + (datasource.size() % pageSize));
-//        }
+
         return tempList;
     }
 }

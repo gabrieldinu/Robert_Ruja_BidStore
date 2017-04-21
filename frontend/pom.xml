@@ -22,8 +22,8 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.jboss.spec</groupId>
-            <artifactId>jboss-javaee-7.0</artifactId>
+            <groupId>org.wildfly</groupId>
+            <artifactId>wildfly-spec-api</artifactId>
             <type>pom</type>
             <scope>provided</scope>
         </dependency>

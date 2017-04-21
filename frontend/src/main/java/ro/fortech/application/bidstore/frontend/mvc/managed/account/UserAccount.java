@@ -112,6 +112,13 @@ public class UserAccount implements Serializable{
                 return null;
             }
 
+            if(!user.isEnabled()){
+                destroyContext();
+                context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Error",
+                        "Your account has been disabled, contact your administrator to enable it!" ));
+                return null;
+            }
+
             if (user.getRole().equals(UserRole.ADMIN)) {
 
                 admin = true;
@@ -151,6 +158,7 @@ public class UserAccount implements Serializable{
                 try {
                     user.setUsername(userAuth.getUsername());
                     user.setRole(UserRole.USER);
+                    user.setEnabled(true);
                     UUID uuid = userAccountService.insertNewUser(userAuth, user);
                     sendConfirmationEmail(user, uuid);
                     context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Success", "Mail sent "));

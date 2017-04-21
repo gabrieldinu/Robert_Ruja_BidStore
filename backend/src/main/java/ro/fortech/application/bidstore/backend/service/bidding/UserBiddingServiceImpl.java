@@ -25,7 +25,7 @@ public class UserBiddingServiceImpl implements UserBiddingService {
     @Override
     public List<BiddingUser> getBiddingUsers(int first, int pageSize, String sortField, String sortOrder, Map<String, Object> filters) {
 
-        return biddingDAO.queryForBiddingUsers(first,pageSize,sortField,sortField,filters);
+        return biddingDAO.queryForBiddingUsers(first,pageSize,sortField,sortOrder,filters);
 
     }
 

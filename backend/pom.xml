@@ -22,18 +22,17 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.jboss.spec</groupId>
-            <artifactId>jboss-javaee-7.0</artifactId>
+            <groupId>org.wildfly</groupId>
+            <artifactId>wildfly-spec-api</artifactId>
             <type>pom</type>
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>org.jboss.as</groupId>
-            <artifactId>jboss-as-jpa-hibernate4</artifactId>
-            <version>7.2.0.Final</version>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-core</artifactId>
+            <version>5.1.5.Final</version>
         </dependency>
     </dependencies>
-
     <build>
         <finalName>BidStore-backend</finalName>
     </build>
