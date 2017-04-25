@@ -244,7 +244,7 @@ public class UserAccount implements Serializable{
                     "An email has been sent to " + user.getEmail() + " with a link to reset your password :" ));
         } catch (AccountException e) {
             context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Unknown email",
-                    "This email address is unknown to our database"));
+                    "This email address is unknown to our database!"));
             return null;
         }
 
