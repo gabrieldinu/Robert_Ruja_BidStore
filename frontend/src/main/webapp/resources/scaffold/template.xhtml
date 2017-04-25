@@ -16,7 +16,11 @@
         <meta name="author" content=""/>
         <link rel="icon" href="./resources/favicon.ico"/>
         <link rel="shortcut icon" href="./resources/favicon.ico"/>
-
+        <style>
+            .container {
+                width:90% !important;
+            }
+        </style>
 
         <title><ui:insert name="title"/></title>
 
@@ -57,17 +61,17 @@
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </button>
-                    <h:link class="navbar-brand" outcome="/faces/view/main.xhtml" value="Home" rendered="#{userAccount.loggedIn}"/>
+                    <h:link class="navbar-brand" outcome="/view/main" value="Home" />
                 </div>
                 <div id="navbar" class="navbar-collapse collapse">
-                    <!--<h:form>-->
-                        <!--<ul class="nav navbar-nav">-->
-                            <!--<li><h:link outcome="/shopping/showShoppingCart.xhtml" value="Shopping cart"-->
-                                        <!--rendered="#{!shoppingCartBean.shoppingCartIsEmpty()}"/></li>-->
-                            <!--&lt;!&ndash;<li><h:link outcome="/admin/main.xhtml" value="Admin"/></li>&ndash;&gt;-->
+                    <h:form rendered="#{userAccount.loggedIn}">
+                        <ul class="nav navbar-nav">
+                            <li><h:link outcome="/view/account/userManagement.xhtml" value="User management" class="navbar-brand"
+                                        rendered="#{userAccount.admin}"/></li>
+                            <!--<li><h:link outcome="/admin/main.xhtml" value="Admin"/></li>-->
                             <!--<li><h:link outcome="/admin/main.xhtml" value="Admin" rendered="#{userAccount.admin}"/></li>-->
-                        <!--</ul>-->
-                    <!--</h:form>-->
+                        </ul>
+                    </h:form>
                     <h:form class="navbar-form navbar-right">
                         <!--<div class="form-group">-->
                             <!--<h:inputText pt:placeholder="Search" class="form-control" value="#{catalogBean.keyword}"/>-->
@@ -89,7 +93,7 @@
                                        aria-haspopup="true" aria-expanded="false">#{userAccount.user.firstName} <span
                                             class="caret"></span></a>
                                     <ul class="dropdown-menu">
-                                        <!--<li><h:link outcome="/account/profile.xhtml" value="Profile"/></li>-->
+                                        <li><h:link outcome="/view/account/accountManagement.xhtml" value="Manage account"/></li>
                                         <!--<li>-->
                                             <!--<h:link outcome="/account/chat.xhtml" value="Need some help" rendered="#{!userAccount.admin}"/>-->
                                             <!--<h:link outcome="/account/chat.xhtml" value="Help customers" rendered="#{userAccount.admin}"/>-->

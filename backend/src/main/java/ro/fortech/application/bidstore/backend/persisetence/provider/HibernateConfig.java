@@ -4,7 +4,6 @@ import org.hibernate.HibernateException;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.service.ServiceRegistry;
-import org.hibernate.service.ServiceRegistryBuilder;
 
 import javax.inject.Named;
 
@@ -20,7 +19,7 @@ public class HibernateConfig {
     public void configure(){
         try {
             Configuration config = new Configuration();
-            serviceRegistry = new ServiceRegistryBuilder().configure("META-INF/hibernate.cfg.xml").buildServiceRegistry();
+            //serviceRegistry = new ServiceRegistryBuilder().configure("META-INF/hibernate.cfg.xml").buildServiceRegistry();
             factory = config.buildSessionFactory(serviceRegistry);
         } catch (HibernateException ex){
             throw new RuntimeException(ex);

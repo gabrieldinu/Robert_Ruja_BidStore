@@ -42,9 +42,9 @@ public class ResourceProvider {
 
     @Produces
     @ApplicationScoped
-    private Properties getMailProperties(){
+    private Properties getConfigProperties(){
         Properties properties = new Properties();
-        InputStream is = FacesContext.getCurrentInstance().getExternalContext().getResourceAsStream("config/mail_config.properties");
+        InputStream is = FacesContext.getCurrentInstance().getExternalContext().getResourceAsStream("config/config.properties");
         try {
             properties.load(is);
             return properties;

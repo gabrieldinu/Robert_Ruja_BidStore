@@ -1,6 +1,7 @@
-package ro.fortech.application.bidstore.frontend.mvc.model.managed;
+package ro.fortech.application.bidstore.frontend.mvc.managed.account;
 
 
+import ro.fortech.application.bidstore.backend.exception.AccountEmailException;
 import ro.fortech.application.bidstore.backend.exception.AccountException;
 import ro.fortech.application.bidstore.backend.model.UserRegistration;
 import ro.fortech.application.bidstore.backend.model.UserRole;
@@ -18,8 +19,12 @@ import javax.enterprise.inject.spi.BeanManager;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
+import javax.faces.event.ComponentSystemEvent;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -56,11 +61,34 @@ public class UserAccount implements Serializable{
     ExternalContext externalContext;
 
     @Inject
-    Properties emailProperties;
+    Properties configProperties;
+
+    @Inject
+    HttpServletRequest request;
+
+    @Inject
+    HttpServletResponse response;
+
+    private static final String COOKIE_NAME = "applicationBidStoreCookie";
+    private static final int COOKIE_AGE = 1800; //half an hour
 
     @PostConstruct
-    public void init(){
+    private void checkIfUserHasRememberMeCookie() {
+        String cookieValue = getCookieValue();
+        if (cookieValue == null)
+            return;
+        userAuth = userAccountService.getAuthenticationByUUID(cookieValue);
 
+        if(userAuth !=null) {
+            user.setUsername(userAuth.getUsername());
+            user = userAccountService.getUserDetails(user);
+            if (user.getRole().equals(UserRole.ADMIN))
+                admin = true;
+            // The user is now logged in
+            loggedIn = true;
+        } else {
+            removeCookie();
+        }
     }
 
     public String signIn() {
@@ -84,9 +112,24 @@ public class UserAccount implements Serializable{
                 return null;
             }
 
+            if(!user.isEnabled()){
+                destroyContext();
+                context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Error",
+                        "Your account has been disabled, contact your administrator to enable it!" ));
+                return null;
+            }
+
             if (user.getRole().equals(UserRole.ADMIN)) {
 
                 admin = true;
+            }
+            if (rememberMe) {
+                String uuid = UUID.randomUUID().toString();
+                userAuth.setUuid(uuid);
+                addCookie(uuid);
+            } else {
+                userAuth.setUuid(null);
+                removeCookie();
             }
             loggedIn = true;
             context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Welcome back " + user.getFirstName(),
@@ -114,13 +157,15 @@ public class UserAccount implements Serializable{
             case UNREGISTERED:
                 try {
                     user.setUsername(userAuth.getUsername());
-                    user.setRole(UserRole.ADMIN);
+                    user.setRole(UserRole.USER);
+                    user.setEnabled(true);
                     UUID uuid = userAccountService.insertNewUser(userAuth, user);
-                    sendConfirmationEmail(user,uuid);
-                    context.addMessage(null,
-                            new FacesMessage(FacesMessage.SEVERITY_INFO, "Success","mail sent "));
+                    sendConfirmationEmail(user, uuid);
+                    context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Success", "Mail sent "));
                     return "/view/public/account/mailSent";
-
+                } catch(AccountEmailException ex) {
+                    context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error","This email address already exists"));
+                    return null;
                 }catch(AccountException ex){
 
                     context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error","An internal error occured"));
@@ -142,13 +187,13 @@ public class UserAccount implements Serializable{
 
     private void sendConfirmationEmail(User user, UUID uuid) throws AccountException {
 
-        if(this.emailProperties != null) {
-            new MailSender(emailProperties).sendMail(
+        if(this.configProperties != null) {
+            new MailSender(configProperties).sendMail(
                     EmailBuilder.getEmailBuilder()
                             .withFrom("caveat-emptor@fortech.ro")
                             .withTo(user.getEmail())
                             .withSubject("Caveat Emptor account activation for " + user.getFirstName() + " " + user.getLastName())
-                            .withText("Hi, your activation link is http://192.168.215.156:8080/BidStore/activate?activationId=" + uuid)
+                            .withText("Hi, your activation link is " + configProperties.getProperty("application.url") + "/BidStore/activate?activationId=" + uuid)
                             .build()
             );
         }else {
@@ -161,7 +206,7 @@ public class UserAccount implements Serializable{
         Bean<?> myBean = beanManager.getBeans(UserAccount.class).iterator().next();
         ctx.destroy(myBean);
         //myBean = beanManager.getBeans(ShoppingCartBean.class).iterator().next();
-        ctx.destroy(myBean);
+        //ctx.destroy(myBean);
     }
 
     public String doLogout() {
@@ -178,23 +223,74 @@ public class UserAccount implements Serializable{
     }
 
     public String recoverPassword() {
-//        TypedQuery<User> query = em.createNamedQuery(User.FIND_BY_EMAIL, User.class);
-//        query.setParameter("email", user.getEmail());
-//        try {
-//            user = query.getSingleResult();
-//            String temporaryPassword = LoremIpsum.getInstance().getWords(1);
-//            user.setPassword(PasswordUtils.digestPassword(temporaryPassword));
-//            em.merge(user);
+
+        try {
+            String resetToken = userAccountService.resetPassword(user);
+
+            if(this.configProperties != null) {
+
+                new MailSender(configProperties).sendMail(
+                        EmailBuilder.getEmailBuilder()
+                                .withFrom("caveat-emptor@fortech.ro")
+                                .withTo(user.getEmail())
+                                .withSubject("Caveat Emptor password reset link")
+                                .withText("Hi, to reset you password follow this link: " + configProperties.getProperty("application.url") + "/BidStore/resetPassword?token=" + resetToken)
+                                .build()
+                );
+            }else {
+                throw new AccountException("Unable to fetch mail configuration properties");
+            }
             context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Email sent",
-                    "An email has been sent to " + user.getEmail() + " with temporary password :" ));
-//            // send an email with the password "dummyPassword"
-//            return doLogout();
-//        } catch (NoResultException e) {
-//            facesContext.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Unknown email",
-//                    "This email address is unknonw in our system"));
-//            return null;
-//        }
-        return doLogout();
+                    "An email has been sent to " + user.getEmail() + " with a link to reset your password :" ));
+        } catch (AccountException e) {
+            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Unknown email",
+                    "This email address is unknown to our database!"));
+            return null;
+        }
+
+        return "/view/public/account/signin";
+    }
+
+    public String changePassword(){
+        try {
+            userAccountService.changeUserAuthentication(userAuth);
+            destroyContext();
+            this.loggedIn = false;
+            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "New password",
+                    "Your password has been reset successfully. You can now login with your new credentials."));
+
+        } catch (AccountException ex){
+            destroyContext();
+            this.loggedIn = false;
+            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Internal error",
+                    "An internal error occurred, please try again later"));
+        }
+        return "/view/public/account/signin";
+    }
+
+    private String getCookieValue() {
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if (COOKIE_NAME.equals(cookie.getName())) {
+                    return cookie.getValue();
+                }
+            }
+        }
+        return null;
+    }
+
+    private void removeCookie() {
+        Cookie cookie = new Cookie(COOKIE_NAME, null);
+        cookie.setMaxAge(0);
+        response.addCookie(cookie);
+    }
+
+    private void addCookie(String value) {
+        Cookie cookie = new Cookie(COOKIE_NAME, value);
+        cookie.setPath("/sampleJSFLogin");
+        cookie.setMaxAge(COOKIE_AGE);
+        response.addCookie(cookie);
     }
 
     public UserAccountService getUserAccountService() {
@@ -203,6 +299,14 @@ public class UserAccount implements Serializable{
 
     public void setUserAccountService(UserAccountService userAccountService) {
         this.userAccountService = userAccountService;
+    }
+
+    public void checkAdminPermissions(ComponentSystemEvent event) throws IOException {
+        FacesContext fc = FacesContext.getCurrentInstance();
+        if(!admin){
+            context.getExternalContext().redirect(context.getExternalContext().getRequestContextPath()+"/view/main.xhtml");
+        }
+        return;
     }
 
     public User getUser() {

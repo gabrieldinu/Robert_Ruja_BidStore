@@ -1,6 +1,6 @@
 package ro.fortech.application.bidstore.frontend.mvc.controller.filter;
 
-import ro.fortech.application.bidstore.frontend.mvc.model.managed.UserAccount;
+import ro.fortech.application.bidstore.frontend.mvc.managed.account.UserAccount;
 
 import javax.inject.Inject;
 import javax.servlet.*;
@@ -11,7 +11,7 @@ import java.io.IOException;
 /**
  * Created by robert.ruja on 12-Apr-17.
  */
-public class SecurityFilter implements Filter{
+public class AuthSecurityFilter implements Filter{
 
     @Inject
     UserAccount userAccount;

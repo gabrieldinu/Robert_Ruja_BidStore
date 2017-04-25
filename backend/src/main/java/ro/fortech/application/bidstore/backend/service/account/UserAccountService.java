@@ -1,13 +1,14 @@
 package ro.fortech.application.bidstore.backend.service.account;
 
-import ro.fortech.application.bidstore.backend.exception.AccountActivationException;
 import ro.fortech.application.bidstore.backend.exception.AccountException;
 import ro.fortech.application.bidstore.backend.model.UserRegistration;
 import ro.fortech.application.bidstore.backend.persisetence.entity.User;
+import ro.fortech.application.bidstore.backend.persisetence.entity.UserAddress;
 import ro.fortech.application.bidstore.backend.persisetence.entity.UserAuth;
 
 import javax.ejb.Local;
 import java.io.Serializable;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -25,4 +26,22 @@ public interface UserAccountService extends Serializable {
     UserRegistration getRegisterStatus(UserAuth userAuth);
 
     void activateAccount(String pathUUID) throws AccountException;
+
+    String resetPassword(User user) throws AccountException;
+
+    UserAuth getRequestChangePassowrd(String token);
+
+    void changeUserAuthentication(UserAuth userAuth) throws AccountException;
+
+    UserAuth getAuthenticationByUUID(String cookieValue);
+
+    void enableUser(String managedUsername) throws AccountException;
+
+    void disableUser(String managedUsername) throws AccountException;
+
+    Map<String,UserAddress> getUserAddressMap(User user);
+
+    void updateUserDetails(User user) throws AccountException;
+
+    void updateUserAddress(Map<String,UserAddress> addressMap) throws AccountException;
 }
