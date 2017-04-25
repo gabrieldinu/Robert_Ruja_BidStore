@@ -3,17 +3,23 @@ package ro.fortech.application.bidstore.backend.service.account;
 import ro.fortech.application.bidstore.backend.exception.AccountActivationException;
 import ro.fortech.application.bidstore.backend.exception.AccountEmailException;
 import ro.fortech.application.bidstore.backend.exception.AccountException;
+import ro.fortech.application.bidstore.backend.model.AddressType;
 import ro.fortech.application.bidstore.backend.model.UserRegistration;
+import ro.fortech.application.bidstore.backend.persisetence.dao.BiddingDAO;
 import ro.fortech.application.bidstore.backend.persisetence.dao.UserDAO;
 import ro.fortech.application.bidstore.backend.persisetence.entity.User;
+import ro.fortech.application.bidstore.backend.persisetence.entity.UserAddress;
 import ro.fortech.application.bidstore.backend.persisetence.entity.UserAuth;
 import ro.fortech.application.bidstore.backend.util.PasswordDigest;
 
 import javax.ejb.Stateful;
 
+import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.sql.Timestamp;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 
@@ -22,11 +28,14 @@ import java.util.UUID;
  */
 
 @Named
-@Stateful
+@Stateless
 public class UserAccountServiceImpl implements UserAccountService {
 
     @Inject
     private UserDAO userDAO;
+
+    @Inject
+    private BiddingDAO biddingDAO;
 
     @Override
     public User getUserDetails(User user) {
@@ -63,13 +72,29 @@ public class UserAccountServiceImpl implements UserAccountService {
         //DigestUserPassword
         userAuth.setPassword(PasswordDigest.digestPassword(userAuth.getPassword()));
         userAuth.setActivationToken(uuid.toString());
+
         //set expiration date of the account to 24h
         userAuth.setExpiringDate(new Timestamp(System.currentTimeMillis()+86400000));
+
         if(!userDAO.saveUserInfo(userAuth,user)){
             throw new AccountException("Failed to insert user into database");
         }
 
         return uuid;
+    }
+
+    @Override
+    public void updateUserDetails(User user) throws AccountException {
+        if(!userDAO.saveUserInfo(user)){
+            throw new AccountException("Unable to save user details into database");
+        }
+    }
+
+    @Override
+    public void updateUserAddress(Map<String,UserAddress> addressMap) throws AccountException {
+        if(!userDAO.saveUserAddress(addressMap)) {
+            throw new AccountException("Unable to save user address into database");
+        }
     }
 
     private boolean checkExistingEmail(User user) {
@@ -105,11 +130,12 @@ public class UserAccountServiceImpl implements UserAccountService {
             if (userAuth != null){
                 userAuth.setActivationToken(null);
                 userAuth.setExpiringDate(null);
-                userDAO.saveUserAuthentication(userAuth);
+                if(!biddingDAO.enableBiddingUser(userAuth))
+                    throw new AccountActivationException("Failed to activate account. Problem with enabling bidding user (DB save)");
+
             }else{
                 throw new AccountActivationException("Failed activating user with UUID: " + userAuth.getUuid());
             }
-
     }
 
     @Override
@@ -161,6 +187,11 @@ public class UserAccountServiceImpl implements UserAccountService {
     public void disableUser(String managedUsername) throws AccountException {
         if(!userDAO.setUserEnabled(managedUsername,false))
             throw new AccountException("Error while disabling the user");
+    }
+
+    @Override
+    public Map<String, UserAddress> getUserAddressMap(User user) {
+        return userDAO.getUserAddressDetails(user);
     }
 
 }

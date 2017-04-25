@@ -1,7 +1,13 @@
 package ro.fortech.application.bidstore.backend.persisetence.dao;
 
+import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.Restrictions;
+import ro.fortech.application.bidstore.backend.model.AddressType;
 import ro.fortech.application.bidstore.backend.persisetence.entity.User;
+import ro.fortech.application.bidstore.backend.persisetence.entity.UserAddress;
+import ro.fortech.application.bidstore.backend.persisetence.entity.UserAddressPk;
 import ro.fortech.application.bidstore.backend.persisetence.entity.UserAuth;
+import ro.fortech.application.bidstore.backend.persisetence.provider.HibernateSessionProvider;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -11,6 +17,9 @@ import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by robert.ruja on 10-Apr-17.
@@ -21,6 +30,11 @@ public class UserDAOImpl implements UserDAO {
 
     @Inject
     EntityManager em;
+
+    @Inject
+    HibernateSessionProvider hibernateProvider;
+
+
 
     public UserAuth getUserAuthentication(String username){
 
@@ -62,6 +76,17 @@ public class UserDAOImpl implements UserDAO {
     }
 
     @Override
+    @Transactional
+    public boolean saveUserInfo(User user) {
+        try {
+            em.merge(user);
+            return true;
+        } catch(Exception ex){
+            return false;
+        }
+    }
+
+    @Override
     public UserAuth getUserAuthenticationByActivationToken(String activationTokenUUID) {
         UserAuth userAuth;
         TypedQuery<UserAuth> query = em.createNamedQuery(UserAuth.FIND_BY_ACTIVATION_TOKEN, UserAuth.class);
@@ -77,8 +102,13 @@ public class UserDAOImpl implements UserDAO {
 
     @Override
     @Transactional
-    public void saveUserAuthentication(UserAuth userAuth) {
-        em.merge(userAuth);
+    public boolean saveUserAuthentication(UserAuth userAuth) {
+        try {
+            em.merge(userAuth);
+            return true;
+        } catch (Exception ex) {
+            return false;
+        }
     }
 
     @Override
@@ -133,5 +163,40 @@ public class UserDAOImpl implements UserDAO {
             return false;
         }
         return true;
+    }
+
+    @Override
+    public boolean saveUserAddress(Map<String,UserAddress> userAddressMap) {
+        try {
+            for(Map.Entry<String,UserAddress> entry : userAddressMap.entrySet()) {
+                em.merge(entry.getValue());
+            }
+            return true;
+        }catch(Exception ex){
+            return false;
+        }
+    }
+
+    @Override
+    public Map<String, UserAddress> getUserAddressDetails(User user) {
+
+            Map<String, UserAddress> addressMap = new HashMap<>();
+        try {
+            DetachedCriteria detachedCriteria = DetachedCriteria.forClass(UserAddress.class)
+                    .add(Restrictions.or(
+                            Restrictions.eq("primaryKey", new UserAddressPk(user.getUsername(), AddressType.HOME)),
+                            Restrictions.eq("primaryKey", new UserAddressPk(user.getUsername(), AddressType.BILLING)),
+                            Restrictions.eq("primaryKey", new UserAddressPk(user.getUsername(), AddressType.SHIPPING))
+                            )
+                    );
+            for (Object o : detachedCriteria.getExecutableCriteria(hibernateProvider.getSession()).list()) {
+                UserAddress address = (UserAddress) o;
+                addressMap.put(address.getPrimaryKey().getAddressType().getMapKey(), address);
+            }
+
+        }catch(Exception ex) {
+            System.err.println(ex.getMessage());
+        }
+        return addressMap;
     }
 }

@@ -47,13 +47,7 @@ public class LazyUserDataModel extends LazyDataModel<BiddingUser> {
                     break;
                 default:
             }
-       this.tempList = service.getBiddingUsers(first,pageSize, sortField, sort, null);
-
-            //TODO: implement better filtering
-
-        for(BiddingUser user: tempList) {
-
-        }
+       this.tempList = service.getBiddingUsers(first,pageSize, sortField, sort, filters);
 
         this.setRowCount(tempList.size());
 

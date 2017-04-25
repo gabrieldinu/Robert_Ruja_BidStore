@@ -3,16 +3,16 @@ package ro.fortech.application.bidstore.backend.persisetence.dao;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.criterion.Order;
-import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
-import ro.fortech.application.bidstore.backend.model.UserEnabled;
-import ro.fortech.application.bidstore.backend.model.UserRole;
 import ro.fortech.application.bidstore.backend.persisetence.entity.BiddingUser;
+import ro.fortech.application.bidstore.backend.persisetence.entity.User;
+import ro.fortech.application.bidstore.backend.persisetence.entity.UserAuth;
 import ro.fortech.application.bidstore.backend.persisetence.provider.HibernateSessionProvider;
 import ro.fortech.application.bidstore.backend.util.HibernateUtil;
 
 import javax.inject.Inject;
-import java.util.ArrayList;
+import javax.persistence.EntityManager;
+import javax.transaction.Transactional;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -20,10 +20,13 @@ import java.util.Map;
 /**
  * Created by robert.ruja on 20-Apr-17.
  */
-public class BiddingDAOImpl implements BiddingDAO{
+public class BiddingDAOImpl implements BiddingDAO {
 
     @Inject
     private UserDAO userDAO;
+
+    @Inject
+    EntityManager em;
 
     @Inject
     private HibernateSessionProvider hibernateProvider;
@@ -35,35 +38,32 @@ public class BiddingDAOImpl implements BiddingDAO{
 
         temporaryBiddingUserList = new LinkedList<>();
 
-        Criteria criteria = buildCriteriaForBiddingUser();
+        Criteria criteria = hibernateProvider.getSession().createCriteria(BiddingUser.class);
+
         criteria.setFirstResult(first);
         criteria.setMaxResults(pageSize);
 
 
         //sorting
         if(sortField != null) {
-            sortField = "bu." + sortField;
             criteria.addOrder(
                     sortOrder.equals("ASC") ?
                             Order.asc(sortField) :
                             Order.desc(sortField)
             );
         }
+
         //filtering
         if(filters!=null && !filters.isEmpty()){
             for(Map.Entry<String,Object> entry: filters.entrySet()) {
-                criteria.add(Restrictions.sqlRestriction("{alias}." +
+                criteria.add(Restrictions.sqlRestriction(
                         HibernateUtil.getColumNameFromField(BiddingUser.class,entry.getKey()) + " LIKE '%" + entry.getValue() + "%' "
-                        ));
-                //criteria.add(Restrictions.like(entry.getKey(),"%" + entry.getValue() + "%"));
+                ));
             }
         }
 
-        for(Object o:criteria.list()) {
-            Object[] elements = (Object[])o;
-            temporaryBiddingUserList.add(
-                    buildBiddingUserFromProjections(elements)
-            );
+        for(Object u: criteria.list()) {
+            temporaryBiddingUserList.add((BiddingUser) u);
         }
 
         return temporaryBiddingUserList;
@@ -71,45 +71,37 @@ public class BiddingDAOImpl implements BiddingDAO{
 
     @Override
     public BiddingUser getSingleBiddingUser(String rowKey) {
-        Criteria criteria = buildCriteriaForBiddingUser();
+        Criteria criteria = hibernateProvider.getSession().createCriteria(BiddingUser.class);
         BiddingUser user;
         try {
-             Object[] elements = (Object[])criteria.add(Restrictions.eq("username",rowKey))
+             user = (BiddingUser)criteria.add(Restrictions.eq("username",rowKey))
                      .uniqueResult();
 
-             return buildBiddingUserFromProjections(elements);
+             return user;
 
         } catch(Exception ex) {
             return null;
         }
     }
 
-    private Criteria buildCriteriaForBiddingUser() {
-        Session session = hibernateProvider.getSession();
-        return session.createCriteria(BiddingUser.class,"bu")
-                .setProjection(Projections.projectionList()
-                .add(Projections.groupProperty("firstName"))
-                .add(Projections.groupProperty("lastName"))
-                .add(Projections.groupProperty("username"))
-                .add(Projections.groupProperty("email"))
-                .add(Projections.groupProperty("role"))
-                .add(Projections.groupProperty("userEnabled"))
-                .add(Projections.sum("itemsPlaced"),"bu.itemsPlaced")
-                .add(Projections.sum("itemsSold"),"bu.itemsSold")
-                .add(Projections.sum("itemsBought"),"bu.itemsBought")
-        );
+    @Override
+    @Transactional
+    public void saveBiddingUser(BiddingUser biddingUser) {
+        hibernateProvider.getSession().merge(biddingUser);
     }
 
-    private BiddingUser buildBiddingUserFromProjections(Object[] elements){
-        return new BiddingUser(
-                (String)elements[2],
-                (String)elements[0],
-                (String)elements[1],
-                (String)elements[3],
-                (UserRole) elements[4],
-                (UserEnabled) elements[5],
-                (Long)elements[6],
-                (Long)elements[7],
-                (Long)elements[8]);
+    @Override
+    @Transactional
+    public boolean enableBiddingUser(UserAuth auth) {
+        try {
+            userDAO.saveUserAuthentication(auth);
+            User user = userDAO.getUserDetails(new User(auth.getUsername()));
+            hibernateProvider.getSession().delete(user);
+            saveBiddingUser(new BiddingUser(user,0,0,0));
+            return true;
+        }catch(Exception ex) {
+            return false;
+        }
     }
+
 }

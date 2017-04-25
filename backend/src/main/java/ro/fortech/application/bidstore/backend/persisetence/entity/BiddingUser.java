@@ -1,5 +1,7 @@
 package ro.fortech.application.bidstore.backend.persisetence.entity;
 
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
 import ro.fortech.application.bidstore.backend.model.UserEnabled;
 import ro.fortech.application.bidstore.backend.model.UserRole;
 
@@ -30,6 +32,20 @@ public class BiddingUser extends User {
     }
 
     public BiddingUser() {
+
+    }
+
+    public BiddingUser(User userDetails, long itemsPlaced, long itemsSold, long itemsBought) {
+        super.setUsername(userDetails.getUsername());
+        super.setFirstName(userDetails.getFirstName());
+        super.setLastName(userDetails.getLastName());
+        super.setRole(userDetails.getRole());
+        super.setEmail(userDetails.getEmail());
+        super.setTelephone(userDetails.getTelephone());
+        super.setUserEnabled(userDetails.getUserEnabled());
+        this.itemsPlaced = itemsPlaced;
+        this.itemsBought = itemsBought;
+        this.itemsSold = itemsSold;
 
     }
 

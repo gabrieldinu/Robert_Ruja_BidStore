@@ -57,6 +57,9 @@ public class User implements Serializable {
     @Size(min = 1, max = 256)
     private String uuid;
 
+    @Column(name="telephone",length = 20)
+    private Integer telephone;
+
     @Column(name="exp_date")
     private Timestamp expiringDate;
 
@@ -76,6 +79,10 @@ public class User implements Serializable {
         this.role = role;
         this.userEnabled = enabled;
 
+    }
+
+    public User(String username) {
+        this.username = username;
     }
 
     public User() {
@@ -160,6 +167,14 @@ public class User implements Serializable {
 
     public boolean isEnabled() {
         return this.userEnabled.equals(UserEnabled.ENABLED);
+    }
+
+    public Integer getTelephone() {
+        return telephone;
+    }
+
+    public void setTelephone(Integer telephone) {
+        this.telephone = telephone;
     }
 
     public void setEnabled(boolean enabled) {

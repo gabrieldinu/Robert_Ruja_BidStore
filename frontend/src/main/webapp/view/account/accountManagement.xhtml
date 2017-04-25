@@ -1,0 +1,166 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets" xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core" xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+                xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+                template="/resources/scaffold/template.xhtml">
+
+    <ui:define name="title">Account management</ui:define>
+
+    <ui:define name="message">Account management</ui:define>
+
+    <ui:define name="body">
+        <div class="row">
+            <div class="col-md-2"></div>
+            <div class="col-md-8">
+                <h:form class="form-horizontal">
+                    <h3 class="form-signin-heading">Authentication</h3>
+                    <h3>&#160;</h3>
+                    <div class="form-group">
+                        <label for="inputLogin" class="col-sm-2 control-label">Username</label>
+
+                        <div class="col-sm-10">
+                            <h:inputText class="form-control" id="inputLogin" value="#{userAccount.user.username}"
+                                         pt:readonly="true"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <h:outputLabel for="inputCurrentPassword" class="col-sm-2 control-label" value="Current Password"/>
+
+                        <div class="col-sm-10">
+                            <p:password id="inputCurrentPassword" value="#{accountMgt.currentPassword}"
+                                        inline="false"
+                                        label="Current Password"/>
+                        </div>
+
+                    </div>
+                    <div class="form-group">
+                        <h:outputLabel for="inputPassword1" class="col-sm-2 control-label" value="New Password"/>
+
+                        <div class="col-sm-10">
+                            <p:password id="inputPassword1" value="#{accountMgt.newPassword}" required="true" feedback="true"
+                                        inline="false" match="inputPassword2"
+                                        label="Password"/>
+                        </div>
+
+                    </div>
+                    <div class="form-group">
+                        <h:outputLabel for="inputPassword2" class="col-sm-2 control-label" value="Re-type new password"/>
+
+                        <div class="col-sm-10">
+                            <p:password id="inputPassword2" inline="false" value="#{accountMgt.confirmPassword}"
+                                        required="true" label="Second password"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-offset-2 col-sm-10">
+                            <h:commandButton class="btn btn-default" value="Save changes"
+                                             action="#{accountMgt.changePassword}"/>
+                        </div>
+                    </div>
+                    <p:separator />
+                </h:form>
+                <h:form class="form-horizontal">
+                    <h3 class="form-signin-heading">User details</h3>
+                    <div class="form-group">
+                        <label for="inputFirstName" class="col-sm-2 control-label">First name</label>
+
+                        <div class="col-sm-10">
+                            <h:inputText class="form-control" id="inputFirstName"
+                                         value="#{userAccount.user.firstName}"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="inputLastName" class="col-sm-2 control-label">Last name</label>
+
+                        <div class="col-sm-10">
+                            <h:inputText class="form-control" id="inputLastName" value="#{userAccount.user.lastName}"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="inputEmail" class="col-sm-2 control-label">Email</label>
+
+                        <div class="col-sm-10">
+                            <h:inputText pt:type="email" class="form-control" id="inputEmail"
+                                         value="#{userAccount.user.email}"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="inputEmail" class="col-sm-2 control-label">Telephone</label>
+
+                        <div class="col-sm-10">
+                            <h:inputText class="form-control" id="inputTelephone"
+                                         value="#{userAccount.user.telephone}"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-offset-2 col-sm-10">
+                            <h:commandButton class="btn btn-default" value="Save changes"
+                                             action="#{accountMgt.saveUserAccount}"/>
+                        </div>
+                    </div>
+                </h:form>
+                <h:form class="form-horizontal">
+                    <p:separator />
+                    <h3 class="form-signin-heading">Address details</h3>
+                    <h3>&#160;</h3>
+                    <div class="form-group" style="width:30%; float:left; margin-left:3%">
+                        <h5 class="form-signin-heading">Home address</h5>
+                        <label for="homeStreet" class="col-sm-2 control-label">Street:</label>
+
+                        <div class="col-sm-10">
+                            <h:inputText class="form-control" id="homeStreet" value="#{accountMgt.addressMap['homeAddress'].street}"/>
+                        </div>
+                        <label for="homeCity" class="col-sm-2 control-label">City:</label>
+                        <div class="col-sm-10">
+                            <h:inputText class="form-control" id="homeCity" value="#{accountMgt.addressMap['homeAddress'].city}"/>
+                        </div>
+                        <label for="homeZipcode" class="col-sm-2 control-label">Zipcode:</label>
+                        <div class="col-sm-10">
+                            <h:inputText class="form-control" id="homeZipcode" value="#{accountMgt.addressMap['homeAddress'].zipcode}"/>
+                        </div>
+                    </div>
+                    <div class="form-group" style="width:30%;float:left;margin-left:3%">
+                        <h5 class="form-signin-heading">Billing address</h5>
+                        <label for="billingStreet" class="col-sm-2 control-label">Street:</label>
+                        <div class="col-sm-10">
+                            <h:inputText class="form-control" id="billingStreet" value="#{accountMgt.addressMap['billingAddress'].street}"/>
+                        </div>
+                        <label for="billingCity" class="col-sm-2 control-label">City:</label>
+                        <div class="col-sm-10">
+                            <h:inputText class="form-control" id="billingCity" value="#{accountMgt.addressMap['billingAddress'].city}"/>
+                        </div>
+                        <label for="billingZipcode" class="col-sm-2 control-label">Zipcode:</label>
+                        <div class="col-sm-10">
+                            <h:inputText class="form-control" id="billingZipcode" value="#{accountMgt.addressMap['billingAddress'].zipcode}"/>
+                        </div>
+                    </div>
+                    <div class="form-group" style="width:30%;float:left;margin-left:3%">
+                        <h5 class="form-signin-heading">Shipping address</h5>
+                        <label for="shippingStreet" class="col-sm-2 control-label">Street:</label>
+                        <div class="col-sm-10">
+                            <h:inputText class="form-control" id="shippingStreet" value="#{accountMgt.addressMap['shippingAddress'].street}"/>
+                        </div>
+                        <label for="shippingCity" class="col-sm-2 control-label">City:</label>
+                        <div class="col-sm-10">
+                            <h:inputText class="form-control" id="shippingCity" value="#{accountMgt.addressMap['shippingAddress'].city}"/>
+                        </div>
+                        <label for="shippingZipcode" class="col-sm-2 control-label">Zipcode:</label>
+                        <div class="col-sm-10">
+                            <h:inputText class="form-control" id="shippingZipcode" value="#{accountMgt.addressMap['shippingAddress'].zipcode}"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-offset-2 col-sm-10">
+                            <h:commandButton class="btn btn-default" value="Save changes"
+                                             action="#{accountMgt.saveUserAddress}"/>
+                        </div>
+                    </div>
+                </h:form>
+            </div>
+            <div class="col-md-2"></div>
+        </div>
+
+    </ui:define>
+
+</ui:composition>
