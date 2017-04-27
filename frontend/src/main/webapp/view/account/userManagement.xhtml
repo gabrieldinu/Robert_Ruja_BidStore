@@ -1,21 +1,14 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://xmlns.jcp.org/jsf/facelets" xmlns:p="http://primefaces.org/ui"
                 xmlns:f="http://xmlns.jcp.org/jsf/core" xmlns:h="http://xmlns.jcp.org/jsf/html"
-                xmlns:fn="http://java.sun.com/jsp/jstl/functions"
-                template="/resources/scaffold/template.xhtml">
-
-    <ui:define name="title">User management</ui:define>
-
-    <ui:define name="message">User Management</ui:define>
-
-    <ui:define name="body">
-        <f:event type="preRenderView" listener="#{userAccount.checkAdminPermissions}"/>
+                xmlns:fn="http://java.sun.com/jsp/jstl/functions">
         <div class="row" style="width:100%;">
                 <h:form id="form" style="width:100%;">
+                    <p:messages id="messages" showDetail="true" closable="true"/>
                     <p:dataTable var="user" value="#{userMgt.lazyModel}" paginator="true" rows="10"
                                  paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
                                  rowsPerPageTemplate="5,10,15" selectionMode="single" id="userTable" lazy="true">
-                        <p:ajax event="rowSelect" listener="#{userMgt.onRowSelect}" update=":form:userDetail" oncomplete="PF('userDialog').show()" />
+                        <p:ajax event="rowSelect" listener="#{userMgt.onRowSelect}" render=":form:userDetail" oncomplete="PF('userDialog').show()" />
                         <p:column headerText="First Name" sortBy="#{user.firstName}" filterBy="#{user.firstName}">
                             <h:outputText value="#{user.firstName}" />
                         </p:column>
@@ -50,14 +43,17 @@
                                              onclick="if(! confirm('Disable selected user ?')) return false"
                                              action="#{userMgt.disable}" rendered="#{user.enabled}">
                                 <f:setPropertyActionListener target="#{userMgt.managedUsername}" value="#{user.username}"/>
+                                <f:ajax execute="@form" render="@form"/>
                             </h:commandButton>
                             <h:commandButton styleClass="btn-block" value="Enable"
                                              onclick="if(! confirm('Enable selected user ?')) return false"
                                              action="#{userMgt.enable}" rendered="#{!user.enabled}">
                                 <f:setPropertyActionListener target="#{userMgt.managedUsername}" value="#{user.username}"/>
+                                <f:ajax execute="@form" render="@form"/>
                             </h:commandButton>
                         </p:column>
                     </p:dataTable>
+                    <!--todo: make this work-->
                     <p:dialog header="User detail" widgetVar="userDialog" modal="true" showEffect="fade" hideEffect="fade" resizable="false">
                         <p:outputPanel id="userDetail" style="text-align:center;">
                             <p:panelGrid  columns="2" rendered="#{not empty userMgt.selectedUser}" columnClasses="label,value">
@@ -82,8 +78,8 @@
                         </p:outputPanel>
                     </p:dialog>
                 </h:form>
-        </div>
+            </div>
 
-    </ui:define>
+    <!--</ui:define>-->
 
 </ui:composition>

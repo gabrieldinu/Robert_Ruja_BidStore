@@ -1,11 +1,15 @@
 package ro.fortech.application.bidstore.frontend.util;
 
+import ro.fortech.application.bidstore.backend.service.mail.ConfiguredMailService;
+import ro.fortech.application.bidstore.backend.service.mail.MailService;
+
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
+import javax.faces.view.ViewScoped;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
@@ -51,5 +55,14 @@ public class ResourceProvider {
         } catch (IOException e) {
             return null;
         }
+    }
+
+    @Produces
+    @ViewScoped
+    @ConfiguredMailService
+    MailService getMailService() {
+
+        return new MailService(getConfigProperties());
+
     }
 }

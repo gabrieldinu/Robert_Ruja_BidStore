@@ -87,21 +87,23 @@
                             <!--</ul>-->
                         <!--</h:panelGroup>-->
                         <h:panelGroup layout="block" class="form-group" rendered="#{userAccount.loggedIn}">
+
                             <ul class="nav navbar-nav navbar-right">
-                                <li class="dropdown active">
-                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
-                                       aria-haspopup="true" aria-expanded="false">#{userAccount.user.firstName} <span
-                                            class="caret"></span></a>
-                                    <ul class="dropdown-menu">
-                                        <li><h:link outcome="/view/account/accountManagement.xhtml" value="Manage account"/></li>
-                                        <!--<li>-->
-                                            <!--<h:link outcome="/account/chat.xhtml" value="Need some help" rendered="#{!userAccount.admin}"/>-->
-                                            <!--<h:link outcome="/account/chat.xhtml" value="Help customers" rendered="#{userAccount.admin}"/>-->
-                                        <!--</li>-->
-                                        <!--<li role="separator" class="divider"></li>-->
-                                        <li><h:commandLink action="#{userAccount.doLogout}" value="Logout" /></li>
-                                    </ul>
-                                </li>
+                                <li><h:commandLink action="#{userAccount.doLogout}" value="Logout" /></li>
+                                <!--<li class="dropdown active">-->
+                                    <!--<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"-->
+                                       <!--aria-haspopup="true" aria-expanded="false">#{userAccount.user.firstName} <span-->
+                                            <!--class="caret"></span></a>-->
+                                    <!--<ul class="dropdown-menu">-->
+                                        <!--<li><h:link outcome="/view/account/accountManagement.xhtml" value="Manage account"/></li>-->
+                                        <!--&lt;!&ndash;<li>&ndash;&gt;-->
+                                            <!--&lt;!&ndash;<h:link outcome="/account/chat.xhtml" value="Need some help" rendered="#{!userAccount.admin}"/>&ndash;&gt;-->
+                                            <!--&lt;!&ndash;<h:link outcome="/account/chat.xhtml" value="Help customers" rendered="#{userAccount.admin}"/>&ndash;&gt;-->
+                                        <!--&lt;!&ndash;</li>&ndash;&gt;-->
+                                        <!--&lt;!&ndash;<li role="separator" class="divider"></li>&ndash;&gt;-->
+                                        <!--<li><h:commandLink action="#{userAccount.doLogout}" value="Logout" /></li>-->
+                                    <!--</ul>-->
+                                <!--</li>-->
                             </ul>
                         </h:panelGroup>
                     </h:form>
@@ -118,7 +120,7 @@
             </div>
         </div>
 
-        <div class="container">
+        <div class="container" style="height:100%">
 
             <p:messages id="messages" showDetail="true" closable="true"/>
 

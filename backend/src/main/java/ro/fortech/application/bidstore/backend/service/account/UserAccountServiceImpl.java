@@ -1,24 +1,20 @@
 package ro.fortech.application.bidstore.backend.service.account;
 
-import ro.fortech.application.bidstore.backend.exception.AccountActivationException;
-import ro.fortech.application.bidstore.backend.exception.AccountEmailException;
-import ro.fortech.application.bidstore.backend.exception.AccountException;
-import ro.fortech.application.bidstore.backend.model.AddressType;
+import ro.fortech.application.bidstore.backend.exception.account.AccountActivationException;
+import ro.fortech.application.bidstore.backend.exception.account.AccountEmailException;
+import ro.fortech.application.bidstore.backend.exception.account.AccountException;
 import ro.fortech.application.bidstore.backend.model.UserRegistration;
-import ro.fortech.application.bidstore.backend.persisetence.dao.BiddingDAO;
-import ro.fortech.application.bidstore.backend.persisetence.dao.UserDAO;
-import ro.fortech.application.bidstore.backend.persisetence.entity.User;
-import ro.fortech.application.bidstore.backend.persisetence.entity.UserAddress;
-import ro.fortech.application.bidstore.backend.persisetence.entity.UserAuth;
+import ro.fortech.application.bidstore.backend.persistence.dao.BiddingDAO;
+import ro.fortech.application.bidstore.backend.persistence.dao.UserDAO;
+import ro.fortech.application.bidstore.backend.persistence.entity.User;
+import ro.fortech.application.bidstore.backend.persistence.entity.UserAddress;
+import ro.fortech.application.bidstore.backend.persistence.entity.UserAuth;
 import ro.fortech.application.bidstore.backend.util.PasswordDigest;
-
-import javax.ejb.Stateful;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.sql.Timestamp;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 

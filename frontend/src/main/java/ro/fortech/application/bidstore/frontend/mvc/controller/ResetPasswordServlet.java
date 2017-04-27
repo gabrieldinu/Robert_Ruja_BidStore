@@ -1,6 +1,6 @@
 package ro.fortech.application.bidstore.frontend.mvc.controller;
 
-import ro.fortech.application.bidstore.backend.persisetence.entity.UserAuth;
+import ro.fortech.application.bidstore.backend.persistence.entity.UserAuth;
 import ro.fortech.application.bidstore.backend.service.account.UserAccountService;
 import ro.fortech.application.bidstore.frontend.mvc.managed.account.UserAccount;
 

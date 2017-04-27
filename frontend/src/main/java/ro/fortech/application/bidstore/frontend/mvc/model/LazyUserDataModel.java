@@ -2,7 +2,7 @@ package ro.fortech.application.bidstore.frontend.mvc.model;
 
 import org.primefaces.model.LazyDataModel;
 import org.primefaces.model.SortOrder;
-import ro.fortech.application.bidstore.backend.persisetence.entity.BiddingUser;
+import ro.fortech.application.bidstore.backend.persistence.entity.BiddingUser;
 import ro.fortech.application.bidstore.backend.service.bidding.UserBiddingService;
 
 import java.util.*;

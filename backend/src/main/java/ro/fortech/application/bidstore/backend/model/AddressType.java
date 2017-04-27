@@ -5,6 +5,7 @@ package ro.fortech.application.bidstore.backend.model;
  */
 public enum AddressType {
     HOME,BILLING,SHIPPING;
+
     String mapKey;
     AddressType(){
             this.mapKey = this.toString().toLowerCase() + "Address";

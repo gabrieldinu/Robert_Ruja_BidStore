@@ -1,8 +1,10 @@
 package ro.fortech.application.bidstore.backend.service.account;
 
-import ro.fortech.application.bidstore.backend.persisetence.dao.UserDAO;
+import ro.fortech.application.bidstore.backend.persistence.dao.UserDAO;
 
-import javax.ejb.*;
+import javax.ejb.Schedule;
+import javax.ejb.Singleton;
+import javax.ejb.Startup;
 import javax.inject.Inject;
 import java.sql.Timestamp;
 

@@ -2,8 +2,8 @@ package ro.fortech.application.bidstore.frontend.mvc.managed.account;
 
 import org.primefaces.event.SelectEvent;
 import org.primefaces.model.LazyDataModel;
-import ro.fortech.application.bidstore.backend.exception.AccountException;
-import ro.fortech.application.bidstore.backend.persisetence.entity.BiddingUser;
+import ro.fortech.application.bidstore.backend.exception.account.AccountException;
+import ro.fortech.application.bidstore.backend.persistence.entity.BiddingUser;
 import ro.fortech.application.bidstore.backend.service.account.UserAccountService;
 import ro.fortech.application.bidstore.backend.service.bidding.UserBiddingService;
 import ro.fortech.application.bidstore.frontend.mvc.model.LazyUserDataModel;
@@ -44,7 +44,7 @@ public class UserManagement implements Serializable {
         lazyModel = new LazyUserDataModel(service);
     }
 
-    public String enable(){
+    public void enable(){
         try {
             userAccountService.enableUser(managedUsername);
             context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Success",
@@ -52,12 +52,10 @@ public class UserManagement implements Serializable {
         }catch(AccountException ex){
             context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error",
                     "There was a problem updating the user!"));
-            return null;
             }
-        return "view/account/userManagement";
     }
 
-    public String disable(){
+    public void disable(){
         try {
             userAccountService.disableUser(managedUsername);
             context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Success",
@@ -65,9 +63,8 @@ public class UserManagement implements Serializable {
         }catch(AccountException ex){
             context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error",
                     "There was a problem updating the user!"));
-            return null;
+
         }
-        return "view/account/userManagement";
     }
 
     public LazyDataModel getLazyModel() {

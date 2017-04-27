@@ -1,11 +1,11 @@
 package ro.fortech.application.bidstore.frontend.mvc.managed.account;
 
-import ro.fortech.application.bidstore.backend.exception.AccountException;
+import ro.fortech.application.bidstore.backend.exception.account.AccountException;
 import ro.fortech.application.bidstore.backend.model.AddressType;
-import ro.fortech.application.bidstore.backend.persisetence.entity.User;
-import ro.fortech.application.bidstore.backend.persisetence.entity.UserAddress;
-import ro.fortech.application.bidstore.backend.persisetence.entity.UserAddressPk;
-import ro.fortech.application.bidstore.backend.persisetence.entity.UserAuth;
+import ro.fortech.application.bidstore.backend.persistence.entity.User;
+import ro.fortech.application.bidstore.backend.persistence.entity.UserAddress;
+import ro.fortech.application.bidstore.backend.persistence.entity.UserAddressPk;
+import ro.fortech.application.bidstore.backend.persistence.entity.UserAuth;
 import ro.fortech.application.bidstore.backend.service.account.UserAccountService;
 
 import javax.annotation.PostConstruct;
@@ -42,6 +42,8 @@ public class AccountManagement implements Serializable {
 
     private String confirmPassword;
 
+    private String passwordMessage;
+
     @PostConstruct
     public void init(){
         addressMap = userAccountService.getUserAddressMap(account.getUser());
@@ -53,7 +55,7 @@ public class AccountManagement implements Serializable {
         }
     }
 
-    public String changePassword() {
+    public void changePassword() {
         if(newPassword != null && !newPassword.isEmpty()){
             UserAuth auth = new UserAuth();
             auth.setPassword(currentPassword);
@@ -63,48 +65,51 @@ public class AccountManagement implements Serializable {
                     auth.setPassword(newPassword);
                     userAccountService.changeUserAuthentication(auth);
                 } else {
-                    context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error",
+                    context.addMessage("passwordForm:passwordMessage", new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error",
                             "The current password is incorrect, check your passord"));
-                    return null;
+                    currentPassword = null;
+                    return;
                 }
             }catch(AccountException ex) {
-                context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error",
+                context.addMessage("passwordForm:passwordMessage", new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error",
                         "An internal error occured while trying to save the new password"));
-                return null;
+                return;
             }
         }
-        context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Success",
+
+        context.addMessage("passwordForm:passwordMessage", new FacesMessage(FacesMessage.SEVERITY_INFO, "Success",
                 "Your account has been updated successfully!"));
-        return "/view/account/accountManagement";
+        resetPasswods();
     }
 
-    public String saveUserAccount() {
+    public void saveUserAccount() {
 
         try{
             User user = account.getUser();
             userAccountService.updateUserDetails(user);
+            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Success",
+                    "Your account has been updated successfully!"));
         }catch (AccountException ex) {
             context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error",
                     "An internal error occured while saving your account. Please try again later"));
-            return null;
         }
-        context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Success",
-                "Your account has been updated successfully!"));
-        return "/view/account/accountManagement";
     }
 
-    public String saveUserAddress() {
-
+    public void saveUserAddress() {
         try{
             userAccountService.updateUserAddress(addressMap);
+            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Success",
+                    "Your address details have been updated successfully!"));
         }catch (AccountException ex) {
             context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error",
                     "An internal error occured while saving your account. Please try again later"));
-            return null;
         }
-        context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Success",
-                "Your address details have been updated successfully!"));
-        return "/view/account/accountManagement";
+    }
+
+    private void resetPasswods(){
+        this.currentPassword = null;
+        this.newPassword = null;
+        this.confirmPassword = null;
     }
 
     public Map<String, UserAddress> getAddressMap() {
@@ -137,5 +142,13 @@ public class AccountManagement implements Serializable {
 
     public void setConfirmPassword(String confirmPassword) {
         this.confirmPassword = confirmPassword;
+    }
+
+    public String getPasswordMessage() {
+        return passwordMessage;
+    }
+
+    public void setPasswordMessage(String passwordMessage) {
+        this.passwordMessage = passwordMessage;
     }
 }

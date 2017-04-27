@@ -1,7 +1,6 @@
 package ro.fortech.application.bidstore.backend.service.bidding;
 
-import ro.fortech.application.bidstore.backend.persisetence.entity.BiddingUser;
-import ro.fortech.application.bidstore.backend.persisetence.entity.User;
+import ro.fortech.application.bidstore.backend.persistence.entity.BiddingUser;
 
 import javax.ejb.Local;
 import java.util.List;

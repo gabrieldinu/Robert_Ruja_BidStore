@@ -1,10 +1,10 @@
 package ro.fortech.application.bidstore.backend.service.account;
 
-import ro.fortech.application.bidstore.backend.exception.AccountException;
+import ro.fortech.application.bidstore.backend.exception.account.AccountException;
 import ro.fortech.application.bidstore.backend.model.UserRegistration;
-import ro.fortech.application.bidstore.backend.persisetence.entity.User;
-import ro.fortech.application.bidstore.backend.persisetence.entity.UserAddress;
-import ro.fortech.application.bidstore.backend.persisetence.entity.UserAuth;
+import ro.fortech.application.bidstore.backend.persistence.entity.User;
+import ro.fortech.application.bidstore.backend.persistence.entity.UserAddress;
+import ro.fortech.application.bidstore.backend.persistence.entity.UserAuth;
 
 import javax.ejb.Local;
 import java.io.Serializable;

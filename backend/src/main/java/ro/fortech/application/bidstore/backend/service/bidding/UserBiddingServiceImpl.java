@@ -1,14 +1,10 @@
 package ro.fortech.application.bidstore.backend.service.bidding;
 
-import ro.fortech.application.bidstore.backend.model.UserEnabled;
-import ro.fortech.application.bidstore.backend.model.UserRole;
-import ro.fortech.application.bidstore.backend.persisetence.dao.BiddingDAO;
-import ro.fortech.application.bidstore.backend.persisetence.entity.BiddingUser;
-import ro.fortech.application.bidstore.backend.persisetence.entity.User;
+import ro.fortech.application.bidstore.backend.persistence.dao.BiddingDAO;
+import ro.fortech.application.bidstore.backend.persistence.entity.BiddingUser;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -25,7 +21,7 @@ public class UserBiddingServiceImpl implements UserBiddingService {
     @Override
     public List<BiddingUser> getBiddingUsers(int first, int pageSize, String sortField, String sortOrder, Map<String, Object> filters) {
 
-        return biddingDAO.queryForBiddingUsers(first,pageSize,sortField,sortOrder,filters);
+        return biddingDAO.queryForBiddingUsers(first, pageSize, sortField, sortOrder, filters);
 
     }
 

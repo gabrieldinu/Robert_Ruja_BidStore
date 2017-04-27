@@ -1,7 +1,7 @@
 package ro.fortech.application.bidstore.frontend.mvc.controller;
 
-import ro.fortech.application.bidstore.backend.exception.AccountActivationException;
-import ro.fortech.application.bidstore.backend.exception.AccountException;
+import ro.fortech.application.bidstore.backend.exception.account.AccountActivationException;
+import ro.fortech.application.bidstore.backend.exception.account.AccountException;
 import ro.fortech.application.bidstore.backend.service.account.UserAccountService;
 
 import javax.inject.Inject;

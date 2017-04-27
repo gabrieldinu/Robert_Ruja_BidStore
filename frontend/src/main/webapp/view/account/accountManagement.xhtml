@@ -2,23 +2,22 @@
                 xmlns:ui="http://xmlns.jcp.org/jsf/facelets" xmlns:p="http://primefaces.org/ui"
                 xmlns:f="http://xmlns.jcp.org/jsf/core" xmlns:h="http://xmlns.jcp.org/jsf/html"
                 xmlns:fn="http://java.sun.com/jsp/jstl/functions"
-                xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
-                template="/resources/scaffold/template.xhtml">
+                xmlns:pt="http://xmlns.jcp.org/jsf/passthrough">
 
-    <ui:define name="title">Account management</ui:define>
+    <!--<ui:define name="title">Account management</ui:define>-->
 
-    <ui:define name="message">Account management</ui:define>
+    <!--<ui:define name="message">Account management</ui:define>-->
 
-    <ui:define name="body">
+    <!--<ui:define name="body">-->
         <div class="row">
             <div class="col-md-2"></div>
             <div class="col-md-8">
-                <h:form class="form-horizontal">
+                <h:form class="form-horizontal" id="passwordForm">
                     <h3 class="form-signin-heading">Authentication</h3>
                     <h3>&#160;</h3>
+                    <p:messages id="messages" showDetail="true" closable="true"/>
                     <div class="form-group">
                         <label for="inputLogin" class="col-sm-2 control-label">Username</label>
-
                         <div class="col-sm-10">
                             <h:inputText class="form-control" id="inputLogin" value="#{userAccount.user.username}"
                                          pt:readonly="true"/>
@@ -55,19 +54,21 @@
                     <div class="form-group">
                         <div class="col-sm-offset-2 col-sm-10">
                             <h:commandButton class="btn btn-default" value="Save changes"
-                                             action="#{accountMgt.changePassword}"/>
+                                             action="#{accountMgt.changePassword}">
+                                <f:ajax execute="@form" render="@form"/>
+                            </h:commandButton>
                         </div>
                     </div>
                     <p:separator />
                 </h:form>
                 <h:form class="form-horizontal">
                     <h3 class="form-signin-heading">User details</h3>
+                    <p:messages id="messages" showDetail="true" closable="true"/>
                     <div class="form-group">
                         <label for="inputFirstName" class="col-sm-2 control-label">First name</label>
 
                         <div class="col-sm-10">
-                            <h:inputText class="form-control" id="inputFirstName"
-                                         value="#{userAccount.user.firstName}"/>
+                            <h:inputText class="form-control" id="inputFirstName" value="#{userAccount.user.firstName}"/>
                         </div>
                     </div>
                     <div class="form-group">
@@ -95,8 +96,9 @@
                     </div>
                     <div class="form-group">
                         <div class="col-sm-offset-2 col-sm-10">
-                            <h:commandButton class="btn btn-default" value="Save changes"
-                                             action="#{accountMgt.saveUserAccount}"/>
+                            <h:commandButton class="btn btn-default" value="Save changes" action="#{accountMgt.saveUserAccount}">
+                                <f:ajax execute="@form" render="@form"/>
+                            </h:commandButton>
                         </div>
                     </div>
                 </h:form>
@@ -104,6 +106,7 @@
                     <p:separator />
                     <h3 class="form-signin-heading">Address details</h3>
                     <h3>&#160;</h3>
+                    <p:messages id="messages" showDetail="true" closable="true"/>
                     <div class="form-group" style="width:30%; float:left; margin-left:3%">
                         <h5 class="form-signin-heading">Home address</h5>
                         <label for="homeStreet" class="col-sm-2 control-label">Street:</label>
@@ -152,8 +155,9 @@
                     </div>
                     <div class="form-group">
                         <div class="col-sm-offset-2 col-sm-10">
-                            <h:commandButton class="btn btn-default" value="Save changes"
-                                             action="#{accountMgt.saveUserAddress}"/>
+                            <h:commandButton class="btn btn-default" value="Save changes" action="#{accountMgt.saveUserAddress}">
+                                <f:ajax execute="@form" render="@form"/>
+                            </h:commandButton>
                         </div>
                     </div>
                 </h:form>
@@ -161,6 +165,6 @@
             <div class="col-md-2"></div>
         </div>
 
-    </ui:define>
+    <!--</ui:define>-->
 
 </ui:composition>

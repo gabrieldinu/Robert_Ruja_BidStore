@@ -9,7 +9,22 @@
     <ui:define name="message">Welcome to Bid store website</ui:define>
 
     <ui:define name="body">
-
+        <p:tabView>
+            <p:tab title="Bidding">
+                <ui:include src="/view/bidding/main.xhtml"/>
+            </p:tab>
+            <p:tab title="Items">
+            </p:tab>
+            <p:tab title="Cateogries">
+                <ui:include src="/view/categories/main.xhtml"/>
+            </p:tab>
+            <p:tab title="Users" renedered="#{userAccount.admin}">
+                <ui:include src="/view/account/userManagement.xhtml"/>
+            </p:tab>
+            <p:tab title="Account">
+                <ui:include src="/view/account/accountManagement.xhtml"/>
+            </p:tab>
+        </p:tabView>
         <!--<div class="row">-->
             <!--<ui:repeat value="#{ratedItemsBean.randomItems}" var="_item">-->
                 <!--<div class="col-md-4">-->

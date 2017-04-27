@@ -1,15 +1,17 @@
 package ro.fortech.application.bidstore.frontend.mvc.managed.account;
 
 
-import ro.fortech.application.bidstore.backend.exception.AccountEmailException;
-import ro.fortech.application.bidstore.backend.exception.AccountException;
+import ro.fortech.application.bidstore.backend.exception.account.AccountEmailException;
+import ro.fortech.application.bidstore.backend.exception.account.AccountException;
+import ro.fortech.application.bidstore.backend.exception.email.EmailException;
 import ro.fortech.application.bidstore.backend.model.UserRegistration;
 import ro.fortech.application.bidstore.backend.model.UserRole;
-import ro.fortech.application.bidstore.backend.persisetence.entity.User;
-import ro.fortech.application.bidstore.backend.persisetence.entity.UserAuth;
+import ro.fortech.application.bidstore.backend.persistence.entity.User;
+import ro.fortech.application.bidstore.backend.persistence.entity.UserAuth;
 import ro.fortech.application.bidstore.backend.service.account.UserAccountService;
-import ro.fortech.application.bidstore.frontend.util.EmailBuilder;
-import ro.fortech.application.bidstore.frontend.util.MailSender;
+import ro.fortech.application.bidstore.backend.service.mail.EmailBuilder;
+import ro.fortech.application.bidstore.backend.service.mail.MailService;
+import ro.fortech.application.bidstore.backend.service.mail.ConfiguredMailService;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
@@ -36,7 +38,7 @@ import java.util.UUID;
  */
 @Named
 @SessionScoped
-public class UserAccount implements Serializable{
+public class UserAccount implements Serializable {
 
     @Inject
     UserAccountService userAccountService;
@@ -69,11 +71,17 @@ public class UserAccount implements Serializable{
     @Inject
     HttpServletResponse response;
 
+    @Inject
+    @ConfiguredMailService
+    MailService mailService;
+
     private static final String COOKIE_NAME = "applicationBidStoreCookie";
     private static final int COOKIE_AGE = 1800; //half an hour
 
     @PostConstruct
-    private void checkIfUserHasRememberMeCookie() {
+    private void init() {
+
+        //check if the user has remember me cookie
         String cookieValue = getCookieValue();
         if (cookieValue == null)
             return;
@@ -132,8 +140,6 @@ public class UserAccount implements Serializable{
                 removeCookie();
             }
             loggedIn = true;
-            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Welcome back " + user.getFirstName(),
-                    "You can now browse the catalog"));
             return "/view/main";
         }
 
@@ -188,14 +194,18 @@ public class UserAccount implements Serializable{
     private void sendConfirmationEmail(User user, UUID uuid) throws AccountException {
 
         if(this.configProperties != null) {
-            new MailSender(configProperties).sendMail(
-                    EmailBuilder.getEmailBuilder()
-                            .withFrom("caveat-emptor@fortech.ro")
-                            .withTo(user.getEmail())
-                            .withSubject("Caveat Emptor account activation for " + user.getFirstName() + " " + user.getLastName())
-                            .withText("Hi, your activation link is " + configProperties.getProperty("application.url") + "/BidStore/activate?activationId=" + uuid)
-                            .build()
-            );
+            try {
+                mailService.sendMail(
+                        EmailBuilder.getEmailBuilder()
+                                .withFrom("caveat-emptor@fortech.ro")
+                                .withTo(user.getEmail())
+                                .withSubject("Caveat Emptor account activation for " + user.getFirstName() + " " + user.getLastName())
+                                .withText("Hi, your activation link is " + configProperties.getProperty("application.url") + "/BidStore/activate?activationId=" + uuid)
+                                .build()
+                );
+            } catch (EmailException e) {
+                throw new AccountException(e);
+            }
         }else {
             throw new AccountException("Unable to fetch mail configuration properties");
         }
@@ -229,7 +239,7 @@ public class UserAccount implements Serializable{
 
             if(this.configProperties != null) {
 
-                new MailSender(configProperties).sendMail(
+                mailService.sendMail(
                         EmailBuilder.getEmailBuilder()
                                 .withFrom("caveat-emptor@fortech.ro")
                                 .withTo(user.getEmail())
@@ -246,6 +256,9 @@ public class UserAccount implements Serializable{
             context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Unknown email",
                     "This email address is unknown to our database!"));
             return null;
+        } catch (EmailException e) {
+            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Internal error",
+                    "An internal error occurred while sending your email. Please try again later. If the problem persists, contact your administrator"));
         }
 
         return "/view/public/account/signin";

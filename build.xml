@@ -1,0 +1,56 @@
+<project name="Caveat" default="replace-web" basedir=".">
+    <description>
+        Build file helper for IntelliJ IDEA
+    </description>
+
+    <!-- set deploy dir-->
+    <property name="deploy_dir" location="c:\INSTALL\wildfly-11.0.0.Alpha1\standalone\deployments"/>
+
+    <!--set source dir-->
+    <property name="source_dir" location="frontend/src"/>
+
+    <!--set the target of the maven output -->
+    <property name="target_dir" location="frontend/target"/>
+
+    <!--set application name-->
+    <property name="app_name" value="BidStore"/>
+
+    <!--set source application name-->
+    <property name="src_app_name" value="BiddingApp-frontend"/>
+
+    <!--specify location of file-->
+    <property name="deploy_file" location="_bootstrap/resources/${app_name}.war.dodeploy"/>
+
+    <!--#############################################################################################################-->
+
+    <target name="redeploy" description="redeploy all files">
+        <delete file="${deploy_dir}/${app_name}.ear.deployed"/>
+        <delete file="${deploy_dir}/${app_name}.ear.failed"/>
+        <delete dir="${deploy_dir}/${app_name}.ear"/>
+        <mkdir dir="${deploy_dir}/${app_name}.ear"/>
+        <touch file="${deploy_dir}/${app_name}.ear.dodeploy"/>
+        <copy todir="${deploy_dir}/${app_name}.ear">
+            <fileset dir="BidStore/target/BidStore">
+                <exclude name="backend-1.0.jar"/>
+                <exclude name="frontend-1.0.war"/>
+            </fileset>
+        </copy>
+        <mkdir dir="${deploy_dir}/${app_name}.ear/backend-1.0.jar"/>
+        <mkdir dir="${deploy_dir}/${app_name}.ear/frontend-1.0.war"/>
+        <antcall target="deploy-web"/>
+        <copy todir="${deploy_dir}/${app_name}.ear/frontend-1.0.war/WEB-INF/lib">
+            <fileset dir="frontend/target/BidStore-frontend/WEB-INF/lib" includes="**"/>
+        </copy>
+        <copy todir="${deploy_dir}/${app_name}.ear/backend-1.0.jar">
+            <fileset dir="backend/target/classes" includes="**"/>
+        </copy>
+    </target>
+
+    <target name="deploy-web" description="deploy only web files in src directory">
+        <copy todir="${deploy_dir}/${app_name}.ear/frontend-1.0.war">
+            <fileset dir="frontend/src/main/webapp" includes="**"/>
+        </copy>
+    </target>
+
+
+</project>

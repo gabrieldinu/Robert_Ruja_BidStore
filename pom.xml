@@ -24,6 +24,7 @@
         <version.primefaces>5.3</version.primefaces>
         <version.primefaces.theme>1.0.10</version.primefaces.theme>
         <version.resteasy>3.0.12.Final</version.resteasy>
+        <version.org.mockito>1.9.5</version.org.mockito>
         <!-- Test -->
         <version.arquillian>1.1.11.Final</version.arquillian>
         <version.arquillian.wildfly.remote>8.2.1.Final</version.arquillian.wildfly.remote>
@@ -102,6 +103,11 @@
                 <artifactId>wildfly-arquillian-container-remote</artifactId>
                 <version>${version.arquillian.wildfly.remote}</version>
                 <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.mockito</groupId>
+                <artifactId>mockito-all</artifactId>
+                <version>${version.org.mockito}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
