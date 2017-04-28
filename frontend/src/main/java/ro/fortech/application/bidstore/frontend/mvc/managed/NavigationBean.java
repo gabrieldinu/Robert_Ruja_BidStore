@@ -31,4 +31,5 @@ public class NavigationBean implements Serializable {
     public void setPage(String page) {
         this.page = page;
     }
+
 }

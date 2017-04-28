@@ -4,6 +4,7 @@
                 xmlns:fn="http://java.sun.com/jsp/jstl/functions">
     <p:layout style="min-width:400px;min-height:200px;">
         <p:layoutUnit position="west" resizable="true" size="300" minSize="80" maxSize="400">
+
             <h:panelGroup id="menu" layout="block">
                 <f:facet name="header">
                     <h:outputText value="Categories"/>
@@ -21,7 +22,8 @@
         </p:layoutUnit>
 
         <p:layoutUnit position="center" resizable="true" minSize="120">
-            <h:panelGroup id="header" layout="block">
+            <ui:include src=""/>
+            <h:panelGroup id="header_category" layout="block">
                 <p:breadCrumb>
                     <p:menuitem value="Categories" url="#" />
                     <p:menuitem value="Sports" url="#" />
@@ -34,8 +36,9 @@
                 </p:breadCrumb>
             </h:panelGroup>
         </p:layoutUnit>
-        <h:panelGroup id="content" layout="block">
+        <ui:include src=""/>
+        <!--<h:panelGroup id="content" layout="block">-->
             <!--<ui:include src="/WEB-INF/includes/#{naviBean.page}.xhtml" />-->
-        </h:panelGroup>
+        <!--</h:panelGroup>-->
     </p:layout>
 </ui:composition>

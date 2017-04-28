@@ -6,67 +6,29 @@
 
     <ui:define name="title">Caveat Emptor</ui:define>
 
-    <ui:define name="message">Welcome to Bid store website</ui:define>
+    <ui:define name="message" style="position:absolute;float:right;">#{userAccount.user.firstName} #{userAccount.user.lastName}</ui:define>
 
     <ui:define name="body">
-        <p:tabView>
-            <p:tab title="Bidding">
-                <ui:include src="/view/bidding/main.xhtml"/>
-            </p:tab>
-            <p:tab title="Items">
-            </p:tab>
-            <p:tab title="Cateogries">
-                <ui:include src="/view/categories/main.xhtml"/>
-            </p:tab>
-            <p:tab title="Users" renedered="#{userAccount.admin}">
-                <ui:include src="/view/account/userManagement.xhtml"/>
-            </p:tab>
-            <p:tab title="Account">
-                <ui:include src="/view/account/accountManagement.xhtml"/>
-            </p:tab>
-        </p:tabView>
-        <!--<div class="row">-->
-            <!--<ui:repeat value="#{ratedItemsBean.randomItems}" var="_item">-->
-                <!--<div class="col-md-4">-->
-                    <!--<h3>#{fn:substring(_item.title, 0, 22)}</h3>-->
-
-                    <!--<p>-->
-                        <!--<h:link outcome="/shopping/viewItem.xhtml">-->
-                            <!--<f:param name="id" value="#{_item.id}"/>-->
-                            <!--<p:graphicImage url="#{_item.smallImageURL}"/>-->
-                        <!--</h:link>-->
-                    <!--</p>-->
-
-                    <!--<p>#{fn:substring(_item.description, 0, 150)}...</p>-->
-
-                    <!--<p>-->
-                        <!--<h:button outcome="/shopping/viewItem.xhtml" styleClass="btn btn-default" value="View details ">-->
-                            <!--<f:param name="id" value="#{_item.id}"/>-->
-                        <!--</h:button>-->
-                    <!--</p>-->
-                    <!--<p/>-->
-                <!--</div>-->
-            <!--</ui:repeat>-->
-        <!--</div>-->
-
-        <!--<h:panelGroup rendered="#{fn:length(ratedItemsBean.topRatedItems) != 0}">-->
-            <!--<p:carousel value="#{ratedItemsBean.topRatedItems}" headerText="Top rated items" var="_item"-->
-                        <!--responsive="true">-->
-                <!--<p:panelGrid columns="2" layout="grid" columnClasses="label,value" style="width:100%;margin:10px 0px">-->
-
-                    <!--<h:link outcome="/shopping/viewItem.xhtml">-->
-                        <!--<f:param name="id" value="#{_item.id}"/>-->
-                        <!--<p:graphicImage url="#{_item.smallImageURL}"/>-->
-                    <!--</h:link>-->
-
-                    <!--<h:outputText value="#{fn:substring(_item.title, 0, 35)}..."/>-->
-                <!--</p:panelGrid>-->
-
-                <!--<f:facet name="footer">-->
-                    <!--In total there are #{fn:length(ratedItemsBean.topRatedItems)} top rated items.-->
-                <!--</f:facet>-->
-            <!--</p:carousel>-->
-        <!--</h:panelGroup>-->
+        <div class="row" style="width:100%;">
+            <div style="position:block; height:100%;width:100%; min-height:650px;">
+                <p:tabView>
+                    <p:tab title="Bidding">
+                        <ui:include src="/view/bidding/bidding_main.xhtml"/>
+                    </p:tab>
+                    <p:tab title="Items">
+                    </p:tab>
+                    <p:tab title="Cateogries">
+                        <ui:include src="/view/category/category_main.xhtml"/>
+                    </p:tab>
+                    <p:tab title="Users" renedered="#{userAccount.admin}">
+                        <ui:include src="/view/account/userManagement.xhtml"/>
+                    </p:tab>
+                    <p:tab title="Account">
+                        <ui:include src="/view/account/accountManagement.xhtml"/>
+                    </p:tab>
+                </p:tabView>
+            </div>
+        </div>
 
     </ui:define>
 
