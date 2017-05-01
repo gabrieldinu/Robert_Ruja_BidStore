@@ -5,13 +5,14 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
+import javax.faces.validator.FacesValidator;
 import javax.faces.validator.Validator;
 import javax.faces.validator.ValidatorException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 
-@ManagedBean
+@FacesValidator(value = "emailValidator")
 @ViewScoped
 public class EmailAddressValidator implements Validator {
 

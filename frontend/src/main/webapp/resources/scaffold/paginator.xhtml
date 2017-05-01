@@ -1,25 +1,73 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:fn="http://java.sun.com/jsp/jstl/functions"
-                xmlns:ui="http://java.sun.com/jsf/facelets">
-
-    <h:panelGroup styleClass="paginator" rendered="#{paginatorBean.count gt paginatorBean.pageSize}">
-        <!-- Use commandLink, not outputLink, so that search criteria is not lost -->
-        <h:commandLink styleClass="btn btn-primary" rendered="#{paginatorBean.page gt 0}">
-            <f:param name="page" value="#{paginatorBean.page - 1}"/>
-            &lt; Previous
-        </h:commandLink>
-        <h:outputText styleClass="paginator-content"
-                      value="#{paginatorBean.page * paginatorBean.pageSize + 1} to #{paginatorBean.page * paginatorBean.pageSize + fn:length(paginatorBean.pageItems)} (of #{paginatorBean.count})"/>
-        <h:commandLink styleClass="btn btn-primary"
-                       rendered="#{(paginatorBean.page + 1) * paginatorBean.pageSize lt paginatorBean.count}">
-            <f:param name="page" value="#{paginatorBean.page + 1}"/>
-            Next &gt;
-        </h:commandLink>
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+    <h:panelGroup styleClass="paginator" id="paginator_panel" style="overflow:auto;">
+        <h:panelGrid columns="11" style="width:100%;">
+            <p:outputPanel style="width:20px;margin-right:4px;">
+                <h:commandButton value="&lt;&lt;" styleClass="btn btn-default" style="border-radius:0px;" rendered="#{paginatorBean.page gt 1}">
+                    <f:setPropertyActionListener target="#{paginatorBean.page}" value="1"/>
+                    <f:ajax execute="@form" render="bidding_content paginator_panel"/>
+                </h:commandButton>
+            </p:outputPanel>
+            <p:outputPanel style="width:20px">
+                <h:commandButton value="&lt;" styleClass="btn btn-default" style="border-radius:0px;" rendered="#{paginatorBean.page gt 1}">
+                    <f:setPropertyActionListener target="#{paginatorBean.page}" value="#{paginatorBean.page - 1}" />
+                    <f:ajax execute="@form" render="bidding_content paginator_panel"/>
+                </h:commandButton>
+            </p:outputPanel>
+            <h:outputLabel value="Page #{paginatorBean.page} of #{paginatorBean.pageCount}" />
+            <p:outputPanel style="width:20px">
+                <h:commandButton value="&gt;" styleClass="btn btn-default" style="border-radius:0px;" rendered="#{paginatorBean.page lt paginatorBean.pageCount}">
+                    <f:setPropertyActionListener target="#{paginatorBean.page}" value="#{paginatorBean.page + 1}" />
+                    <f:ajax execute="@form" render="bidding_content paginator_panel"/>
+                </h:commandButton>
+            </p:outputPanel>
+            <p:outputPanel style="width:20px">
+                <h:commandButton value="&gt;&gt;" styleClass="btn btn-default" style="border-radius:0px;" rendered="#{paginatorBean.page lt paginatorBean.pageCount}">
+                    <f:setPropertyActionListener target="#{paginatorBean.page}" value="#{paginatorBean.pageCount}"/>
+                    <f:ajax execute="@form" render="bidding_content paginator_panel"/>
+                </h:commandButton>
+            </p:outputPanel>
+            <p:outputLabel for="pageSize" value="Page size:" style="width:90px;float:right;"/>
+            <p:outputPanel style="width:50px">
+                <h:selectOneMenu id="pageSize" value="#{paginatorBean.pageSize}" style="width:50px;height:30px;">
+                    <f:selectItem itemLabel="5" itemValue="5" />
+                    <f:selectItem itemLabel="10" itemValue="10" />
+                    <f:selectItem itemLabel="25" itemValue="25" />
+                    <f:selectItem itemLabel="50" itemValue="40" />
+                    <f:ajax event="change" execute="@form" render="bidding_content paginator_panel" listener="#{paginatorBean.updateContent}" />
+                </h:selectOneMenu>
+            </p:outputPanel>
+            <p:outputLabel for="sortBy" value="Sort by:" style="width:100px;float:right;"/>
+            <p:outputPanel style="width:70px">
+                <h:selectOneMenu id="sortBy" value="#{paginatorBean.sortBy}" style="width:100px;height:30px;">
+                    <f:selectItem itemLabel="Name" itemValue="name" />
+                    <f:selectItem itemLabel="Best bid value" itemValue="currentBid" />
+                    <f:selectItem itemLabel="Bid closing" itemValue="closingDate" />
+                    <f:selectItem itemLabel="Bid no" itemValue="bidCount" />
+                    <f:ajax event="change" execute="@form" render="bidding_content paginator_panel" listener="#{paginatorBean.updateContent}" />
+                </h:selectOneMenu>
+            </p:outputPanel>
+            <p:selectBooleanCheckbox value="#{paginatorBean.ascending}">
+                <p:ajax update="bidding_content paginator_panel" listener="#{paginatorBean.updateContent}" />
+            </p:selectBooleanCheckbox>
+            <h:outputText value="Sort Ascending" />
+        </h:panelGrid>
+        <!--&lt;!&ndash; Use commandLink, not outputLink, so that search criteria is not lost &ndash;&gt;-->
+        <!--<h:commandLink styleClass="btn btn-primary" rendered="#{paginatorBean.page gt 0}">-->
+            <!--<f:param name="page" value="#{paginatorBean.page - 1}"/>-->
+            <!--&lt; Previous-->
+        <!--</h:commandLink>-->
+        <!--<h:outputText styleClass="paginator-content"-->
+                      <!--value="#{paginatorBean.page * paginatorBean.pageSize + 1} to #{paginatorBean.page * paginatorBean.pageSize + fn:length(paginatorBean.pageItems)} (of #{paginatorBean.pageCount})"/>-->
+        <!--<h:commandLink styleClass="btn btn-primary"-->
+                       <!--rendered="#{(paginatorBean.page + 1) * paginatorBean.pageSize lt paginatorBean.pageCount}">-->
+            <!--<f:param name="page" value="#{paginatorBean.page + 1}"/>-->
+            <!--Next &gt;-->
+        <!--</h:commandLink>-->
     </h:panelGroup>
 
 </ui:composition>

@@ -8,7 +8,7 @@
                     <p:dataTable var="user" value="#{userMgt.lazyModel}" paginator="true" rows="10"
                                  paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
                                  rowsPerPageTemplate="5,10,15" selectionMode="single" id="userTable" lazy="true">
-                        <p:ajax event="rowSelect" listener="#{userMgt.onRowSelect}" render=":form:userDetail" oncomplete="PF('userDialog').show()" />
+                        <p:ajax event="rowSelect" listener="#{userMgt.onRowSelect}" render="userDetail" oncomplete="PF('userDialog').show()" />
                         <p:column headerText="First Name" sortBy="#{user.firstName}" filterBy="#{user.firstName}">
                             <h:outputText value="#{user.firstName}" />
                         </p:column>

@@ -1,0 +1,41 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets" xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core" xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+    <h:panelGroup style="position:absolute;overflow:auto;width:100%">
+        <p:repeat value="#{contentView.itemList}" var="item">
+            <h:outputText value="#{item.name}"/>
+
+            <h:panelGrid columns="3" style="width:100%;border:none;" columnClasses="logo,detail,detail">
+                <p:commandLink >
+                    <!--<f:setPropertyActionListener value="#{car}" target="#{dataListView.selectedCar}" />-->
+                    <!--<p:graphicImage name="demo/images/car/#{car.brand}-big.gif" />-->
+                    <h:graphicImage value="/resources/forge-logo.png" width="110" height="100"/>
+                </p:commandLink>
+                <h:outputText value="#{item.description}" />
+
+                <p:outputPanel>
+                    <div>
+                        <h:outputText value="#{item.currentBid} $"/>
+                    </div>
+                    <div>
+                        <h:outputText value="#{item.closingDate}"/>
+                    </div>
+                    <div>
+                        <h:outputText value="#{item.bidCount} bids"/>
+                    </div>
+                </p:outputPanel>
+                <!--<h:outputText value="#{car.id}" style="font-weight: bold"/>-->
+
+                <!--<h:outputText value="Year:" />-->
+                <!--<h:outputText value="#{car.year}" style="font-weight: bold"/>-->
+
+                <!--<h:outputText value="Color:" />-->
+                <!--<h:outputText value="#{car.color}" style="font-weight: bold"/>-->
+
+            </h:panelGrid>
+            <hr />
+        </p:repeat>
+    </h:panelGroup>
+
+</ui:composition>

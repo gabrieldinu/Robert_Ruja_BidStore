@@ -39,7 +39,7 @@
                             <h:inputText class="form-control" id="inputEmail" value="#{userAccount.user.email}"
                                          label="Email address:" style="display:block;width:177px">
                                 <f:ajax event="blur" render="emailMessage" />
-                                <f:validator binding="#{mailValidator}" />
+                                <f:validator validatorId="emailValidator" />
                             </h:inputText>
                             <h:message for="inputEmail" id="emailMessage" style="color:red" />
                         </div>
@@ -85,7 +85,6 @@
             </div>
             <div class="col-md-3"></div>
         </div>
-
 
     </ui:define>
 

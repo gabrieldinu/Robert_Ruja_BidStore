@@ -10,9 +10,9 @@
 
     <ui:define name="body">
         <div class="row" style="width:100%;">
-            <div style="position:block; height:100%;width:100%; min-height:650px;">
-                <p:tabView>
-                    <p:tab title="Bidding">
+            <div style="position:block; height:100%;width:100%;">
+                <p:tabView id="main-tabview" style="border:none;">
+                    <p:tab title="Bidding" style="padding:0px;">
                         <ui:include src="/view/bidding/bidding_main.xhtml"/>
                     </p:tab>
                     <p:tab title="Items">
