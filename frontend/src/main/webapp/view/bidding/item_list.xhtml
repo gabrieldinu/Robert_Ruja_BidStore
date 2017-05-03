@@ -4,8 +4,8 @@
                 xmlns:fn="http://java.sun.com/jsp/jstl/functions">
     <h:panelGroup style="position:absolute;overflow:auto;width:100%">
         <ui:repeat value="#{contentView.getItemList()}" var="item">
-            <p:commandLink update=":main-tabview:main-form:bidding_content" value="#{item.name}" actionListener="#{contentView.renderSingleItem(item)}"/>
-            <h:panelGrid columns="3" style="width:100%;border:none;" columnClasses="logo,detail,detail">
+            <p:commandLink update=":main-tabview:main-form:bidding_content" value="#{item.name}" actionListener="#{contentView.renderSingleItem(item)}" styleClass="fontStyle" style="color:#3684cb;text-decoration:underline;font-size:17px;"/>
+            <h:panelGrid columns="3" style="width:100%;border:none;" columnClasses="logo,detail,detail" styleClass="fontStyle">
                 <p:commandLink >
                     <!--<f:setPropertyActionListener value="#{car}" target="#{dataListView.selectedCar}" />-->
                     <!--<p:graphicImage name="demo/images/car/#{car.brand}-big.gif" />-->
@@ -13,9 +13,9 @@
                 </p:commandLink>
                 <h:outputText value="#{item.description}" />
 
-                <p:outputPanel>
+                <p:outputPanel styleClass="fontStyle">
                     <div>
-                        <h:outputText value="#{item.currentBid} $"/>
+                        <h:outputText value="#{item.currentBid} $" style="font-weight:bold;"/>
                     </div>
                     <div>
                         <h:outputText value="#{item.closingDate}"/>

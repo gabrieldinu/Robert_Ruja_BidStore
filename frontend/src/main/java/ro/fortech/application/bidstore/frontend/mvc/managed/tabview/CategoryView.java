@@ -3,6 +3,7 @@ package ro.fortech.application.bidstore.frontend.mvc.managed.tabview;
 import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.TreeNode;
 import ro.fortech.application.bidstore.backend.persistence.entity.Category;
+import ro.fortech.application.bidstore.frontend.mvc.managed.Paginator;
 
 import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
@@ -15,7 +16,7 @@ import java.util.*;
  * Created by robert.ruja on 28-Apr-17.
  */
 
-@ManagedBean(name = "categoryTree")
+@ManagedBean(name = "categoryView")
 @ViewScoped
 public class CategoryView implements Serializable {
 
@@ -28,6 +29,8 @@ public class CategoryView implements Serializable {
     private List<TreeNode> allNodeCategories;
 
     private String searchText;
+
+    private Paginator paginator = new Paginator();
 
     @ManagedProperty(value = "#{contentView}")
     private ContentView contentView;
@@ -89,13 +92,19 @@ public class CategoryView implements Serializable {
     }
 
     public List<String> completeText(String query) {
-        return new ArrayList<String>(){{
-            add(query +"a");
-            add(query +"b");
-            add(query +"ac");
-            add(query +"ad");
-            add(query +"ae");
-        }};
+
+        //query in db should be done
+        List<String> result = new ArrayList<>();
+        int i = 0;
+
+        for(Category category: allCategories){
+            if(category.getName().toLowerCase().contains(query.toLowerCase())){
+                result.add(category.getName());
+                i++;
+            }
+            if(i>6)break;
+        }
+        return result;
     }
 
     public List<Category> getCategoryList() {
@@ -107,6 +116,8 @@ public class CategoryView implements Serializable {
                     results.add(searchCategory);
             }
         }
+        paginator.setItemCount(results.size());
+        paginator.calculate();
         return results;
     }
 
@@ -175,5 +186,13 @@ public class CategoryView implements Serializable {
 
     public void setSearchText(String searchText) {
         this.searchText = searchText;
+    }
+
+    public Paginator getPaginator() {
+        return paginator;
+    }
+
+    public void setPaginator(Paginator paginator) {
+        this.paginator = paginator;
     }
 }

@@ -1,0 +1,67 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+
+
+    <h:panelGroup styleClass="paginator fontStyle" id="paginator_panel_category" style="overflow:auto;" >
+        <h:outputText value="here goes pagination"/>
+        <h:panelGrid columns="11" style="width:100%;">
+            <p:outputPanel style="width:15px;margin-right:4px;">
+                <h:commandButton value="&lt;&lt;" styleClass="btn btn-default" style="border-radius:0px;" rendered="#{categoryView.paginator.page gt 1}">
+                    <f:setPropertyActionListener target="#{categoryView.paginator.page}" value="1"/>
+                    <f:ajax render=":main-tabview:main-form:category_results"/>
+                </h:commandButton>
+            </p:outputPanel>
+            <p:outputPanel style="width:15px">
+                <h:commandButton value="&lt;" styleClass="btn btn-default" style="border-radius:0px;" rendered="#{categoryView.paginator.page gt 1}">
+                    <f:setPropertyActionListener target="#{categoryView.paginator.page}" value="#{categoryView.paginator.page - 1}" />
+                    <f:ajax render=":main-tabview:main-form:category_results"/>
+                </h:commandButton>
+            </p:outputPanel>
+            <p:outputPanel>
+                <h:outputLabel value="Page #{categoryView.paginator.page} of #{categoryView.paginator.pageCount}" rendered="#{categoryView.paginator.pageCount gt 0}"/>
+            </p:outputPanel>
+            <p:outputPanel style="width:15px">
+                <h:commandButton value="&gt;" styleClass="btn btn-default" style="border-radius:0px;" rendered="#{categoryView.paginator.page lt categoryView.paginator.pageCount}">
+                    <f:setPropertyActionListener target="#{categoryView.paginator.page}" value="#{categoryView.paginator.page + 1}" />
+                    <f:ajax  render=":main-tabview:main-form:category_results"/>
+                </h:commandButton>
+            </p:outputPanel>
+            <p:outputPanel style="width:15px">
+                <h:commandButton value="&gt;&gt;" styleClass="btn btn-default" style="border-radius:0px;" rendered="#{categoryView.paginator.page lt categoryView.paginator.pageCount}">
+                    <f:setPropertyActionListener target="#{categoryView.paginator.page}" value="#{categoryView.paginator.pageCount}"/>
+                    <f:ajax  render=":main-tabview:main-form:category_results"/>
+                </h:commandButton>
+            </p:outputPanel>
+            <p:outputPanel>
+                <p:outputLabel for="pageSizeCategory" value="Page size:" style="width:70px;float:right;" rendered="#{categoryView.paginator.pageCount gt 0}"/>
+            </p:outputPanel>
+            <p:outputPanel style="width:40px">
+                <h:selectOneMenu id="pageSizeCategory" value="#{categoryView.paginator.pageSize}" style="width:50px;height:30px;" rendered="#{categoryView.paginator.pageCount gt 0}">
+                    <f:selectItem itemLabel="5" itemValue="5" />
+                    <f:selectItem itemLabel="10" itemValue="10" />
+                    <f:selectItem itemLabel="25" itemValue="25" />
+                    <f:selectItem itemLabel="50" itemValue="40" />
+                    <f:ajax event="change"  render=":main-tabview:main-form:category_results" />
+                </h:selectOneMenu>
+            </p:outputPanel>
+            <p:outputLabel for="sortByCategory" value="Sort by:" style="width:90px;float:right;" rendered="#{categoryView.paginator.itemCount gt 1}"/>
+            <p:outputPanel style="width:60px" rendered="#{categoryView.paginator.itemCount gt 1}">
+                <h:selectOneMenu id="sortByCategory" value="#{categoryView.paginator.sortBy}" style="width:100px;height:30px;">
+                    <f:selectItem itemLabel="Name" itemValue="name" />
+                    <f:selectItem itemLabel="Description" itemValue="currentBid" />
+                    <f:selectItem itemLabel="Creation" itemValue="closingDate" />
+                    <f:ajax event="change"  render=":main-tabview:main-form:category_results" />
+                </h:selectOneMenu>
+            </p:outputPanel>
+            <p:selectBooleanCheckbox value="#{categoryView.paginator.ascending}" rendered="#{categoryView.paginator.itemCount gt 1}">
+                <p:ajax update=":main-tabview:main-form:category_results" />
+            </p:selectBooleanCheckbox>
+            <h:outputLabel value="Sort Ascending" rendered="#{categoryView.paginator.itemCount gt 1}" />
+        </h:panelGrid>
+    </h:panelGroup>
+
+</ui:composition>

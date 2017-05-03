@@ -18,7 +18,7 @@ public class Paginator {
         pageCount = remainder == 0 ? count:count+1;
         page = pageCount > page ? page : pageCount == 0 ? 1 : pageCount;
         startIndex = (page-1)*pageSize;
-        endIndex = startIndex + pageSize < itemCount ? startIndex + pageSize : startIndex + remainder;
+        endIndex = startIndex + pageSize <= itemCount ? startIndex + pageSize : startIndex + remainder;
 
     }
 

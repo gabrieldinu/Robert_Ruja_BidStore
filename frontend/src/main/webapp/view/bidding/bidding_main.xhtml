@@ -3,24 +3,24 @@
                 xmlns:f="http://xmlns.jcp.org/jsf/core" xmlns:h="http://xmlns.jcp.org/jsf/html"
                 xmlns:fn="http://java.sun.com/jsp/jstl/functions">
     <h:form id="main-form" style="overflow:visible;display:block;min-width:500px;min-height:630px;">
-        <p:layout style="min-width:500px;min-height:630px;">
+        <p:layout style="min-width:500px;min-height:630px;" styleClass="fontStyle">
                 <p:layoutUnit position="west" resizable="true" size="330" minSize="200" maxSize="500" style="padding:6px;border-right:5px double #dddddd; border-radius:initial;">
                     <p:layout>
-                        <p:layoutUnit position="center" resizable="true" style="border:none;overflow:hidden;">
+                        <p:layoutUnit position="center" resizable="true" style="border:none;overflow:hidden;" minSize="300" size="350">
                             <h:panelGroup id="tree-panel" layout="block" style="border:2px solid #dddddd;height:100%;overflow:auto;">
-                                    <p:tree value="#{categoryTree.root}" var="category" style="border:none;">
+                                    <p:tree value="#{categoryView.root}" var="category" style="border:none;">
                                         <p:treeNode>
-                                            <p:commandLink value="#{category.name}" update=":main-tabview:main-form:category_description
+                                            <p:commandLink styleClass="fontStyle" value="#{category.name}" update=":main-tabview:main-form:category_description
                                                                                             :main-tabview:main-form:header_bidding
                                                                                             :main-tabview:main-form:bidding_content
                                                                                             :main-tabview:main-form:paginator_panel"
-                                                           actionListener="#{categoryTree.updateCategoryView(category)}"/>
+                                                           actionListener="#{categoryView.updateCategoryView(category)}"/>
                                         </p:treeNode>
                                     </p:tree>
                             </h:panelGroup>
                         </p:layoutUnit>
-                        <p:layoutUnit position="south" resizable="true" minSize="130" size="310" style="border-top:5px double #dddddd;border-left:none;border-right:none;border-bottom:none;border-radius:initial;">
-                            <p:outputPanel id="category_description" style="border:2px solid #dddddd;height:100%;margin-top:4px;">
+                        <p:layoutUnit position="south" resizable="true" minSize="100" size="250" style="border-top:5px double #dddddd;border-left:none;border-right:none;border-bottom:none;border-radius:initial;">
+                            <p:outputPanel id="category_description" style="border:2px solid #dddddd;height:100%;margin-top:4px;" styleClass="fontStyle">
                                 <div style="margin-left:10px;margin-top:-15px;position:absolute;background-color:#ffffff;white-space:nowrap;padding:5px;z-index:2;">#{contentView.selectedCategory.name}</div>
                                 <h:panelGroup layout="block" style="padding:15px;">
                                     <h:outputText value="#{contentView.selectedCategory.description}"/>
@@ -34,10 +34,10 @@
                         <p:layoutUnit position="north" style="border:none;min-height:100px;">
                             <h:panelGroup id="header_bidding" layout="block" style="padding:10px;padding-top:10px;">
                                 <div style="width:100%;">
-                                    <p:commandButton value="Search for category" styleClass="btn btn-default" style="border-radius:0px;float:left;" onclick="PF('categoryDialog').show();" type="button"/>
-                                    <div style="display:block; float:left; margin-left:200px;">
-                                        <p:outputLabel value="Search for item: " for="acMaxResults" style="margin-right:30px;"/>
-                                        <p:autoComplete id="acMaxResults" maxResults="5" value="#{contentView.searchText}" completeMethod="#{contentView.completeText}" style="border-radius:6px;"
+                                    <p:commandButton value="Search for category" styleClass="btn btn-default fontStyle" style="border-radius:0px;float:left;" onclick="PF('categoryDialog').show();" type="button" />
+                                    <div style="display:block; float:left; margin-left:50px;">
+                                        <p:outputLabel value="Search for item: " for="acMaxResults" style="margin-right:30px;" styleClass="fontStyle"/>
+                                        <p:autoComplete id="acMaxResults" maxResults="5" value="#{contentView.searchText}" completeMethod="#{contentView.completeText}" style="border-radius:6px;" styleClass="fontStyle" size="60"
                                                         onkeypress="if (event.keyCode == 13) {onchange(); return false; }">
                                             <f:ajax event="change" render=":main-tabview:main-form:bidding_content :main-tabview:main-form:paginator_panel "/>
                                         </p:autoComplete>
@@ -45,14 +45,15 @@
                                 </div>
                                 <div style="width:100%;border:none; background-color:#fafafa;display:block;float:left; margin-top:20px;">
                                     <ul>
-                                        <ui:repeat value="#{categoryTree.breadcrumbs}" var="category">
+                                        <ui:repeat value="#{categoryView.breadcrumbs}" var="category">
                                             <li class="ui-breadcrumb-chevron ui-icon ui-icon-triangle-1-e" style="float:left;"/>
                                             <li class="menuItem" style="float:left;">
-                                                <p:commandLink value="#{category.name}"
-                                                               update=":main-tabview:main-form:category_description :main-tabview:main-form:header_bidding
+                                                <p:commandLink styleClass="fontStyle" value="#{category.name}"
+                                                               update=":main-tabview:main-form:category_description
+                                                                        :main-tabview:main-form:header_bidding
                                                                         :main-tabview:main-form:bidding_content
                                                                         :main-tabview:main-form:paginator_panel"
-                                                               actionListener="#{categoryTree.updateCategoryView(category)}"/>
+                                                               actionListener="#{categoryView.updateCategoryView(category)}"/>
                                             </li>
                                         </ui:repeat>
                                     </ul>
@@ -65,38 +66,52 @@
                             </p:outputPanel>
                         </p:layoutUnit>
                         <p:layoutUnit position="south" style="border:none;padding:0px;">
-                            <ui:include src="/resources/scaffold/paginator.xhtml"/>
+                            <ui:include src="/view/bidding/bidding_paginator.xhtml"/>
                         </p:layoutUnit>
                     </p:layout>
                 </p:layoutUnit>
         </p:layout>
-        <p:dialog header="Search category" widgetVar="categoryDialog" modal="true" height="600" width="1200">
+    </h:form>
+    <h:form id="dialog-form">
+        <p:dialog header="Search category" footer="" widgetVar="categoryDialog" modal="true" height="600" width="1000" styleClass="fontStyle">
             <p:layout style="padding:40px;">
                 <p:layoutUnit position="north" style="border:none;min-height:100px;">
-                    <h:panelGroup layout="block">
-                        <p:autoComplete maxResults="5" value="#{categoryTree.searchText}" completeMethod="#{categoryTree.completeText}" size="120" style="border-radius:6px;float:left; width:80%;"
+                    <h:panelGroup layout="block" styleClass="fontStyle">
+                        <p:autoComplete maxResults="5" value="#{categoryView.searchText}" styleClass="fontStyle" completeMethod="#{categoryView.completeText}" size="120" style="border-radius:6px;float:left; width:80%;"
                                         onkeypress="if (event.keyCode == 13) {onchange(); return false; }">
-                            <f:ajax event="change" render=":main-tabview:main-form:category_results"/>
+                            <f:ajax event="change" render=":main-tabview:dialog-form:category_results"/>
                         </p:autoComplete>
-                        <h:commandButton value="Cancel" styleClass="btn btn-default" style="border-radius:0px;float:right;" onclick="PF('categoryDialog').hide();return false;"/>
+                        <h:commandButton value="Cancel" styleClass="btn btn-default fontStyle" style="border-radius:0px;float:right;" onclick="PF('categoryDialog').hide();return false;"/>
                     </h:panelGroup>
                 </p:layoutUnit>
                 <p:layoutUnit position="center" style="border:none;min-height:400px;">
-                    <p:outputPanel id="category_results" cellpadding="5">
-                        <h:panelGrid columns="2" style="width:100%;border:none;" columnClasses="logo,detail">
-                            <ui:repeat value="#{categoryTree.getCategoryList()}" var="category">
-                                <p:commandLink value="#{category.name}">
-                                    <!--<f:setPropertyActionListener value="#{car}" target="#{dataListView.selectedCar}" />-->
-                                    <!--<p:graphicImage name="demo/images/car/#{car.brand}-big.gif" />-->
-                                </p:commandLink>
-                                <h:outputText value="#{category.description}" />
+                    <h:panelGroup layout="block" id="category_results" styleClass="fontStyle" style="position:absolute;overflow:auto;width:100%">
+                        <table style="width:100%">
+                            <ui:repeat value="#{categoryView.getCategoryList()}" var="category">
+                                <tr style="height:100px;">
+                                    <td style="width:30%;">
+                                        <p:commandLink value="#{category.name}" style="color:#3684cb;text-decoration:underline;font-size:25px;"
+                                                       styleClass="fontStyle"
+                                                       process="@this"
+                                                       onsuccess="PF('categoryDialog').hide();return false;"
+                                                       update=":main-tabview:main-form:category_description
+                                                                        :main-tabview:main-form:header_bidding
+                                                                        :main-tabview:main-form:bidding_content
+                                                                        :main-tabview:main-form:paginator_panel"
+                                                       actionListener="#{categoryView.updateCategoryView(category)}"/>
+                                    </td>
+                                    <td style="width:70%;padding:5px;font-size:15px;">
+                                        <h:outputText value="#{category.description}" />
+                                    </td>
+                                </tr>
                             </ui:repeat>
-                        </h:panelGrid>
-                    </p:outputPanel>
+                        </table>
+                    </h:panelGroup>
+                    <ui:include src="/view/category/category_paginator.xhtml"/>
                 </p:layoutUnit>
-                <p:layoutUnit position="south" style="border:none;min-height:100px;">
-
-                </p:layoutUnit>
+                <!--<p:layoutUnit position="south" style="border:none;min-height:100px;">-->
+                    <!---->
+                <!--</p:layoutUnit>-->
             </p:layout>
         </p:dialog>
     </h:form>
