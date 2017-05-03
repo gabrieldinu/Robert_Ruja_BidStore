@@ -8,18 +8,22 @@
                     <p:layout>
                         <p:layoutUnit position="center" resizable="true" style="border:none;overflow:hidden;">
                             <h:panelGroup id="tree-panel" layout="block" style="border:2px solid #dddddd;height:100%;overflow:auto;">
-                                    <p:tree value="#{categoryTree.root}" var="node" style="border:none;">
+                                    <p:tree value="#{categoryTree.root}" var="category" style="border:none;">
                                         <p:treeNode>
-                                            <p:commandLink value="#{node}" update=":main-tabview:main-form:category_description" actionListener="#{categoryTree.setDescription(node)}"/>
+                                            <p:commandLink value="#{category.name}" update=":main-tabview:main-form:category_description
+                                                                                            :main-tabview:main-form:header_bidding
+                                                                                            :main-tabview:main-form:bidding_content
+                                                                                            :main-tabview:main-form:paginator_panel"
+                                                           actionListener="#{categoryTree.updateCategoryView(category)}"/>
                                         </p:treeNode>
                                     </p:tree>
                             </h:panelGroup>
                         </p:layoutUnit>
                         <p:layoutUnit position="south" resizable="true" minSize="130" size="310" style="border-top:5px double #dddddd;border-left:none;border-right:none;border-bottom:none;border-radius:initial;">
                             <p:outputPanel id="category_description" style="border:2px solid #dddddd;height:100%;margin-top:4px;">
-                                <div style="margin-left:10px;margin-top:-15px;position:absolute;background-color:#ffffff;white-space:nowrap;padding:5px;z-index:2;">#{categoryTree.description}</div>
+                                <div style="margin-left:10px;margin-top:-15px;position:absolute;background-color:#ffffff;white-space:nowrap;padding:5px;z-index:2;">#{contentView.selectedCategory.name}</div>
                                 <h:panelGroup layout="block" style="padding:15px;">
-                                    <h:outputText value=""/>
+                                    <h:outputText value="#{contentView.selectedCategory.description}"/>
                                 </h:panelGroup>
                             </p:outputPanel>
                         </p:layoutUnit>
@@ -27,32 +31,32 @@
                 </p:layoutUnit>
                 <p:layoutUnit position="center" resizable="true" style="border:none;">
                     <p:layout>
-                        <p:layoutUnit position="north" style="border:none;">
-                            <h:panelGroup id="header_bidding" layout="block" style="padding:10px;padding-top:10px;background-color:#fafafa;">
-
-                                    <h:commandButton value="Search for category" styleClass="btn btn-default" style="border-radius:0px;float:left;">
-                                        <f:ajax execute="@form" render="tree-panel category_description"/>
-                                    </h:commandButton>
-                                    <div style="display:block; float:left; margin-left:30px;">
+                        <p:layoutUnit position="north" style="border:none;min-height:100px;">
+                            <h:panelGroup id="header_bidding" layout="block" style="padding:10px;padding-top:10px;">
+                                <div style="width:100%;">
+                                    <p:commandButton value="Search for category" styleClass="btn btn-default" style="border-radius:0px;float:left;" onclick="PF('categoryDialog').show();" type="button"/>
+                                    <div style="display:block; float:left; margin-left:200px;">
                                         <p:outputLabel value="Search for item: " for="acMaxResults" style="margin-right:30px;"/>
-                                        <p:autoComplete id="acMaxResults" maxResults="5" value="#{autoCompleteView.txt4}" completeMethod="#{autoCompleteView.completeText}" style="border-radius:6px;"/>
+                                        <p:autoComplete id="acMaxResults" maxResults="5" value="#{contentView.searchText}" completeMethod="#{contentView.completeText}" style="border-radius:6px;"
+                                                        onkeypress="if (event.keyCode == 13) {onchange(); return false; }">
+                                            <f:ajax event="change" render=":main-tabview:main-form:bidding_content :main-tabview:main-form:paginator_panel "/>
+                                        </p:autoComplete>
                                     </div>
-                                    <div>
-                                        <span><h:outputText value="&#160;" /></span>
-                                    </div>
-                                    <div>
-                                        <span><h:outputText value="&#160;" /></span>
-                                    </div>
-                                    <p:breadCrumb style="border:none; background-color:#fafafa;">
-                                        <p:menuitem value="Sports" url="#" />
-                                        <p:menuitem value="Basketball" url="#" />
-                                        <p:menuitem value="NBA" url="#" />
-                                        <p:menuitem value="Teams" url="#" />
-                                        <p:menuitem value="L.A. Lakers" url="#" />
-                                        <p:menuitem value="Roster" url="#" />
-                                        <p:menuitem value="Kobe Bryant" url="#" />
-                                    </p:breadCrumb>
-
+                                </div>
+                                <div style="width:100%;border:none; background-color:#fafafa;display:block;float:left; margin-top:20px;">
+                                    <ul>
+                                        <ui:repeat value="#{categoryTree.breadcrumbs}" var="category">
+                                            <li class="ui-breadcrumb-chevron ui-icon ui-icon-triangle-1-e" style="float:left;"/>
+                                            <li class="menuItem" style="float:left;">
+                                                <p:commandLink value="#{category.name}"
+                                                               update=":main-tabview:main-form:category_description :main-tabview:main-form:header_bidding
+                                                                        :main-tabview:main-form:bidding_content
+                                                                        :main-tabview:main-form:paginator_panel"
+                                                               actionListener="#{categoryTree.updateCategoryView(category)}"/>
+                                            </li>
+                                        </ui:repeat>
+                                    </ul>
+                                </div>
                             </h:panelGroup>
                         </p:layoutUnit>
                         <p:layoutUnit position="center" style="border:none;padding:0px;">
@@ -66,5 +70,34 @@
                     </p:layout>
                 </p:layoutUnit>
         </p:layout>
+        <p:dialog header="Search category" widgetVar="categoryDialog" modal="true" height="600" width="1200">
+            <p:layout style="padding:40px;">
+                <p:layoutUnit position="north" style="border:none;min-height:100px;">
+                    <h:panelGroup layout="block">
+                        <p:autoComplete maxResults="5" value="#{categoryTree.searchText}" completeMethod="#{categoryTree.completeText}" size="120" style="border-radius:6px;float:left; width:80%;"
+                                        onkeypress="if (event.keyCode == 13) {onchange(); return false; }">
+                            <f:ajax event="change" render=":main-tabview:main-form:category_results"/>
+                        </p:autoComplete>
+                        <h:commandButton value="Cancel" styleClass="btn btn-default" style="border-radius:0px;float:right;" onclick="PF('categoryDialog').hide();return false;"/>
+                    </h:panelGroup>
+                </p:layoutUnit>
+                <p:layoutUnit position="center" style="border:none;min-height:400px;">
+                    <p:outputPanel id="category_results" cellpadding="5">
+                        <h:panelGrid columns="2" style="width:100%;border:none;" columnClasses="logo,detail">
+                            <ui:repeat value="#{categoryTree.getCategoryList()}" var="category">
+                                <p:commandLink value="#{category.name}">
+                                    <!--<f:setPropertyActionListener value="#{car}" target="#{dataListView.selectedCar}" />-->
+                                    <!--<p:graphicImage name="demo/images/car/#{car.brand}-big.gif" />-->
+                                </p:commandLink>
+                                <h:outputText value="#{category.description}" />
+                            </ui:repeat>
+                        </h:panelGrid>
+                    </p:outputPanel>
+                </p:layoutUnit>
+                <p:layoutUnit position="south" style="border:none;min-height:100px;">
+
+                </p:layoutUnit>
+            </p:layout>
+        </p:dialog>
     </h:form>
 </ui:composition>

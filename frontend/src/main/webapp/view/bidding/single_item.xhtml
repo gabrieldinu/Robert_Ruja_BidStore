@@ -4,7 +4,7 @@
                 xmlns:fn="http://java.sun.com/jsp/jstl/functions">
     <h:panelGroup style="position:absolute;overflow:auto;width:100%">
 
-            <h:outputText value="#{contentView.itemList[0].name}"/>
+            <h:outputText value="#{contentView.selectedItem.name}"/>
 
             <h:panelGrid columns="3" style="width:100%;border:none;" columnClasses="logo,detail,detail">
                 <p:commandLink >
@@ -12,7 +12,7 @@
                     <!--<p:graphicImage name="demo/images/car/#{car.brand}-big.gif" />-->
                     <h:graphicImage value="/resources/forge-logo.png" width="140" height="130"/>
                 </p:commandLink>
-                <h:outputText value="#{contentView.itemList[0].description}" />
+                <h:outputText value="#{contentView.selectedItem.description}" />
 
                 <p:outputPanel>
                 </p:outputPanel>
@@ -27,22 +27,22 @@
             </h:panelGrid>
         <h:panelGrid columns="2" style="width:100%" columnClasses="logo,detail">
             <h:outputText value="Best bid:"/>
-            <h:outputText value="#{contentView.itemList[0].currentBid} $"/>
+            <h:outputText value="#{contentView.selectedItem.currentBid} $"/>
 
             <h:outputText value="Initial price:"/>
-            <h:outputText value="#{contentView.itemList[0].initialPrice}"/>
+            <h:outputText value="#{contentView.selectedItem.initialPrice}"/>
 
             <h:outputText value="Opening date:"/>
-            <h:outputText value="#{contentView.itemList[0].initialPrice}"/>
+            <h:outputText value="#{contentView.selectedItem.initialPrice}"/>
 
             <h:outputText value="Bid open until:"/>
-            <h:outputText value="#{contentView.itemList[0].closingDate}"/>
+            <h:outputText value="#{contentView.selectedItem.closingDate}"/>
 
             <h:outputText value="Total bids:"/>
-            <h:outputText value="#{contentView.itemList[0].bidCount} bids"/>
+            <h:outputText value="#{contentView.selectedItem.bidCount} bids"/>
 
             <h:outputText value="Your bid:"/>
-            <h:outputText value="#{contentView.itemList[0].initialPrice}"/>
+            <h:outputText value="#{contentView.selectedItem.initialPrice}"/>
 
         </h:panelGrid>
             <hr />

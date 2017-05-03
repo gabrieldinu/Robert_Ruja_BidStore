@@ -2,11 +2,14 @@ package ro.fortech.application.bidstore.frontend.mvc.managed.tabview;
 
 import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.TreeNode;
+import ro.fortech.application.bidstore.backend.persistence.entity.Category;
 
 import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
+import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
 import java.io.Serializable;
+import java.util.*;
 
 /**
  * Created by robert.ruja on 28-Apr-17.
@@ -18,38 +21,112 @@ public class CategoryView implements Serializable {
 
     private TreeNode root;
 
-    private String someData = "Initial";
+    private List<Category> breadcrumbs;
 
-    private String description = "";
+    private List<Category> allCategories;
+
+    private List<TreeNode> allNodeCategories;
+
+    private String searchText;
+
+    @ManagedProperty(value = "#{contentView}")
+    private ContentView contentView;
 
     @PostConstruct
     public void init(){
-        updateTree();
+        allCategories = populate();
+        buildTree();
     }
 
-    public void updateTree(){
-        root = new DefaultTreeNode("");
-        root.getChildren().add(populateNew("Desktop PC"));
-        root.getChildren().add(populateNew("PC Components"));
-        root.getChildren().add(populateNew("Laptops"));
-        root.getChildren().add(populateNew("Laptop Accessiories"));
-        this.someData = "Updated";
+    public void updateCategoryView(Category category){
+        contentView.setSelectedCategory(category);
+        contentView.renderItemList();
+        updateBreadcrumbs(category);
+        buildTree();
     }
 
-    private TreeNode populateNew(String name){
-        TreeNode root = new DefaultTreeNode(name);
-        root.getChildren().add(new DefaultTreeNode("Node 2"));
-        root.getChildren().add(new DefaultTreeNode("Node 3"));
-        root.getChildren().add(new DefaultTreeNode("Some other node"));
-        return root;
+    private void updateBreadcrumbs(Category category) {
+        breadcrumbs = new ArrayList<>();
+        breadcrumbs.add(category);
+        Category current = category;
+        for(int i = allCategories.size() - 1; i >= 0; i--){
+            Category searchCategory = allCategories.get(i);
+            if(searchCategory.getId() != null && searchCategory.getId().equals(current.getParentId())){
+                breadcrumbs.add(searchCategory);
+                current = searchCategory;
+            }
+        }
+        Collections.reverse(breadcrumbs);
     }
 
-    public String getSomeData() {
-        return someData;
+    private void buildTree(){
+
+        allNodeCategories = new ArrayList<>();
+        for(Category category: allCategories){
+            allNodeCategories.add(new DefaultTreeNode(category));
+        }
+        root = new DefaultTreeNode();
+        for( int i = 0; i < allNodeCategories.size(); i++ ) {
+
+            TreeNode currentNode = allNodeCategories.get(i);
+            Category currentCategory = (Category)currentNode.getData();
+
+            TreeNode searchNode;
+            Category searchCategory;
+
+            //search for direct children
+            for( int j = i; j < allNodeCategories.size(); j++ ){
+                searchNode = allNodeCategories.get(j);
+                searchCategory = (Category) searchNode.getData();
+                if(currentCategory.getId().equals(searchCategory.getParentId()))
+                    //we have a child
+                    currentNode.getChildren().add(searchNode);
+            }
+
+            //if is root category, add to tree
+            if(currentCategory.getLevel() == 0) root.getChildren().add(currentNode);
+        }
     }
 
-    public void setSomeData(String someData) {
-        this.someData = someData;
+    public List<String> completeText(String query) {
+        return new ArrayList<String>(){{
+            add(query +"a");
+            add(query +"b");
+            add(query +"ac");
+            add(query +"ad");
+            add(query +"ae");
+        }};
+    }
+
+    public List<Category> getCategoryList() {
+
+        List<Category> results = new ArrayList<>();
+        if(searchText != null && !searchText.isEmpty()){
+            for(Category searchCategory: allCategories){
+                if(searchCategory.getName().toLowerCase().contains(searchText.toLowerCase()))
+                    results.add(searchCategory);
+            }
+        }
+        return results;
+    }
+
+    public static List<Category> populate(){
+        List<Category> list = new ArrayList<>();
+        list.add(new Category("Desktop PC",null, 0L,"Some long description here",0));
+        list.add(new Category("PC Components",null, 1L,"Some long description here",0));
+        list.add(new Category("Laptops",null, 2L,"Some long description here",0));
+        list.add(new Category("Laptop Accessiories",null, 3L,"Some long description here",0));
+        list.add(new Category("CPUs",1L, 4L, "Cpu is a desktop pc component",1));
+        list.add(new Category("Motherboards",1L, 5L, "Motherboard is a desktop pc component",1));
+        list.add(new Category("AMD",4L,6L,"Amd cpus",2));
+        list.add(new Category("Intel",4L,7L,"Intel cpus",2));
+        list.add(new Category("Socket 1150",7L,8L,"Intel CPUs socket 1150",3));
+        list.add(new Category("Socket FM2",6L,9L,"AMD CPUs socket FM2",3));
+        list.add(new Category("Socket AM3+",6L,10L,"AMD CPUs socket AM3+",3));
+        Collections.sort(list, (o1,o2) -> {
+                return o1.getLevel().compareTo(o2.getLevel());
+        });
+        return list;
     }
 
     public TreeNode getRoot() {
@@ -60,11 +137,43 @@ public class CategoryView implements Serializable {
         this.root = root;
     }
 
-    public String getDescription() {
-        return description;
+    public List<Category> getBreadcrumbs() {
+        return breadcrumbs;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setBreadcrumbs(List<Category> breadcrumbs) {
+        this.breadcrumbs = breadcrumbs;
+    }
+
+    public List<Category> getAllCategories() {
+        return allCategories;
+    }
+
+    public void setAllCategories(List<Category> allCategories) {
+        this.allCategories = allCategories;
+    }
+
+    public List<TreeNode> getAllNodeCategories() {
+        return allNodeCategories;
+    }
+
+    public void setAllNodeCategories(List<TreeNode> allNodeCategories) {
+        this.allNodeCategories = allNodeCategories;
+    }
+
+    public ContentView getContentView() {
+        return contentView;
+    }
+
+    public void setContentView(ContentView contentView) {
+        this.contentView = contentView;
+    }
+
+    public String getSearchText() {
+        return searchText;
+    }
+
+    public void setSearchText(String searchText) {
+        this.searchText = searchText;
     }
 }

@@ -3,9 +3,8 @@
                 xmlns:f="http://xmlns.jcp.org/jsf/core" xmlns:h="http://xmlns.jcp.org/jsf/html"
                 xmlns:fn="http://java.sun.com/jsp/jstl/functions">
     <h:panelGroup style="position:absolute;overflow:auto;width:100%">
-        <p:repeat value="#{contentView.itemList}" var="item">
-            <h:outputText value="#{item.name}"/>
-
+        <ui:repeat value="#{contentView.getItemList()}" var="item">
+            <p:commandLink update=":main-tabview:main-form:bidding_content" value="#{item.name}" actionListener="#{contentView.renderSingleItem(item)}"/>
             <h:panelGrid columns="3" style="width:100%;border:none;" columnClasses="logo,detail,detail">
                 <p:commandLink >
                     <!--<f:setPropertyActionListener value="#{car}" target="#{dataListView.selectedCar}" />-->
@@ -35,7 +34,7 @@
 
             </h:panelGrid>
             <hr />
-        </p:repeat>
+        </ui:repeat>
     </h:panelGroup>
 
 </ui:composition>

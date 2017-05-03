@@ -3,11 +3,8 @@ package ro.fortech.application.bidstore.backend.persistence.entity;
 import ro.fortech.application.bidstore.backend.model.BidStatus;
 
 import java.sql.Date;
+import java.text.DecimalFormat;
 import java.util.List;
-
-/**
- * Created by coco on 30-Apr-17.
- */
 
 
 public class Item {
@@ -34,6 +31,8 @@ public class Item {
     private String winnerName;
 
     private List<Category> categories;
+
+    DecimalFormat format = new DecimalFormat("#.00");
 
     public Item(Long id, String name, String description, Double initialPrice, Double currentBid, Long bidCount, Date openingDate, Date closingDate, BidStatus status, String winnerName) {
         this.id = id;
@@ -73,7 +72,8 @@ public class Item {
     }
 
     public Double getInitialPrice() {
-        return initialPrice;
+
+        return Double.parseDouble(format.format(initialPrice));
     }
 
     public void setInitialPrice(Double initialPrice) {
@@ -81,7 +81,7 @@ public class Item {
     }
 
     public Double getCurrentBid() {
-        return currentBid;
+        return Double.parseDouble(format.format(currentBid));
     }
 
     public void setCurrentBid(Double currentBid) {
@@ -126,5 +126,17 @@ public class Item {
 
     public void setWinnerName(String winnerName) {
         this.winnerName = winnerName;
+    }
+
+    public List<Category> getCategories() {
+        return categories;
+    }
+
+    public void setCategories(List<Category> categories) {
+        this.categories = categories;
+    }
+
+    public boolean hasCategory(Category selectedCategory) {
+        return categories.contains(selectedCategory);
     }
 }
