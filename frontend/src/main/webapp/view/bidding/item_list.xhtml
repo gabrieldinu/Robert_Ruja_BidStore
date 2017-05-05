@@ -4,11 +4,11 @@
                 xmlns:fn="http://java.sun.com/jsp/jstl/functions">
     <h:panelGroup style="position:absolute;overflow:auto;width:100%">
         <ui:repeat value="#{contentView.getItemList()}" var="item">
-            <p:commandLink update=":main-tabview:main-form:bidding_content" value="#{item.name}" actionListener="#{contentView.renderSingleItem(item)}" styleClass="fontStyle" style="color:#3684cb;text-decoration:underline;font-size:17px;"/>
+            <p:commandLink update=":main-tabview:main-form:bidding_content :main-tabview:main-form:paginator_panel" value="#{item.name}" actionListener="#{contentView.renderSingleItem(item)}" styleClass="fontStyle" style="color:#3684cb;text-decoration:underline;font-size:17px;">
+                <f:setPropertyActionListener value="false" target="#{bidEditBean.editable}"/>
+            </p:commandLink>
             <h:panelGrid columns="3" style="width:100%;border:none;" columnClasses="logo,detail,detail" styleClass="fontStyle">
-                <p:commandLink >
-                    <!--<f:setPropertyActionListener value="#{car}" target="#{dataListView.selectedCar}" />-->
-                    <!--<p:graphicImage name="demo/images/car/#{car.brand}-big.gif" />-->
+                <p:commandLink>
                     <h:graphicImage value="/resources/forge-logo.png" width="110" height="100"/>
                 </p:commandLink>
                 <h:outputText value="#{item.description}" />
@@ -24,14 +24,6 @@
                         <h:outputText value="#{item.bidCount} bids"/>
                     </div>
                 </p:outputPanel>
-                <!--<h:outputText value="#{car.id}" style="font-weight: bold"/>-->
-
-                <!--<h:outputText value="Year:" />-->
-                <!--<h:outputText value="#{car.year}" style="font-weight: bold"/>-->
-
-                <!--<h:outputText value="Color:" />-->
-                <!--<h:outputText value="#{car.color}" style="font-weight: bold"/>-->
-
             </h:panelGrid>
             <hr />
         </ui:repeat>

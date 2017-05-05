@@ -197,4 +197,40 @@ public class User implements Serializable {
                 ", role=" + role +
                 '}';
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        User user = (User) o;
+
+        if (admin != user.admin) return false;
+        if (enabled != user.enabled) return false;
+        if (!username.equals(user.username)) return false;
+        if (firstName != null ? !firstName.equals(user.firstName) : user.firstName != null) return false;
+        if (lastName != null ? !lastName.equals(user.lastName) : user.lastName != null) return false;
+        if (email != null ? !email.equals(user.email) : user.email != null) return false;
+        if (userEnabled != user.userEnabled) return false;
+        if (role != user.role) return false;
+        if (uuid != null ? !uuid.equals(user.uuid) : user.uuid != null) return false;
+        if (telephone != null ? !telephone.equals(user.telephone) : user.telephone != null) return false;
+        return expiringDate != null ? expiringDate.equals(user.expiringDate) : user.expiringDate == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = username.hashCode();
+        result = 31 * result + (firstName != null ? firstName.hashCode() : 0);
+        result = 31 * result + (lastName != null ? lastName.hashCode() : 0);
+        result = 31 * result + (email != null ? email.hashCode() : 0);
+        result = 31 * result + userEnabled.hashCode();
+        result = 31 * result + role.hashCode();
+        result = 31 * result + (uuid != null ? uuid.hashCode() : 0);
+        result = 31 * result + (telephone != null ? telephone.hashCode() : 0);
+        result = 31 * result + (expiringDate != null ? expiringDate.hashCode() : 0);
+        result = 31 * result + (admin ? 1 : 0);
+        result = 31 * result + (enabled ? 1 : 0);
+        return result;
+    }
 }

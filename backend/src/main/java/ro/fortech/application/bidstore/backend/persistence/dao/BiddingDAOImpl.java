@@ -66,11 +66,11 @@ public class BiddingDAOImpl implements BiddingDAO {
     }
 
     @Override
-    public BiddingUser getSingleBiddingUser(String rowKey) {
+    public BiddingUser getSingleBiddingUser(String username) {
         Criteria criteria = hibernateProvider.getSession().createCriteria(BiddingUser.class);
         BiddingUser user;
         try {
-             user = (BiddingUser)criteria.add(Restrictions.eq("username",rowKey))
+             user = (BiddingUser)criteria.add(Restrictions.eq("username",username))
                      .uniqueResult();
 
              return user;

@@ -14,7 +14,9 @@
                                                                                             :main-tabview:main-form:header_bidding
                                                                                             :main-tabview:main-form:bidding_content
                                                                                             :main-tabview:main-form:paginator_panel"
-                                                           actionListener="#{categoryView.updateCategoryView(category)}"/>
+                                                           actionListener="#{categoryView.updateCategoryView(category)}">
+                                                <f:setPropertyActionListener value="item_list" target="#{contentView.content}"/>
+                                            </p:commandLink>
                                         </p:treeNode>
                                     </p:tree>
                             </h:panelGroup>
@@ -39,7 +41,7 @@
                                         <p:outputLabel value="Search for item: " for="acMaxResults" style="margin-right:30px;" styleClass="fontStyle"/>
                                         <p:autoComplete id="acMaxResults" maxResults="5" value="#{contentView.searchText}" completeMethod="#{contentView.completeText}" style="border-radius:6px;" styleClass="fontStyle" size="60"
                                                         onkeypress="if (event.keyCode == 13) {onchange(); return false; }">
-                                            <f:ajax event="change" render=":main-tabview:main-form:bidding_content :main-tabview:main-form:paginator_panel "/>
+                                            <f:ajax event="change" render=":main-tabview:main-form:bidding_content :main-tabview:main-form:paginator_panel" listener="#{contentView.renderItemList}"/>
                                         </p:autoComplete>
                                     </div>
                                 </div>
@@ -52,8 +54,11 @@
                                                                update=":main-tabview:main-form:category_description
                                                                         :main-tabview:main-form:header_bidding
                                                                         :main-tabview:main-form:bidding_content
-                                                                        :main-tabview:main-form:paginator_panel"
-                                                               actionListener="#{categoryView.updateCategoryView(category)}"/>
+                                                                        :main-tabview:main-form:paginator_panel
+                                                                        :main-tabview:main-form:tree-panel"
+                                                               actionListener="#{categoryView.updateCategoryView(category)}">
+                                                    <f:setPropertyActionListener value="item_list" target="#{contentView.content}"/>
+                                                </p:commandLink>
                                             </li>
                                         </ui:repeat>
                                     </ul>
@@ -73,13 +78,13 @@
         </p:layout>
     </h:form>
     <h:form id="dialog-form">
-        <p:dialog header="Search category" footer="" widgetVar="categoryDialog" modal="true" height="600" width="1000" styleClass="fontStyle">
+        <p:dialog header="Search category" resizeable="false" footer="" widgetVar="categoryDialog" modal="true" height="600" width="1000" styleClass="fontStyle">
             <p:layout style="padding:40px;">
-                <p:layoutUnit position="north" style="border:none;min-height:100px;">
+                <p:layoutUnit position="north" style="border:none;min-height:80px;">
                     <h:panelGroup layout="block" styleClass="fontStyle">
                         <p:autoComplete maxResults="5" value="#{categoryView.searchText}" styleClass="fontStyle" completeMethod="#{categoryView.completeText}" size="120" style="border-radius:6px;float:left; width:80%;"
                                         onkeypress="if (event.keyCode == 13) {onchange(); return false; }">
-                            <f:ajax event="change" render=":main-tabview:dialog-form:category_results"/>
+                            <f:ajax event="change" render=":main-tabview:dialog-form:category_results :main-tabview:dialog-form:paginator_panel_category"/>
                         </p:autoComplete>
                         <h:commandButton value="Cancel" styleClass="btn btn-default fontStyle" style="border-radius:0px;float:right;" onclick="PF('categoryDialog').hide();return false;"/>
                     </h:panelGroup>
@@ -98,7 +103,9 @@
                                                                         :main-tabview:main-form:header_bidding
                                                                         :main-tabview:main-form:bidding_content
                                                                         :main-tabview:main-form:paginator_panel"
-                                                       actionListener="#{categoryView.updateCategoryView(category)}"/>
+                                                       actionListener="#{categoryView.updateCategoryView(category)}">
+                                            <f:setPropertyActionListener value="item_list" target="#{contentView.content}"/>
+                                        </p:commandLink>
                                     </td>
                                     <td style="width:70%;padding:5px;font-size:15px;">
                                         <h:outputText value="#{category.description}" />
@@ -107,12 +114,13 @@
                             </ui:repeat>
                         </table>
                     </h:panelGroup>
-                    <ui:include src="/view/category/category_paginator.xhtml"/>
+
                 </p:layoutUnit>
                 <!--<p:layoutUnit position="south" style="border:none;min-height:100px;">-->
-                    <!---->
+                    <!--<ui:include src="/view/category/category_paginator.xhtml"/>-->
                 <!--</p:layoutUnit>-->
             </p:layout>
+            <ui:include src="/view/category/category_paginator.xhtml"/>
         </p:dialog>
     </h:form>
 </ui:composition>

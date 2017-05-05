@@ -6,6 +6,8 @@ import ro.fortech.application.bidstore.backend.model.UserRole;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import javax.persistence.Transient;
+import java.util.List;
 
 /**
  * Created by robert.ruja on 19-Apr-17.
@@ -21,6 +23,9 @@ public class BiddingUser extends User {
     private Long itemsSold;
     @Column(name = "item_bought")
     private Long itemsBought;
+
+    @Transient
+    private List<Bid> bids;
 
     public BiddingUser(String username, String firstName, String lastName, String email, UserRole role, UserEnabled enabled, Long itemsPlaced, Long itemsSold, Long itemsBought) {
         super(username, firstName, lastName, email, role, enabled);
@@ -69,5 +74,13 @@ public class BiddingUser extends User {
 
     public void setItemsBought(Long itemsBought) {
         this.itemsBought = itemsBought;
+    }
+
+    public List<Bid> getBids() {
+        return bids;
+    }
+
+    public void setBids(List<Bid> bids) {
+        this.bids = bids;
     }
 }

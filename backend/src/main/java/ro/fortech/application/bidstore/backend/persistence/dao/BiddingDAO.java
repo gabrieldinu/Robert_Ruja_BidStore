@@ -12,7 +12,7 @@ import java.util.Map;
 public interface BiddingDAO {
     List<BiddingUser> queryForBiddingUsers(int first, int pageSize, String sortField, String sortOrder, Map<String, Object> filters);
 
-    BiddingUser getSingleBiddingUser(String rowKey);
+    BiddingUser getSingleBiddingUser(String username);
 
     boolean enableBiddingUser(UserAuth auth);
 

@@ -1,10 +1,11 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://xmlns.jcp.org/jsf/facelets" xmlns:p="http://primefaces.org/ui"
                 xmlns:f="http://xmlns.jcp.org/jsf/core" xmlns:h="http://xmlns.jcp.org/jsf/html"
-                xmlns:fn="http://java.sun.com/jsp/jstl/functions">
-    <h:panelGroup style="position:absolute;overflow:auto;width:100%">
+                xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+                xmlns:c="http://java.sun.com/jstl/core">
+    <h:panelGroup style="position:absolute;overflow:auto;width:100%" styleClass="fontStyle">
 
-            <h:outputText value="#{contentView.selectedItem.name}"/>
+            <h:outputText value="#{contentView.selectedItem.name}" style="color:#3684cb;text-decoration:underline;font-size:17px;"/>
 
             <h:panelGrid columns="3" style="width:100%;border:none;" columnClasses="logo,detail,detail">
                 <p:commandLink >
@@ -25,26 +26,72 @@
                 <!--<h:outputText value="#{car.color}" style="font-weight: bold"/>-->
 
             </h:panelGrid>
-        <h:panelGrid columns="2" style="width:100%" columnClasses="logo,detail">
-            <h:outputText value="Best bid:"/>
-            <h:outputText value="#{contentView.selectedItem.currentBid} $"/>
-
-            <h:outputText value="Initial price:"/>
-            <h:outputText value="#{contentView.selectedItem.initialPrice}"/>
-
-            <h:outputText value="Opening date:"/>
-            <h:outputText value="#{contentView.selectedItem.initialPrice}"/>
-
-            <h:outputText value="Bid open until:"/>
-            <h:outputText value="#{contentView.selectedItem.closingDate}"/>
-
-            <h:outputText value="Total bids:"/>
-            <h:outputText value="#{contentView.selectedItem.bidCount} bids"/>
-
-            <h:outputText value="Your bid:"/>
-            <h:outputText value="#{contentView.selectedItem.initialPrice}"/>
-
-        </h:panelGrid>
+        <p:outputPanel layout="block" styleClass="fontStyle">
+            <table style="width:85%">
+                <tr>
+                    <td style="padding:5px;width:50%;float:left;padding-left:150px;"><h:outputText value="Best bid:"/></td>
+                    <td style="padding:5px;width:50%;float:right;"><h:outputText value="#{contentView.selectedItem.currentBid} $"/></td>
+                </tr>
+                <tr>
+                    <td style="padding:5px;width:50%;float:left;padding-left:150px;"><h:outputText value="Initial price:"/></td>
+                    <td style="padding:5px;width:50%;float:right;"><h:outputText value="#{contentView.selectedItem.initialPrice}"/></td>
+                </tr>
+                <tr>
+                    <td style="padding:5px;width:50%;float:left;padding-left:150px;"><h:outputText value="Opening date:"/></td>
+                    <td style="padding:5px;width:50%;float:right;"><h:outputText value="#{contentView.selectedItem.openingDate}"/></td>
+                </tr>
+                <tr>
+                    <td style="padding:5px;width:50%;float:left;padding-left:150px;"><h:outputText value="Bid open until:"/></td>
+                    <td style="padding:5px;width:50%;float:right;"><h:outputText value="#{contentView.selectedItem.closingDate}"/></td>
+                </tr>
+                <tr>
+                    <td style="padding:5px;width:50%;float:left;padding-left:150px;"><h:outputText value="Total bids:"/></td>
+                    <td style="padding:5px;width:50%;float:right;"><h:outputText value="#{contentView.selectedItem.bidCount} bids"/></td>
+                </tr>
+                <tr>
+                    <td style="padding:5px;width:50%;float:left;padding-left:150px;">
+                        <h:outputText value="Your bid:" rendered="#{contentView.currentItemBid == null}"/>
+                        <h:outputText value="Your bid value:" rendered="#{contentView.currentItemBid != null}" style="color:red;"/>
+                    </td>
+                    <td style="padding:5px;width:50%;float:right;">
+                        <p:commandButton value="Place bid" update=":main-tabview:main-form:bidding_content" rendered="#{contentView.currentItemBid == null and !bidEditBean.editable}"
+                                         actionListener="#{bidEditBean.editBid}"/>
+                        <p:inputText value="#{bidEditBean.bidValueText}" id="bidValueInput" size="15" rendered="#{bidEditBean.editable}">
+                            <f:ajax event="blur" render="inputBidMessage" />
+                            <f:validator validatorId="bidInputValidator" />
+                        </p:inputText>
+                        <h:outputText value="#{contentView.currentItemBid.bidValue} $" rendered="#{contentView.currentItemBid != null and not bidEditBean.editable}" style="margin-right:10px;color:red;"/>
+                        <p:commandButton value="Edit" update=":main-tabview:main-form:bidding_content" rendered="#{contentView.currentItemBid != null and not bidEditBean.editable}" actionListener="#{bidEditBean.editBid}" style="margin-right:10px;"/>
+                        <p:commandButton value="Remove" update=":main-tabview:main-form:bidding_content"
+                                         onclick="if(! confirm('Remove bid ?')) return false;"
+                                         rendered="#{contentView.currentItemBid != null and not bidEditBean.editable}"
+                                         actionListener="#{bidEditBean.removeBid}"/>
+                        <h:message for="bidValueInput" id="inputBidMessage" style="color:red" />
+                    </td>
+                </tr>
+                <tr>
+                    <td style="padding:5px;width:50%;float:left;padding-left:150px;">
+                        <h:outputText value="Your bid date:" rendered="#{contentView.currentItemBid != null}" style="color:red;"/>
+                    </td>
+                    <td style="padding:5px;width:50%;float:right;">
+                        <h:outputText value="#{contentView.currentItemBid.bidDate}" rendered="#{contentView.currentItemBid != null}" style="color:red;"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2" style="height:40px;"/>
+                </tr>
+                <tr>
+                    <td style="padding:5px;width:50%;float:left;padding-left:300px;">
+                        <p:commandButton value="Submit" update=":main-tabview:main-form:bidding_content :main-tabview:main-form:paginator_panel" actionListener="#{bidEditBean.placeBid}"
+                                         rendered="#{bidEditBean.editable}"/>
+                    </td>
+                    <td style="padding:5px;width:50%;float:right;">
+                        <p:commandButton value="Discard" update=":main-tabview:main-form:bidding_content :main-tabview:main-form:paginator_panel" actionListener="#{bidEditBean.discardBid}"
+                                         rendered="#{bidEditBean.editable}" immediate="true"/>
+                    </td>
+                </tr>
+            </table>
+        </p:outputPanel>
             <hr />
     </h:panelGroup>
 

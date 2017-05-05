@@ -26,7 +26,7 @@ public class UserBiddingServiceImpl implements UserBiddingService {
     }
 
     @Override
-    public BiddingUser getSingleBiddingUser(String rowKey) {
-        return biddingDAO.getSingleBiddingUser(rowKey);
+    public BiddingUser getSingleBiddingUser(String username) {
+        return biddingDAO.getSingleBiddingUser(username);
     }
 }

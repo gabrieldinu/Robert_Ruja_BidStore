@@ -66,9 +66,12 @@ public class CategoryView implements Serializable {
 
         allNodeCategories = new ArrayList<>();
         for(Category category: allCategories){
-            allNodeCategories.add(new DefaultTreeNode(category));
+            TreeNode node = new DefaultTreeNode(category);
+            node.setSelectable(true);
+            allNodeCategories.add(node);
         }
         root = new DefaultTreeNode();
+        root.setSelectable(true);
         for( int i = 0; i < allNodeCategories.size(); i++ ) {
 
             TreeNode currentNode = allNodeCategories.get(i);
@@ -78,16 +81,30 @@ public class CategoryView implements Serializable {
             Category searchCategory;
 
             //search for direct children
-            for( int j = i; j < allNodeCategories.size(); j++ ){
+            for( int j = i+1; j < allNodeCategories.size(); j++ ){
                 searchNode = allNodeCategories.get(j);
                 searchCategory = (Category) searchNode.getData();
-                if(currentCategory.getId().equals(searchCategory.getParentId()))
+                if(searchCategory.getParentId() != null && currentCategory.getId().equals(searchCategory.getParentId()))
                     //we have a child
                     currentNode.getChildren().add(searchNode);
+                    //searchNode.setParent(currentNode);
             }
-
+            //TODO: try to make expand to work
+            //expand all parents if current node is selected node
+            if(currentCategory.equals(contentView.getSelectedCategory())) {
+                expand(currentNode);
+                currentNode.setSelected(true);
+            }
             //if is root category, add to tree
             if(currentCategory.getLevel() == 0) root.getChildren().add(currentNode);
+
+        }
+    }
+
+    private void expand(TreeNode treeNode){
+        if (treeNode.getParent()!=null){
+            treeNode.getParent().setExpanded(true);
+            expand(treeNode.getParent());
         }
     }
 
@@ -118,7 +135,7 @@ public class CategoryView implements Serializable {
         }
         paginator.setItemCount(results.size());
         paginator.calculate();
-        return results;
+        return results.subList(paginator.getStartIndex(),paginator.getEndIndex());
     }
 
     public static List<Category> populate(){
@@ -134,6 +151,17 @@ public class CategoryView implements Serializable {
         list.add(new Category("Socket 1150",7L,8L,"Intel CPUs socket 1150",3));
         list.add(new Category("Socket FM2",6L,9L,"AMD CPUs socket FM2",3));
         list.add(new Category("Socket AM3+",6L,10L,"AMD CPUs socket AM3+",3));
+        list.add(new Category("Cc1",0L,11L,"Description of cc1 ... ccn",1));
+        list.add(new Category("Cc1",0L,12L,"Description of cc1 ... ccn",1));
+        list.add(new Category("Cc1",0L,13L,"Description of cc1 ... ccn",1));
+        list.add(new Category("Cc1",0L,14L,"Description of cc1 ... ccn",1));
+        list.add(new Category("Cc1",0L,15L,"Description of cc1 ... ccn",1));
+        list.add(new Category("Cc1",0L,16L,"Description of cc1 ... ccn",1));
+        list.add(new Category("Cc1",0L,17L,"Description of cc1 ... ccn",1));
+        list.add(new Category("Cc1",0L,18L,"Description of cc1 ... ccn",1));
+        list.add(new Category("Cc1",0L,19L,"Description of cc1 ... ccn",1));
+        list.add(new Category("Cc1",0L,20L,"Description of cc1 ... ccn",1));
+        list.add(new Category("Cc1",0L,21L,"Description of cc1 ... ccn",1));
         Collections.sort(list, (o1,o2) -> {
                 return o1.getLevel().compareTo(o2.getLevel());
         });

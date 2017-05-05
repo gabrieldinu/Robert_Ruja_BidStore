@@ -9,7 +9,6 @@ import java.util.List;
 
 public class Item {
 
-
     private Long id;
 
     private String name;
@@ -31,6 +30,8 @@ public class Item {
     private String winnerName;
 
     private List<Category> categories;
+
+    private List<Bid> currentBids;
 
     DecimalFormat format = new DecimalFormat("#.00");
 

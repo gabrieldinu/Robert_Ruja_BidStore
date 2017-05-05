@@ -4,8 +4,8 @@
                 xmlns:fn="http://java.sun.com/jsp/jstl/functions"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui">
-    <h:panelGroup styleClass="paginator fontStyle" id="paginator_panel" style="overflow:auto;" >
-        <h:panelGrid columns="11" style="width:100%;">
+    <h:panelGroup styleClass="paginator fontStyle" id="paginator_panel" style="overflow:auto;">
+        <h:panelGrid columns="11" style="width:100%;" rendered="#{contentView.content == 'item_list'}">
             <p:outputPanel style="width:20px;margin-right:4px;">
                 <h:commandButton value="&lt;&lt;" styleClass="btn btn-default" style="border-radius:0px;" rendered="#{contentView.paginator.page gt 1}">
                     <f:setPropertyActionListener target="#{contentView.paginator.page}" value="1"/>
@@ -19,7 +19,7 @@
                 </h:commandButton>
             </p:outputPanel>
             <p:outputPanel>
-                <h:outputLabel value="Page #{contentView.paginator.page} of #{contentView.paginator.pageCount}" rendered="#{contentView.paginator.pageCount gt 0}" styleClass="fontStyle"/>
+                <h:outputLabel value="Page #{contentView.paginator.page} of #{contentView.paginator.pageCount}" rendered="#{contentView.paginator.pageCount gt 1}" styleClass="fontStyle"/>
             </p:outputPanel>
             <p:outputPanel style="width:20px">
                 <h:commandButton value="&gt;" styleClass="btn btn-default" style="border-radius:0px;" rendered="#{contentView.paginator.page lt contentView.paginator.pageCount}">

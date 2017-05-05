@@ -1,15 +1,20 @@
 package ro.fortech.application.bidstore.frontend.mvc.managed.tabview;
 
 import ro.fortech.application.bidstore.backend.model.BidStatus;
-import ro.fortech.application.bidstore.backend.persistence.entity.Category;
-import ro.fortech.application.bidstore.backend.persistence.entity.Item;
+import ro.fortech.application.bidstore.backend.persistence.entity.*;
+import ro.fortech.application.bidstore.backend.service.bidding.UserBiddingService;
 import ro.fortech.application.bidstore.frontend.mvc.managed.Paginator;
+import ro.fortech.application.bidstore.frontend.mvc.managed.account.UserAccount;
+import ro.fortech.application.bidstore.frontend.mvc.managed.tabview.bidding.BidEditBean;
 
 import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
+import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
+import javax.inject.Inject;
 import java.io.Serializable;
 import java.sql.Date;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -28,9 +33,17 @@ public class ContentView implements Serializable {
 
     private Item selectedItem;
 
+    private Bid currentItemBid;
+
     private Category selectedCategory;
 
     private Paginator paginator = new Paginator();
+
+    @Inject
+    private UserAccount userAccount;
+
+    @Inject
+    private UserBiddingService userBiddingService;
 
     @PostConstruct
     public void init(){
@@ -54,12 +67,10 @@ public class ContentView implements Serializable {
     }
 
     public List<Item> getItemList() {
-
         List<Item> tempList = new ArrayList<>();
         Item item;
-
         //filter
-        //db search
+        //todo:db search
         for(int i = 0; i < allItems.size(); i++){
             item = allItems.get(i);
             if(selectedCategory != null && !item.hasCategory(selectedCategory))
@@ -83,7 +94,7 @@ public class ContentView implements Serializable {
     }
 
     public List<String> completeText(String query) {
-        //db search should be done
+        //todo: db search should be done
         List<String> results = new ArrayList<String>();
         for(Item item: getItemList()){
             if(item.getName().contains(query))
@@ -92,14 +103,24 @@ public class ContentView implements Serializable {
         return results;
     }
 
+    public List<Bid> getBid(Item item, User user) {
+        //todo: db search
+        return new ArrayList<>();
+    }
+
 
     public void renderItemList(){
         this.content = "item_list";
     }
 
     public void renderSingleItem(Item item){
+
        this.selectedItem = item;
-        this.content = "single_item";
+       this.content = "single_item";
+       //db search
+//        this.currentItemBid = new Bid();
+//        currentItemBid.setBidDate(new Timestamp(System.currentTimeMillis()));
+//        currentItemBid.setBidValue(123.3);
     }
 
     public String getContent() {
@@ -149,4 +170,29 @@ public class ContentView implements Serializable {
     public void setSelectedCategory(Category selectedCategory) {
         this.selectedCategory = selectedCategory;
     }
+
+    public Bid getCurrentItemBid() {
+        return currentItemBid;
+    }
+
+    public void setCurrentItemBid(Bid currentItemBid) {
+        this.currentItemBid = currentItemBid;
+    }
+
+    public UserAccount getUserAccount() {
+        return userAccount;
+    }
+
+    public void setUserAccount(UserAccount userAccount) {
+        this.userAccount = userAccount;
+    }
+
+    public UserBiddingService getUserBiddingService() {
+        return userBiddingService;
+    }
+
+    public void setUserBiddingService(UserBiddingService userBiddingService) {
+        this.userBiddingService = userBiddingService;
+    }
+
 }
