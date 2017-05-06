@@ -2,10 +2,9 @@ package ro.fortech.application.bidstore.frontend.mvc.managed.tabview;
 
 import ro.fortech.application.bidstore.backend.model.BidStatus;
 import ro.fortech.application.bidstore.backend.persistence.entity.*;
-import ro.fortech.application.bidstore.backend.service.bidding.UserBiddingService;
+import ro.fortech.application.bidstore.backend.service.bidding.BiddingService;
 import ro.fortech.application.bidstore.frontend.mvc.managed.Paginator;
 import ro.fortech.application.bidstore.frontend.mvc.managed.account.UserAccount;
-import ro.fortech.application.bidstore.frontend.mvc.managed.tabview.bidding.BidEditBean;
 
 import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
@@ -14,7 +13,6 @@ import javax.faces.bean.ViewScoped;
 import javax.inject.Inject;
 import java.io.Serializable;
 import java.sql.Date;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -35,7 +33,6 @@ public class ContentView implements Serializable {
 
     private Bid currentItemBid;
 
-    private Category selectedCategory;
 
     private Paginator paginator = new Paginator();
 
@@ -43,28 +40,17 @@ public class ContentView implements Serializable {
     private UserAccount userAccount;
 
     @Inject
-    private UserBiddingService userBiddingService;
+    private BiddingService biddingService;
+
+    @ManagedProperty(value = "#{treeBean}")
+    private TreeBean treeBean;
 
     @PostConstruct
     public void init(){
-
-        populate();
+        allItems = biddingService.getFullItemList();
         renderItemList();
     }
 
-    private void populate() {
-        allItems = new ArrayList<>();
-        List<Category> categoryList = CategoryView.populate();
-        for(int i=1;i<37;i++){
-            Item item = new Item((long)i, "intel i"+i, "some long long long description here, just writitng something to fill this up",
-                    223.7*i, 130.2*i, 3L*i, new Date(System.currentTimeMillis()/i),new Date(System.currentTimeMillis()/i), i%2==0?BidStatus.OPEN:BidStatus.CLOSED, "Gigel Costel");
-            item.setCategories(new ArrayList<Category>(){{
-                //add random category
-                add(categoryList.get((int)((categoryList.size()-1)*Math.random())));
-            }});
-            allItems.add(item);
-        }
-    }
 
     public List<Item> getItemList() {
         List<Item> tempList = new ArrayList<>();
@@ -73,7 +59,7 @@ public class ContentView implements Serializable {
         //todo:db search
         for(int i = 0; i < allItems.size(); i++){
             item = allItems.get(i);
-            if(selectedCategory != null && !item.hasCategory(selectedCategory))
+            if(treeBean.getSelectedCategory() != null && !item.hasCategory(treeBean.getSelectedCategory()))
                 continue;
             if(searchText !=null && !item.getName().toLowerCase().contains(searchText.toLowerCase()))
                 continue;
@@ -163,14 +149,6 @@ public class ContentView implements Serializable {
         this.paginator = paginator;
     }
 
-    public Category getSelectedCategory() {
-        return selectedCategory;
-    }
-
-    public void setSelectedCategory(Category selectedCategory) {
-        this.selectedCategory = selectedCategory;
-    }
-
     public Bid getCurrentItemBid() {
         return currentItemBid;
     }
@@ -187,12 +165,19 @@ public class ContentView implements Serializable {
         this.userAccount = userAccount;
     }
 
-    public UserBiddingService getUserBiddingService() {
-        return userBiddingService;
+    public BiddingService getBiddingService() {
+        return biddingService;
     }
 
-    public void setUserBiddingService(UserBiddingService userBiddingService) {
-        this.userBiddingService = userBiddingService;
+    public void setBiddingService(BiddingService biddingService) {
+        this.biddingService = biddingService;
     }
 
+    public TreeBean getTreeBean() {
+        return treeBean;
+    }
+
+    public void setTreeBean(TreeBean treeBean) {
+        this.treeBean = treeBean;
+    }
 }

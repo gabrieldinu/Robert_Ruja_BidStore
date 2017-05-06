@@ -3,9 +3,9 @@ package ro.fortech.application.bidstore.frontend.mvc.managed.account;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.model.LazyDataModel;
 import ro.fortech.application.bidstore.backend.exception.account.AccountException;
-import ro.fortech.application.bidstore.backend.persistence.entity.BiddingUser;
+import ro.fortech.application.bidstore.backend.model.BiddingUser;
 import ro.fortech.application.bidstore.backend.service.account.UserAccountService;
-import ro.fortech.application.bidstore.backend.service.bidding.UserBiddingService;
+import ro.fortech.application.bidstore.backend.service.bidding.BiddingService;
 import ro.fortech.application.bidstore.frontend.mvc.model.LazyUserDataModel;
 
 import javax.annotation.PostConstruct;
@@ -25,7 +25,7 @@ import java.io.Serializable;
 public class UserManagement implements Serializable {
 
     @Inject
-    UserBiddingService service;
+    BiddingService service;
 
     @Inject
     UserAccountService userAccountService;
@@ -75,11 +75,11 @@ public class UserManagement implements Serializable {
         this.lazyModel = lazyModel;
     }
 
-    public UserBiddingService getService() {
+    public BiddingService getService() {
         return service;
     }
 
-    public void setService(UserBiddingService service) {
+    public void setService(BiddingService service) {
         this.service = service;
     }
 

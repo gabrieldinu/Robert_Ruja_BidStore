@@ -5,6 +5,7 @@ import ro.fortech.application.bidstore.backend.persistence.entity.UserAddress;
 import ro.fortech.application.bidstore.backend.persistence.entity.UserAuth;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -16,6 +17,8 @@ public interface UserDAO {
     UserAuth getUserAuthentication(String username);
 
     User getUserDetails(User user);
+
+    User getUserDetails(String user);
 
     boolean saveUserInfo(UserAuth userAuth, User user);
 
@@ -38,4 +41,6 @@ public interface UserDAO {
     boolean saveUserAddress(Map<String,UserAddress> userAddressMap);
 
     Map<String,UserAddress> getUserAddressDetails(User user);
+
+    List<User> getUserList();
 }

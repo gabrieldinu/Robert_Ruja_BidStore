@@ -1,52 +1,62 @@
 package ro.fortech.application.bidstore.backend.persistence.entity;
 
 import ro.fortech.application.bidstore.backend.model.BidStatus;
+import ro.fortech.application.bidstore.backend.util.Formatter;
 
+import javax.persistence.*;
 import java.sql.Date;
 import java.text.DecimalFormat;
 import java.util.List;
 
-
+@Entity
+@Table(schema = "bid_app", name = "item")
 public class Item {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column
     private String name;
 
+    @Column
     private String description;
 
+    @Column(name = "initial_price")
     private Double initialPrice;
 
+    @Column(name = "current_price")
     private Double currentBid;
 
-    private Long bidCount;
-
+    @Column(name = "opening_date")
     private Date openingDate;
 
+    @Column(name = "closing_date")
     private Date closingDate;
 
+    @Column(name = "bid_status")
+    @Enumerated
     private BidStatus status;
 
-    private String winnerName;
+    @ManyToOne
+    @JoinColumn(name ="winner_user_id")
+    private User winner;
 
+    @ManyToOne
+    @JoinColumn(name = "owner_user_id")
+    private User owner;
+
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinTable(name = "item_category",
+            joinColumns = {@JoinColumn(name = "item_id")},
+            inverseJoinColumns = {@JoinColumn(name = "category_id")})
     private List<Category> categories;
 
-    private List<Bid> currentBids;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "itemId", fetch = FetchType.EAGER)
+    private List<Bid> bids;
 
-    DecimalFormat format = new DecimalFormat("#.00");
-
-    public Item(Long id, String name, String description, Double initialPrice, Double currentBid, Long bidCount, Date openingDate, Date closingDate, BidStatus status, String winnerName) {
-        this.id = id;
-        this.name = name;
-        this.description = description;
-        this.initialPrice = initialPrice;
-        this.currentBid = currentBid;
-        this.bidCount = bidCount;
-        this.openingDate = openingDate;
-        this.closingDate = closingDate;
-        this.status = status;
-        this.winnerName = winnerName;
-    }
+    @Transient
+    private int bidCount;
 
     public Long getId() {
         return id;
@@ -74,27 +84,11 @@ public class Item {
 
     public Double getInitialPrice() {
 
-        return Double.parseDouble(format.format(initialPrice));
+        return Formatter.formatPrice(initialPrice);
     }
 
     public void setInitialPrice(Double initialPrice) {
         this.initialPrice = initialPrice;
-    }
-
-    public Double getCurrentBid() {
-        return Double.parseDouble(format.format(currentBid));
-    }
-
-    public void setCurrentBid(Double currentBid) {
-        this.currentBid = currentBid;
-    }
-
-    public Long getBidCount() {
-        return bidCount;
-    }
-
-    public void setBidCount(Long bidCount) {
-        this.bidCount = bidCount;
     }
 
     public Date getOpeningDate() {
@@ -121,14 +115,6 @@ public class Item {
         this.status = status;
     }
 
-    public String getWinnerName() {
-        return winnerName;
-    }
-
-    public void setWinnerName(String winnerName) {
-        this.winnerName = winnerName;
-    }
-
     public List<Category> getCategories() {
         return categories;
     }
@@ -139,5 +125,45 @@ public class Item {
 
     public boolean hasCategory(Category selectedCategory) {
         return categories.contains(selectedCategory);
+    }
+
+    public User getWinner() {
+        return winner;
+    }
+
+    public void setWinner(User winner) {
+        this.winner = winner;
+    }
+
+    public User getOwner() {
+        return owner;
+    }
+
+    public void setOwner(User owner) {
+        this.owner = owner;
+    }
+
+    public Double getCurrentBid() {
+        return currentBid;
+    }
+
+    public void setCurrentBid(Double currentBid) {
+        this.currentBid = currentBid;
+    }
+
+    public List<Bid> getBids() {
+        return bids;
+    }
+
+    public void setBids(List<Bid> bids) {
+        this.bids = bids;
+    }
+
+    public int getBidCount() {
+        return getBids().size();
+    }
+
+    public void setBidCount(int bidCount) {
+        this.bidCount = bidCount;
     }
 }

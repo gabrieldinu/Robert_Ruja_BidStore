@@ -25,6 +25,7 @@ public class HibernateConfig {
             throw new RuntimeException(ex);
         }
     }
+
     public SessionFactory getFactory(){
 
         if(this.factory == null) {

@@ -1,9 +1,13 @@
 package ro.fortech.application.bidstore.backend.persistence.dao;
 
 import org.hibernate.Criteria;
+import org.hibernate.criterion.Criterion;
+import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
-import ro.fortech.application.bidstore.backend.persistence.entity.BiddingUser;
+import ro.fortech.application.bidstore.backend.model.BiddingUser;
+import ro.fortech.application.bidstore.backend.persistence.entity.Category;
+import ro.fortech.application.bidstore.backend.persistence.entity.Item;
 import ro.fortech.application.bidstore.backend.persistence.entity.User;
 import ro.fortech.application.bidstore.backend.persistence.entity.UserAuth;
 import ro.fortech.application.bidstore.backend.persistence.provider.HibernateSessionProvider;
@@ -28,42 +32,42 @@ public class BiddingDAOImpl implements BiddingDAO {
 
     private List<BiddingUser> temporaryBiddingUserList;
 
-    @Override
-    public List<BiddingUser> queryForBiddingUsers(int first, int pageSize, String sortField, String sortOrder, Map<String, Object> filters) {
-
-        temporaryBiddingUserList = new LinkedList<>();
-
-        Criteria criteria = hibernateProvider.getSession().createCriteria(BiddingUser.class);
-
-        criteria.setFirstResult(first);
-        criteria.setMaxResults(pageSize);
-
-
-        //sorting
-        if(sortField != null) {
-            criteria.addOrder(
-                    sortOrder.equals("ASC") ?
-                            Order.asc(sortField) :
-                            Order.desc(sortField)
-            );
-        }
-        //TODO: solve the filtering bug
-        //filtering
-        if(filters!=null && !filters.isEmpty()){
-            for(Map.Entry<String,Object> entry: filters.entrySet()) {
-                criteria.add(Restrictions.sqlRestriction(
-                        //"{alias}." +
-                        HibernateUtil.getColumNameFromField(BiddingUser.class,entry.getKey()) + " LIKE '%" + entry.getValue() + "%' "
-                ));
-            }
-        }
-
-        for(Object u: criteria.list()) {
-            temporaryBiddingUserList.add((BiddingUser) u);
-        }
-
-        return temporaryBiddingUserList;
-    }
+//    @Override
+//    public List<BiddingUser> queryForBiddingUsers(int first, int pageSize, String sortField, String sortOrder, Map<String, Object> filters) {
+//
+//        temporaryBiddingUserList = new LinkedList<>();
+//
+//        Criteria criteria = hibernateProvider.getSession().createCriteria(BiddingUser.class);
+//
+//        criteria.setFirstResult(first);
+//        criteria.setMaxResults(pageSize);
+//
+//
+//        //sorting
+//        if(sortField != null) {
+//            criteria.addOrder(
+//                    sortOrder.equals("ASC") ?
+//                            Order.asc(sortField) :
+//                            Order.desc(sortField)
+//            );
+//        }
+//        //TODO: solve the filtering bug
+//        //filtering
+//        if(filters!=null && !filters.isEmpty()){
+//            for(Map.Entry<String,Object> entry: filters.entrySet()) {
+//                criteria.add(Restrictions.sqlRestriction(
+//                        //"{alias}." +
+//                        HibernateUtil.getColumNameFromField(BiddingUser.class,entry.getKey()) + " LIKE '%" + entry.getValue() + "%' "
+//                ));
+//            }
+//        }
+//
+//        for(Object u: criteria.list()) {
+//            temporaryBiddingUserList.add((BiddingUser) u);
+//        }
+//
+//        return temporaryBiddingUserList;
+//    }
 
     @Override
     public BiddingUser getSingleBiddingUser(String username) {
@@ -81,9 +85,53 @@ public class BiddingDAOImpl implements BiddingDAO {
     }
 
     @Override
-    @Transactional
-    public void saveBiddingUser(BiddingUser biddingUser) {
-        hibernateProvider.getSession().merge(biddingUser);
+    public List<Category> getCategoriesWithParentId(Long id) {
+
+        DetachedCriteria detachedCriteria = DetachedCriteria.forClass(Category.class);
+
+        Criterion criterion;
+        if(id != null)
+            criterion = Restrictions.eq("parentId", id);
+        else
+            criterion = Restrictions.isNull("parentId");
+
+        detachedCriteria.add(criterion);
+
+        return detachedCriteria.getExecutableCriteria(hibernateProvider.getSession()).list();
+    }
+
+    @Override
+    public List<Category> getAllCategories() {
+        return hibernateProvider.getSession().createCriteria(Category.class).list();
+    }
+
+    public Category getRoot() {
+        DetachedCriteria detachedCriteria = DetachedCriteria.forClass(Category.class);
+        detachedCriteria.add(Restrictions.idEq(0L));
+        return (Category)detachedCriteria.getExecutableCriteria(hibernateProvider.getSession()).list().get(0);
+    }
+
+    @Override
+    public long getBoughtItemCount(String username) {
+        //todo:
+        return 0;
+    }
+
+    @Override
+    public long getSoldItemCount(String username) {
+        //todo:
+        return 0;
+    }
+
+    @Override
+    public long getPlacedItemCount(String username) {
+        //todo:
+        return 0;
+    }
+
+    @Override
+    public List<Item> getFullItemList() {
+        return hibernateProvider.getSession().createCriteria(Item.class).list();
     }
 
     @Override
@@ -93,7 +141,7 @@ public class BiddingDAOImpl implements BiddingDAO {
             userDAO.saveUserAuthentication(auth);
             User user = userDAO.getUserDetails(new User(auth.getUsername()));
             hibernateProvider.getSession().delete(user);
-            saveBiddingUser(new BiddingUser(user,0,0,0));
+            userDAO.saveUserInfo(user);
             return true;
         }catch(Exception ex) {
             return false;

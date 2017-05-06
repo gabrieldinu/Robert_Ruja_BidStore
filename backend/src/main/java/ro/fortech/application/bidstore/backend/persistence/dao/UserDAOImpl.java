@@ -1,5 +1,6 @@
 package ro.fortech.application.bidstore.backend.persistence.dao;
 
+import org.hibernate.HibernateException;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Restrictions;
 import ro.fortech.application.bidstore.backend.model.AddressType;
@@ -16,9 +17,7 @@ import javax.persistence.NoResultException;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by robert.ruja on 10-Apr-17.
@@ -60,6 +59,12 @@ public class UserDAOImpl implements UserDAO {
         }catch(NoResultException ex){
             return null;
         }
+    }
+
+    public User getUserDetails(String username){
+        User user = new User();
+        user.setUsername(username);
+        return getUserDetails(user);
     }
 
     @Override
@@ -197,6 +202,19 @@ public class UserDAOImpl implements UserDAO {
             System.err.println(ex.getMessage());
         }
         return addressMap;
+    }
+
+    @Override
+    public List<User> getUserList() {
+
+        List<User> list = new ArrayList<>();
+        try {
+               DetachedCriteria detachedCriteria = DetachedCriteria.forClass(User.class);
+               return detachedCriteria.getExecutableCriteria(hibernateProvider.getSession()).list();
+        } catch (HibernateException ex) {
+
+        }
+        return list;
     }
 
     public HibernateSessionProvider getHibernateProvider() {

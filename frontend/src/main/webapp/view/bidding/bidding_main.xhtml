@@ -8,24 +8,35 @@
                     <p:layout>
                         <p:layoutUnit position="center" resizable="true" style="border:none;overflow:hidden;" minSize="300" size="350">
                             <h:panelGroup id="tree-panel" layout="block" style="border:2px solid #dddddd;height:100%;overflow:auto;">
-                                    <p:tree value="#{categoryView.root}" var="category" style="border:none;">
-                                        <p:treeNode>
-                                            <p:commandLink styleClass="fontStyle" value="#{category.name}" update=":main-tabview:main-form:category_description
+                                    <p:tree value="#{treeBean.root}" selectionMode="single" var="category" style="border:none;" selection="#{treeBean.selectedNode}" animate="true">
+                                        <p:ajax event="select" update=":main-tabview:main-form:category_description
                                                                                             :main-tabview:main-form:header_bidding
                                                                                             :main-tabview:main-form:bidding_content
                                                                                             :main-tabview:main-form:paginator_panel"
-                                                           actionListener="#{categoryView.updateCategoryView(category)}">
-                                                <f:setPropertyActionListener value="item_list" target="#{contentView.content}"/>
-                                            </p:commandLink>
+                                                listener="#{treeBean.onNodeSelect}">
+                                            <f:setPropertyActionListener value="item_list" target="#{contentView.content}"/>
+                                        </p:ajax>
+                                        <!--<p:ajax event="expand" listener="#{treeBean.onNodeExpand}" >-->
+                                            <!--<f:setPropertyActionListener value="item_list" target="#{contentView.content}"/>-->
+                                        <!--</p:ajax>-->
+                                        <p:treeNode expandedIcon="ui-icon-folder-open" collapsedIcon="ui-icon-folder-collapsed">
+                                            <h:outputText styleClass="fontStyle" value="#{category.name}"/>
+                                            <!--<p:commandLink styleClass="fontStyle" value="#{category.name}" update=":main-tabview:main-form:category_description-->
+                                                                                            <!--:main-tabview:main-form:header_bidding-->
+                                                                                            <!--:main-tabview:main-form:bidding_content-->
+                                                                                            <!--:main-tabview:main-form:paginator_panel"-->
+                                                           <!--actionListener="#{categoryView.updateCategoryView(category)}">-->
+                                                <!--<f:setPropertyActionListener value="item_list" target="#{contentView.content}"/>-->
+                                            <!--</p:commandLink>-->
                                         </p:treeNode>
                                     </p:tree>
                             </h:panelGroup>
                         </p:layoutUnit>
                         <p:layoutUnit position="south" resizable="true" minSize="100" size="250" style="border-top:5px double #dddddd;border-left:none;border-right:none;border-bottom:none;border-radius:initial;">
                             <p:outputPanel id="category_description" style="border:2px solid #dddddd;height:100%;margin-top:4px;" styleClass="fontStyle">
-                                <div style="margin-left:10px;margin-top:-15px;position:absolute;background-color:#ffffff;white-space:nowrap;padding:5px;z-index:2;">#{contentView.selectedCategory.name}</div>
+                                <div style="margin-left:10px;margin-top:-15px;position:absolute;background-color:#ffffff;white-space:nowrap;padding:5px;z-index:2;">#{treeBean.selectedCategory.name}</div>
                                 <h:panelGroup layout="block" style="padding:15px;">
-                                    <h:outputText value="#{contentView.selectedCategory.description}"/>
+                                    <h:outputText value="#{treeBean.selectedCategory.description}"/>
                                 </h:panelGroup>
                             </p:outputPanel>
                         </p:layoutUnit>

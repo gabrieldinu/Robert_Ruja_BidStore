@@ -1,22 +1,33 @@
 package ro.fortech.application.bidstore.backend.persistence.entity;
 
+import ro.fortech.application.bidstore.backend.util.Formatter;
+
+import javax.persistence.*;
 import java.sql.Timestamp;
 
 /**
  * Created by robert.ruja on 05-May-17.
  */
+
+@Entity
+@Table(schema = "bid_app", name = "bid")
 public class Bid {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Timestamp bidDate;
-
-    private Item item;
-
-    private BiddingUser user;
-
+    @Column(name = "bid_value")
     private double bidValue;
 
+    @Column(name = "bid_date")
+    private Timestamp bidDate;
+
+    @Column(name = "bid_user_id")
+    private String bidUserId;
+
+    @Column(name = "item_id")
+    private Long itemId;
 
     public Long getId() {
         return id;
@@ -34,24 +45,24 @@ public class Bid {
         this.bidDate = bidDate;
     }
 
-    public Item getItem() {
-        return item;
+    public String getBidUserId() {
+        return bidUserId;
     }
 
-    public void setItem(Item item) {
-        this.item = item;
+    public void setBidUserId(String bidUserId) {
+        this.bidUserId = bidUserId;
     }
 
-    public BiddingUser getUser() {
-        return user;
+    public Long getItemId() {
+        return itemId;
     }
 
-    public void setUser(BiddingUser user) {
-        this.user = user;
+    public void setItemId(Long itemId) {
+        this.itemId = itemId;
     }
 
     public double getBidValue() {
-        return bidValue;
+        return Formatter.formatPrice(bidValue);
     }
 
     public void setBidValue(double bidValue) {

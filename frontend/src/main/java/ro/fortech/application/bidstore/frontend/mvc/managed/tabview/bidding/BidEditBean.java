@@ -1,7 +1,7 @@
 package ro.fortech.application.bidstore.frontend.mvc.managed.tabview.bidding;
 
 import ro.fortech.application.bidstore.backend.persistence.entity.Bid;
-import ro.fortech.application.bidstore.backend.service.bidding.UserBiddingService;
+import ro.fortech.application.bidstore.backend.service.bidding.BiddingService;
 import ro.fortech.application.bidstore.frontend.mvc.managed.account.UserAccount;
 import ro.fortech.application.bidstore.frontend.mvc.managed.tabview.ContentView;
 
@@ -28,7 +28,7 @@ public class BidEditBean implements Serializable {
     private ContentView contentView;
 
     @Inject
-    private UserBiddingService userBiddingService;
+    private BiddingService biddingService;
 
     @Inject
     private UserAccount userAccount;
@@ -48,9 +48,11 @@ public class BidEditBean implements Serializable {
 
             bid.setBidValue(Double.parseDouble(bidValueText));
             bid.setBidDate(new Timestamp(System.currentTimeMillis()));
-            bid.setItem(contentView.getSelectedItem());
-            bid.setUser(userBiddingService.getSingleBiddingUser(userAccount.getUser().getUsername()));
+            bid.setItemId(contentView.getSelectedItem().getId());
+            bid.setBidUserId(userAccount.getUser().getUsername());
             //TODO:save bid in db
+
+            //todo: find a way to update the item currentBid if current bid is max
             contentView.setCurrentItemBid(bid);
             this.editable = false;
         }
@@ -85,12 +87,12 @@ public class BidEditBean implements Serializable {
         this.contentView = contentView;
     }
 
-    public UserBiddingService getUserBiddingService() {
-        return userBiddingService;
+    public BiddingService getBiddingService() {
+        return biddingService;
     }
 
-    public void setUserBiddingService(UserBiddingService userBiddingService) {
-        this.userBiddingService = userBiddingService;
+    public void setBiddingService(BiddingService biddingService) {
+        this.biddingService = biddingService;
     }
 
     public UserAccount getUserAccount() {
