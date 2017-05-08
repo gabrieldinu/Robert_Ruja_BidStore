@@ -7,6 +7,7 @@ import javax.persistence.*;
 import java.sql.Date;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Entity
@@ -67,10 +68,30 @@ public class Item {
     }
 
     public void addBid(Bid bid) {
-        if(this.bids == null){
-            bids = new ArrayList<>();
+        if(this.getBids() == null){
+            this.setBids(new ArrayList<>());
         }
-        this.bids.add(bid);
+        if(!this.bids.contains(bid)) {
+            this.bids.add(bid);
+            this.bidCount++;
+        }
+        if(this.bids.size()>0){
+            setCurrentBid(Collections.max(this.bids).getBidValue());
+        } else {
+            setCurrentBid(bid.getBidValue());
+        }
+    }
+
+    public void removeBid(Bid bid) {
+        if(this.getBids() != null && this.getBids().contains(bid)) {
+            this.bids.remove(bid);
+            this.bidCount--;
+        }
+        if(this.bids.size()>1){
+            setCurrentBid(Collections.max(this.bids).getBidValue());
+        } else {
+            setCurrentBid(0.0);
+        }
     }
 
     public Long getId() {
@@ -163,7 +184,10 @@ public class Item {
     }
 
     public void setCurrentBid(Double currentBid) {
-        this.currentBid = currentBid;
+        if(currentBid == null)
+            this.currentBid = 0.0;
+        else
+            this.currentBid = currentBid;
     }
 
     public List<Bid> getBids() {
@@ -175,13 +199,11 @@ public class Item {
     }
 
     public int getBidCount() {
-        return getBids().size();
+        return this.bidCount;
     }
 
     public void setBidCount(int bidCount) {
-        if(this.bids != null)
-        this.bidCount = this.bids.size();
-        else this.bidCount = 0;
+        this.bidCount = bidCount;
     }
 
     @Override

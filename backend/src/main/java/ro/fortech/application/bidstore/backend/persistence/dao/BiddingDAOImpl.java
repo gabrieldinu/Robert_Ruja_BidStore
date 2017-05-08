@@ -3,11 +3,9 @@ package ro.fortech.application.bidstore.backend.persistence.dao;
 import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.criterion.*;
+import ro.fortech.application.bidstore.backend.model.BidStatus;
 import ro.fortech.application.bidstore.backend.model.BiddingUser;
-import ro.fortech.application.bidstore.backend.persistence.entity.Category;
-import ro.fortech.application.bidstore.backend.persistence.entity.Item;
-import ro.fortech.application.bidstore.backend.persistence.entity.User;
-import ro.fortech.application.bidstore.backend.persistence.entity.UserAuth;
+import ro.fortech.application.bidstore.backend.persistence.entity.*;
 import ro.fortech.application.bidstore.backend.persistence.provider.HibernateSessionProvider;
 import ro.fortech.application.bidstore.backend.util.HibernateUtil;
 
@@ -126,6 +124,7 @@ public class BiddingDAOImpl implements BiddingDAO {
                 //.setMaxResults(maxResults)
                 .createAlias("categories","categoriesAlias")
                 .add(Restrictions.in("categoriesAlias.id", categoryIds))
+                .add(Restrictions.eq("status", BidStatus.OPEN))
                 .setResultTransformer (Criteria.DISTINCT_ROOT_ENTITY);
 
         //filter
@@ -149,12 +148,35 @@ public class BiddingDAOImpl implements BiddingDAO {
     }
 
     @Override
+    @Transactional
     public boolean saveItem(Item item) {
 
         try {
             hibernateProvider.getSession().merge(item);
             return true;
-        } catch (HibernateException ex) {
+        }catch (Exception ex) {
+            return false;
+        }
+    }
+
+    @Override
+    @Transactional
+    public boolean saveBid(Bid bid) {
+        try {
+            hibernateProvider.getSession().merge(bid);
+            return true;
+        }catch (Exception ex) {
+            return false;
+        }
+    }
+
+    @Override
+    @Transactional
+    public boolean removeBid(Bid bid) {
+        try {
+            hibernateProvider.getSession().delete(bid);
+            return true;
+        }catch (Exception ex) {
             return false;
         }
     }

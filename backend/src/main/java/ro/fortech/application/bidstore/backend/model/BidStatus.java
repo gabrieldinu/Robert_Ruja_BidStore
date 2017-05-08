@@ -2,5 +2,5 @@ package ro.fortech.application.bidstore.backend.model;
 
 
 public enum BidStatus {
-    OPEN,CLOSED
+    OPEN,CLOSED,NOT_YET_OPEN,ABANDONED
 }

@@ -3,28 +3,17 @@
                 xmlns:f="http://xmlns.jcp.org/jsf/core" xmlns:h="http://xmlns.jcp.org/jsf/html"
                 xmlns:fn="http://java.sun.com/jsp/jstl/functions"
                 xmlns:c="http://java.sun.com/jstl/core">
-    <p:messages id="messages" showDetail="true" closable="true"/>
+    <p:growl id="growl" showDetail="true" sticky="false" style="top:35% !important;z-index:2000 !important;" />
     <h:panelGroup style="position:absolute;overflow:auto;width:100%" styleClass="fontStyle">
             <h:outputText value="#{contentView.selectedItem.name}" style="color:#3684cb;text-decoration:underline;font-size:17px;"/>
 
             <h:panelGrid columns="3" style="width:100%;border:none;" columnClasses="logo,detail,detail">
                 <p:commandLink >
-                    <!--<f:setPropertyActionListener value="#{car}" target="#{dataListView.selectedCar}" />-->
-                    <!--<p:graphicImage name="demo/images/car/#{car.brand}-big.gif" />-->
                     <h:graphicImage value="/resources/forge-logo.png" width="140" height="130"/>
                 </p:commandLink>
                 <h:outputText value="#{contentView.selectedItem.description}" />
-
                 <p:outputPanel>
                 </p:outputPanel>
-                <!--<h:outputText value="#{car.id}" style="font-weight: bold"/>-->
-
-                <!--<h:outputText value="Year:" />-->
-                <!--<h:outputText value="#{car.year}" style="font-weight: bold"/>-->
-
-                <!--<h:outputText value="Color:" />-->
-                <!--<h:outputText value="#{car.color}" style="font-weight: bold"/>-->
-
             </h:panelGrid>
         <p:outputPanel layout="block" styleClass="fontStyle">
             <table style="width:85%">
@@ -58,7 +47,7 @@
                                          actionListener="#{bidEditBean.editBid}"/>
                         <p:inputText value="#{bidEditBean.bidValueText}" id="bidValueInput" size="15" rendered="#{bidEditBean.editable}">
                             <f:ajax event="blur" render="inputBidMessage" />
-                            <f:attribute name="currentValue" value="#{contentView.selectedItem.currentBid}" />
+                            <f:attribute name="currentValue" value="#{contentView.selectedItem.initialPrice}" />
                             <f:validator validatorId="bidInputValidator" />
                         </p:inputText>
                         <h:outputText value="#{contentView.currentItemBid.bidValue} $" rendered="#{contentView.currentItemBid != null and not bidEditBean.editable}" style="margin-right:10px;color:red;"/>

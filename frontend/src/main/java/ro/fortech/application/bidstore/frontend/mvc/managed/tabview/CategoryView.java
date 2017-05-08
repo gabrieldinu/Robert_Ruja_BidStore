@@ -70,6 +70,7 @@ public class CategoryView implements Serializable {
     public List<Category> getCategoryList() {
 
         List<Category> results = new ArrayList<>();
+        //todo: sorting and filtering for category search
         if(searchText != null && !searchText.isEmpty()){
             for(Category searchCategory: allCategories){
                 if(searchCategory.getName().toLowerCase().contains(searchText.toLowerCase()))

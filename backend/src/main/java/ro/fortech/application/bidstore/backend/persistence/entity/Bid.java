@@ -11,7 +11,7 @@ import java.sql.Timestamp;
 
 @Entity
 @Table(schema = "bid_app", name = "bid")
-public class Bid {
+public class Bid implements Comparable<Bid> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -67,5 +67,30 @@ public class Bid {
 
     public void setBidValue(double bidValue) {
         this.bidValue = bidValue;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Bid bid = (Bid) o;
+
+        if (id != null ? !id.equals(bid.id) : bid.id != null) return false;
+        if (!bidUserId.equals(bid.bidUserId)) return false;
+        return itemId.equals(bid.itemId);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id != null ? id.hashCode() : 0;
+        result = 31 * result + bidUserId.hashCode();
+        result = 31 * result + itemId.hashCode();
+        return result;
+    }
+
+    @Override
+    public int compareTo(Bid other) {
+        return bidValue < other.getBidValue() ? -1 : bidValue == other.getBidValue() ? 0 : 1;
     }
 }

@@ -53,15 +53,19 @@ public class BidEditBean implements Serializable {
 
     public void placeBid() {
         if(bidValueText != null){
-            Bid bid = new Bid();
+            Bid bid = contentView.getCurrentItemBid();
             Item item = contentView.getSelectedItem();
+            if(bid == null) {
+                bid = new Bid();
+                bid.setItemId(contentView.getSelectedItem().getId());
+                bid.setBidUserId(userAccount.getUser().getUsername());
+            }
             bid.setBidValue(Double.parseDouble(bidValueText));
             bid.setBidDate(new Timestamp(System.currentTimeMillis()));
-            bid.setItemId(contentView.getSelectedItem().getId());
-            bid.setBidUserId(userAccount.getUser().getUsername());
             item.addBid(bid);
             item.setCurrentBid(bid.getBidValue());
             try {
+                //biddingService.saveBid(bid);
                 biddingService.saveItem(item);
             } catch(BiddingException ex) {
                 context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Update",
@@ -74,18 +78,8 @@ public class BidEditBean implements Serializable {
 
     public void removeBid(){
         Item selectedItem = contentView.getSelectedItem();
-        List<Bid> newBids = new ArrayList<>();
-        for(Bid bid: selectedItem.getBids()){
-            if(bid.getBidUserId().equals(userAccount.getUser().getUsername()))
-                continue; //skip the currentBid
-            newBids.add(bid);
-        }
-        selectedItem.setBids(newBids);
-        if(newBids.size()>0){
-            selectedItem.setCurrentBid(Collections.max(newBids, (b1,b2) -> {
-                return b1.getBidValue() < b2.getBidValue() ? -1 : b1.getBidValue() == b2.getBidValue() ? 0 : 1;
-            }).getBidValue());
-        }
+        Bid bid = contentView.getCurrentItemBid();
+        selectedItem.removeBid(bid);
         try {
             //todo: the bid does not remove from db, check why
             biddingService.saveItem(selectedItem);

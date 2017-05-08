@@ -83,10 +83,12 @@ public class ContentView implements Serializable {
        this.content = "single_item";
        this.currentItemBid = null;
 
-       //search for bids in current item
+       //search for bids for current item
        for(Bid bid: item.getBids()){
-           if(bid.getBidUserId().equals(userAccount.getUser().getUsername()))
+           if(bid.getBidUserId().equals(userAccount.getUser().getUsername())) {
                this.currentItemBid = bid;
+               break;
+           }
        }
     }
 

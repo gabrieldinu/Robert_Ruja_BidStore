@@ -1,6 +1,7 @@
 package ro.fortech.application.bidstore.backend.persistence.dao;
 
 import ro.fortech.application.bidstore.backend.model.BiddingUser;
+import ro.fortech.application.bidstore.backend.persistence.entity.Bid;
 import ro.fortech.application.bidstore.backend.persistence.entity.Category;
 import ro.fortech.application.bidstore.backend.persistence.entity.Item;
 import ro.fortech.application.bidstore.backend.persistence.entity.UserAuth;
@@ -38,4 +39,8 @@ public interface BiddingDAO {
     List<String> getItemsNameContains(String query);
 
     boolean saveItem(Item item);
+
+    boolean saveBid(Bid bid);
+
+    boolean removeBid(Bid bid);
 }

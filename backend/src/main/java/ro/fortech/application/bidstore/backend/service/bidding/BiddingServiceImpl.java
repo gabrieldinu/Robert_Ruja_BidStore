@@ -4,6 +4,7 @@ import ro.fortech.application.bidstore.backend.exception.bidding.BiddingExceptio
 import ro.fortech.application.bidstore.backend.model.BiddingUser;
 import ro.fortech.application.bidstore.backend.persistence.dao.BiddingDAO;
 import ro.fortech.application.bidstore.backend.persistence.dao.UserDAO;
+import ro.fortech.application.bidstore.backend.persistence.entity.Bid;
 import ro.fortech.application.bidstore.backend.persistence.entity.Category;
 import ro.fortech.application.bidstore.backend.persistence.entity.Item;
 import ro.fortech.application.bidstore.backend.persistence.entity.User;
@@ -96,6 +97,18 @@ public class BiddingServiceImpl implements BiddingService {
     public void saveItem(Item item) throws BiddingException{
         if(!biddingDAO.saveItem(item))
             throw new BiddingException("An error occured while trying to save item in the database!");
+    }
+
+    @Override
+    public void saveBid(Bid bid) throws BiddingException {
+        if(!biddingDAO.saveBid(bid))
+            throw new BiddingException("An error occured while trying to save the new bid");
+    }
+
+    @Override
+    public void removeBid(Bid bid) throws BiddingException{
+        if(!biddingDAO.removeBid(bid))
+            throw new BiddingException("An error occured while trying to remove the selected bid");
     }
 
     private void populateCategoryChildrenIds(List<Long> categoryIds, Category category){
