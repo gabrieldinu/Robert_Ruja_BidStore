@@ -27,9 +27,15 @@ public class BidInputValidator implements Validator {
     public void validate(FacesContext facesContext, UIComponent uiComponent, Object o) throws ValidatorException {
         String biddingText = (String) o;
         matcher = PATTERN.matcher(biddingText);
-        FacesMessage facesMessage;
+        FacesMessage facesMessage = null;
         if(!matcher.find()){
             facesMessage = new FacesMessage(FacesMessage.SEVERITY_ERROR,"Please enter a valid value, or discard!",null);
+            throw new ValidatorException(facesMessage);
+        }
+        double currentValue = (Double)uiComponent.getAttributes().get("currentValue");
+        double inputValue = Double.parseDouble(biddingText);
+        if(currentValue >= inputValue) {
+            facesMessage = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Your bid must be greater than best bid!", null);
             throw new ValidatorException(facesMessage);
         }
     }

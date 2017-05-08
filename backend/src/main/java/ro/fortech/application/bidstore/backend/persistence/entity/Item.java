@@ -6,6 +6,7 @@ import ro.fortech.application.bidstore.backend.util.Formatter;
 import javax.persistence.*;
 import java.sql.Date;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -38,6 +39,9 @@ public class Item {
     @Enumerated
     private BidStatus status;
 
+    @Column(name = "bid_count")
+    private Integer bidCount;
+
     @ManyToOne
     @JoinColumn(name ="winner_user_id")
     private User winner;
@@ -52,11 +56,22 @@ public class Item {
             inverseJoinColumns = {@JoinColumn(name = "category_id")})
     private List<Category> categories;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "itemId", fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "itemId", fetch = FetchType.LAZY)
     private List<Bid> bids;
 
-    @Transient
-    private int bidCount;
+    public void addCategory(Category category) {
+        if(this.categories == null) {
+            categories = new ArrayList<>();
+        }
+        this.categories.add(category);
+    }
+
+    public void addBid(Bid bid) {
+        if(this.bids == null){
+            bids = new ArrayList<>();
+        }
+        this.bids.add(bid);
+    }
 
     public Long getId() {
         return id;
@@ -164,6 +179,48 @@ public class Item {
     }
 
     public void setBidCount(int bidCount) {
-        this.bidCount = bidCount;
+        if(this.bids != null)
+        this.bidCount = this.bids.size();
+        else this.bidCount = 0;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Item item = (Item) o;
+
+        if (bidCount != item.bidCount) return false;
+        if (!id.equals(item.id)) return false;
+        if (!name.equals(item.name)) return false;
+        if (description != null ? !description.equals(item.description) : item.description != null) return false;
+        if (initialPrice != null ? !initialPrice.equals(item.initialPrice) : item.initialPrice != null) return false;
+        if (currentBid != null ? !currentBid.equals(item.currentBid) : item.currentBid != null) return false;
+        if (openingDate != null ? !openingDate.equals(item.openingDate) : item.openingDate != null) return false;
+        if (closingDate != null ? !closingDate.equals(item.closingDate) : item.closingDate != null) return false;
+        if (status != item.status) return false;
+        if (winner != null ? !winner.equals(item.winner) : item.winner != null) return false;
+        if (owner != null ? !owner.equals(item.owner) : item.owner != null) return false;
+        if (categories != null ? !categories.equals(item.categories) : item.categories != null) return false;
+        return bids != null ? bids.equals(item.bids) : item.bids == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id.hashCode();
+        result = 31 * result + name.hashCode();
+        result = 31 * result + (description != null ? description.hashCode() : 0);
+        result = 31 * result + (initialPrice != null ? initialPrice.hashCode() : 0);
+        result = 31 * result + (currentBid != null ? currentBid.hashCode() : 0);
+        result = 31 * result + (openingDate != null ? openingDate.hashCode() : 0);
+        result = 31 * result + (closingDate != null ? closingDate.hashCode() : 0);
+        result = 31 * result + (status != null ? status.hashCode() : 0);
+        result = 31 * result + (winner != null ? winner.hashCode() : 0);
+        result = 31 * result + (owner != null ? owner.hashCode() : 0);
+        result = 31 * result + (categories != null ? categories.hashCode() : 0);
+        result = 31 * result + (bids != null ? bids.hashCode() : 0);
+        result = 31 * result + bidCount;
+        return result;
     }
 }

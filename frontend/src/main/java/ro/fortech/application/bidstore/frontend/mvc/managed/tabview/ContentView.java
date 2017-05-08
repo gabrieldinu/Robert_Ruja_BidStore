@@ -33,7 +33,6 @@ public class ContentView implements Serializable {
 
     private Bid currentItemBid;
 
-
     private Paginator paginator = new Paginator();
 
     @Inject
@@ -53,47 +52,26 @@ public class ContentView implements Serializable {
 
 
     public List<Item> getItemList() {
-        List<Item> tempList = new ArrayList<>();
-        Item item;
-        //filter
-        //todo:db search
-        for(int i = 0; i < allItems.size(); i++){
-            item = allItems.get(i);
-            if(treeBean.getSelectedCategory() != null && !item.hasCategory(treeBean.getSelectedCategory()))
-                continue;
-            if(searchText !=null && !item.getName().toLowerCase().contains(searchText.toLowerCase()))
-                continue;
-            tempList.add(item);
-        }
+        List<Item> tempList = biddingService.getItems(
+                treeBean.getSelectedCategory(),
+                paginator.getPageSize(),
+                paginator.getSortBy(),
+                paginator.isAscending(),
+                searchText);
+
+        //number of pages should be computed from db
 
         paginator.setItemCount(tempList.size());
         paginator.calculate();
-        if(paginator.getSortBy() != null) {
-            Collections.sort(tempList, (o1 ,o2) -> {
-                   if(paginator.isAscending())
-                       return o1.getName().compareToIgnoreCase(o2.getName());
-                   else
-                       return o2.getName().compareToIgnoreCase(o1.getName());
-            });
-        }
+
         return tempList.subList(paginator.getStartIndex(), paginator.getEndIndex());
     }
 
     public List<String> completeText(String query) {
-        //todo: db search should be done
-        List<String> results = new ArrayList<String>();
-        for(Item item: getItemList()){
-            if(item.getName().contains(query))
-                results.add(item.getName());
-        }
-        return results;
-    }
 
-    public List<Bid> getBid(Item item, User user) {
-        //todo: db search
-        return new ArrayList<>();
-    }
+        return biddingService.getItemsNameCointains(query);
 
+    }
 
     public void renderItemList(){
         this.content = "item_list";
@@ -103,10 +81,13 @@ public class ContentView implements Serializable {
 
        this.selectedItem = item;
        this.content = "single_item";
-       //db search
-//        this.currentItemBid = new Bid();
-//        currentItemBid.setBidDate(new Timestamp(System.currentTimeMillis()));
-//        currentItemBid.setBidValue(123.3);
+       this.currentItemBid = null;
+
+       //search for bids in current item
+       for(Bid bid: item.getBids()){
+           if(bid.getBidUserId().equals(userAccount.getUser().getUsername()))
+               this.currentItemBid = bid;
+       }
     }
 
     public String getContent() {

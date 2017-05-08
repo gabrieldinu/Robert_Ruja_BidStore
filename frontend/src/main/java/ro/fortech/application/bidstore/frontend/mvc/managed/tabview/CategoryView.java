@@ -54,7 +54,7 @@ public class CategoryView implements Serializable {
         Category current = category;
         for(int i = allCategories.size() - 1; i >= 0; i--){
             Category searchCategory = allCategories.get(i);
-            if(searchCategory.getId() != null && searchCategory.getId().equals(current.getParentId())){
+            if(searchCategory.getParentId() != null && searchCategory.getId().equals(current.getParentId())){
                 breadcrumbs.add(searchCategory);
                 current = searchCategory;
             }
@@ -64,18 +64,7 @@ public class CategoryView implements Serializable {
 
     public List<String> completeText(String query) {
 
-        //todo:query in db should be done
-        List<String> result = new ArrayList<>();
-        int i = 0;
-
-        for(Category category: allCategories){
-            if(category.getName().toLowerCase().contains(query.toLowerCase())){
-                result.add(category.getName());
-                i++;
-            }
-            if(i>6)break;
-        }
-        return result;
+        return biddingService.getCategoriesNameCointains(query);
     }
 
     public List<Category> getCategoryList() {

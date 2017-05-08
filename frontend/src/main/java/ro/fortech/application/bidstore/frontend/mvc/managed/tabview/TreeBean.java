@@ -25,12 +25,15 @@ public class TreeBean implements Serializable {
 
     private Category selectedCategory;
 
+    private Category rootCategory;
+
     @Inject
     private BiddingService biddingService;
 
     @PostConstruct
     public void init() {
         root = new DefaultTreeNode();
+        rootCategory = biddingService.getRoot();
         buildTree(biddingService.getRoot(), root);
     }
 
@@ -54,23 +57,24 @@ public class TreeBean implements Serializable {
     }
 
     private TreeNode searchNodeForCateogory(Category category, TreeNode node) {
-
-        if(node.getData().equals(category)){
+        if(node.getData() != null && node.getData().equals(category)){
             return node;
         }
         for(TreeNode searchNode: node.getChildren()){
-            if((searchNode.getData()).equals(category)){
+            if((searchNode = searchNodeForCateogory(category,searchNode)) != null)
                 return searchNode;
-            }
-            searchNodeForCateogory(category,searchNode);
         }
-        return node;
+        return null;
     }
 
     public void onNodeSelect(NodeSelectEvent event) {
         TreeNode selectedNode = event.getTreeNode();
         selectedCategory = (Category)selectedNode.getData();
 
+    }
+
+    public void onNodeUnselect() {
+        selectedCategory = rootCategory;
     }
 
     public void onNodeExpand(NodeSelectEvent event){
@@ -105,11 +109,17 @@ public class TreeBean implements Serializable {
     }
 
     public Category getSelectedCategory() {
+        if(selectedCategory == null)
+            selectedCategory = rootCategory;
         return selectedCategory;
     }
 
     public void setSelectedCategory(Category selectedCategory) {
-        expand(searchNodeForCateogory(selectedCategory, root));
+        TreeNode node = searchNodeForCateogory(selectedCategory,root);
+        if(selectedNode != null)selectedNode.setSelected(false);
+        selectedNode = node;
+        selectedNode.setSelected(true);
+        expand(selectedNode);
         this.selectedCategory = selectedCategory;
     }
 
@@ -119,5 +129,13 @@ public class TreeBean implements Serializable {
 
     public void setBiddingService(BiddingService biddingService) {
         this.biddingService = biddingService;
+    }
+
+    public Category getRootCategory() {
+        return rootCategory;
+    }
+
+    public void setRootCategory(Category rootCategory) {
+        this.rootCategory = rootCategory;
     }
 }

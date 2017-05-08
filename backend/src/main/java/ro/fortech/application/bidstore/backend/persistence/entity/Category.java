@@ -73,4 +73,26 @@ public class Category implements Serializable {
     public void setChildren(List<Category> children) {
         this.children = children;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Category category = (Category) o;
+
+        if (!name.equals(category.name)) return false;
+        if (!id.equals(category.id)) return false;
+        if (parentId != null ? !parentId.equals(category.parentId) : category.parentId != null) return false;
+        return description != null ? description.equals(category.description) : category.description == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = name.hashCode();
+        result = 31 * result + id.hashCode();
+        result = 31 * result + (parentId != null ? parentId.hashCode() : 0);
+        result = 31 * result + (description != null ? description.hashCode() : 0);
+        return result;
+    }
 }

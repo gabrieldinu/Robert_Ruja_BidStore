@@ -1,5 +1,6 @@
 package ro.fortech.application.bidstore.backend.service.bidding;
 
+import ro.fortech.application.bidstore.backend.exception.bidding.BiddingException;
 import ro.fortech.application.bidstore.backend.model.BiddingUser;
 import ro.fortech.application.bidstore.backend.persistence.entity.Category;
 import ro.fortech.application.bidstore.backend.persistence.entity.Item;
@@ -24,9 +25,17 @@ public interface BiddingService {
 
     List<Category> getCategoriesWithParentId(Long id);
 
+    List<String> getCategoriesNameCointains(String query);
+
+    List<String> getItemsNameCointains(String query);
+
     List<Category> getAllCategories();
 
     Category getRoot();
 
     List<Item> getFullItemList();
+
+    List<Item> getItems(Category category, int pageSize, String sortBy, boolean ascending, String searchFilter);
+
+    void saveItem(Item item) throws BiddingException;
 }

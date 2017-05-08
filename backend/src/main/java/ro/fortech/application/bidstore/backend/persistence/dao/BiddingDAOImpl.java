@@ -1,10 +1,8 @@
 package ro.fortech.application.bidstore.backend.persistence.dao;
 
 import org.hibernate.Criteria;
-import org.hibernate.criterion.Criterion;
-import org.hibernate.criterion.DetachedCriteria;
-import org.hibernate.criterion.Order;
-import org.hibernate.criterion.Restrictions;
+import org.hibernate.HibernateException;
+import org.hibernate.criterion.*;
 import ro.fortech.application.bidstore.backend.model.BiddingUser;
 import ro.fortech.application.bidstore.backend.persistence.entity.Category;
 import ro.fortech.application.bidstore.backend.persistence.entity.Item;
@@ -32,42 +30,7 @@ public class BiddingDAOImpl implements BiddingDAO {
 
     private List<BiddingUser> temporaryBiddingUserList;
 
-//    @Override
-//    public List<BiddingUser> queryForBiddingUsers(int first, int pageSize, String sortField, String sortOrder, Map<String, Object> filters) {
-//
-//        temporaryBiddingUserList = new LinkedList<>();
-//
-//        Criteria criteria = hibernateProvider.getSession().createCriteria(BiddingUser.class);
-//
-//        criteria.setFirstResult(first);
-//        criteria.setMaxResults(pageSize);
-//
-//
-//        //sorting
-//        if(sortField != null) {
-//            criteria.addOrder(
-//                    sortOrder.equals("ASC") ?
-//                            Order.asc(sortField) :
-//                            Order.desc(sortField)
-//            );
-//        }
-//        //TODO: solve the filtering bug
-//        //filtering
-//        if(filters!=null && !filters.isEmpty()){
-//            for(Map.Entry<String,Object> entry: filters.entrySet()) {
-//                criteria.add(Restrictions.sqlRestriction(
-//                        //"{alias}." +
-//                        HibernateUtil.getColumNameFromField(BiddingUser.class,entry.getKey()) + " LIKE '%" + entry.getValue() + "%' "
-//                ));
-//            }
-//        }
-//
-//        for(Object u: criteria.list()) {
-//            temporaryBiddingUserList.add((BiddingUser) u);
-//        }
-//
-//        return temporaryBiddingUserList;
-//    }
+
 
     @Override
     public BiddingUser getSingleBiddingUser(String username) {
@@ -135,6 +98,15 @@ public class BiddingDAOImpl implements BiddingDAO {
     }
 
     @Override
+    public List<String> getCategoriesNameContains(String query) {
+        return hibernateProvider.getSession().createCriteria(Category.class)
+                                .add(Restrictions.like("name",query, MatchMode.ANYWHERE))
+                                .setMaxResults(6)
+                                .setProjection(Projections.property("name"))
+                                .list();
+    }
+
+    @Override
     @Transactional
     public boolean enableBiddingUser(UserAuth auth) {
         try {
@@ -148,4 +120,42 @@ public class BiddingDAOImpl implements BiddingDAO {
         }
     }
 
+    @Override
+    public List<Item> getItems(List<Long> categoryIds, int maxResults, String sortBy, boolean ascending, String searchFilter) {
+        Criteria criteria = hibernateProvider.getSession().createCriteria(Item.class)
+                //.setMaxResults(maxResults)
+                .createAlias("categories","categoriesAlias")
+                .add(Restrictions.in("categoriesAlias.id", categoryIds))
+                .setResultTransformer (Criteria.DISTINCT_ROOT_ENTITY);
+
+        //filter
+        if(searchFilter != null && !searchFilter.isEmpty())
+            criteria.add(Restrictions.like("name", searchFilter, MatchMode.ANYWHERE));
+        //sort
+        if(sortBy != null && !sortBy.isEmpty())
+            criteria.addOrder(ascending?Order.asc(sortBy):Order.desc(sortBy));
+
+        return criteria.list();
+    }
+
+    @Override
+    public List<String> getItemsNameContains(String query) {
+        return hibernateProvider.getSession().createCriteria(Item.class)
+                .add(Restrictions.like("name",query, MatchMode.ANYWHERE))
+                .setMaxResults(6)
+                .setProjection(Projections.property("name"))
+                .setResultTransformer (Criteria.DISTINCT_ROOT_ENTITY)
+                .list();
+    }
+
+    @Override
+    public boolean saveItem(Item item) {
+
+        try {
+            hibernateProvider.getSession().merge(item);
+            return true;
+        } catch (HibernateException ex) {
+            return false;
+        }
+    }
 }

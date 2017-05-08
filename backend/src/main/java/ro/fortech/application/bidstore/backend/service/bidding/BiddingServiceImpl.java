@@ -1,5 +1,6 @@
 package ro.fortech.application.bidstore.backend.service.bidding;
 
+import ro.fortech.application.bidstore.backend.exception.bidding.BiddingException;
 import ro.fortech.application.bidstore.backend.model.BiddingUser;
 import ro.fortech.application.bidstore.backend.persistence.dao.BiddingDAO;
 import ro.fortech.application.bidstore.backend.persistence.dao.UserDAO;
@@ -60,6 +61,16 @@ public class BiddingServiceImpl implements BiddingService {
     }
 
     @Override
+    public List<String> getCategoriesNameCointains(String query) {
+        return biddingDAO.getCategoriesNameContains(query);
+    }
+
+    @Override
+    public List<String> getItemsNameCointains(String query) {
+        return biddingDAO.getItemsNameContains(query);
+    }
+
+    @Override
     public List<Category> getAllCategories() {
         return biddingDAO.getAllCategories();
     }
@@ -71,5 +82,29 @@ public class BiddingServiceImpl implements BiddingService {
     @Override
     public List<Item> getFullItemList() {
         return biddingDAO.getFullItemList();
+    }
+
+    @Override
+    public List<Item> getItems(Category category, int pageSize, String sortBy, boolean ascending, String searchFilter) {
+        List<Long> categoryIds = new ArrayList<>();
+        categoryIds.add(category.getId());
+        populateCategoryChildrenIds(categoryIds,category);
+        return biddingDAO.getItems(categoryIds,pageSize,sortBy,ascending,searchFilter);
+    }
+
+    @Override
+    public void saveItem(Item item) throws BiddingException{
+        if(!biddingDAO.saveItem(item))
+            throw new BiddingException("An error occured while trying to save item in the database!");
+    }
+
+    private void populateCategoryChildrenIds(List<Long> categoryIds, Category category){
+
+        if(category.getChildren() == null)
+            return;
+        for(Category child: category.getChildren()){
+            categoryIds.add(child.getId());
+            populateCategoryChildrenIds(categoryIds,child);
+        }
     }
 }

@@ -30,4 +30,12 @@ public interface BiddingDAO {
     long getPlacedItemCount(String username);
 
     List<Item> getFullItemList();
+
+    List<String> getCategoriesNameContains(String query);
+
+    List<Item> getItems(List<Long> categoryIds, int maxResults, String sortBy, boolean ascending, String searchFilter);
+
+    List<String> getItemsNameContains(String query);
+
+    boolean saveItem(Item item);
 }
