@@ -2,6 +2,7 @@ package ro.fortech.application.bidstore.backend.persistence.entity;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.sql.Date;
 import java.util.List;
 
 @Entity
@@ -16,6 +17,9 @@ public class Category implements Serializable {
 
     @Column(name = "parent_id")
     private Long parentId;
+
+    @Column(name = "creation_date")
+    private Date creationDate;
 
     @Column
     private String description;
@@ -72,6 +76,14 @@ public class Category implements Serializable {
 
     public void setChildren(List<Category> children) {
         this.children = children;
+    }
+
+    public Date getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(Date creationDate) {
+        this.creationDate = creationDate;
     }
 
     @Override

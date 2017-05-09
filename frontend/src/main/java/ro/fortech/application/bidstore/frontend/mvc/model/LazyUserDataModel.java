@@ -4,6 +4,7 @@ import org.primefaces.model.LazyDataModel;
 import org.primefaces.model.SortOrder;
 import ro.fortech.application.bidstore.backend.model.BiddingUser;
 import ro.fortech.application.bidstore.backend.service.bidding.BiddingService;
+import ro.fortech.application.bidstore.frontend.util.Paginator;
 
 import java.util.*;
 
@@ -13,6 +14,8 @@ import java.util.*;
 public class LazyUserDataModel extends LazyDataModel<BiddingUser> {
 
     private BiddingService service;
+
+    private Paginator paginator = new Paginator();
 
     public LazyUserDataModel(BiddingService service) {
         this.service = service;
@@ -28,30 +31,45 @@ public class LazyUserDataModel extends LazyDataModel<BiddingUser> {
         return user.getUsername();
     }
     private List<BiddingUser> tempList;
-    @Override
-    public List<BiddingUser> load(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String,Object> filters) {
 
-        String sort;
-        switch (sortOrder){
-            case DESCENDING: sort = "DESC";
-            break;
-            case ASCENDING: sort = "ASC";
-            break;
-            default: sort = null;
-        }
-        if(sortField != null)
-            switch (sortField){
-                case "admin": sortField = "role";
+    public List<BiddingUser> load(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String,Object> filters ){
+
+        boolean ascending = false;
+        if(sortField != null) {
+            if (sortOrder.equals(SortOrder.ASCENDING))
+                ascending = true;
+            else
+                ascending = false;
+
+
+            switch (sortField) {
+                case "admin":
+                    sortField = "role";
                     break;
-                case "enabled": sortField = "userEnabled";
+                case "enabled":
+                    sortField = "userEnabled";
                     break;
                 default:
             }
-       this.tempList = service.getBiddingUsers(first,pageSize, sortField, sort, filters);
+        }
+        Map<String,Object> likeMap = new HashMap<>();
+        Map<String,Object> equalMap = new HashMap<>();
 
-        this.setRowCount(tempList.size());
 
-        return tempList;
+        for(Map.Entry<String, Object> entry :filters.entrySet()) {
+            String key = entry.getKey();
+            if(key.equals("itemsPlaced") || key.equals("itemsBought") || key.equals("itemsSold"))
+                equalMap.put(key, entry.getValue());
+            else
+                likeMap.put(key,entry.getValue());
+        }
+        List<BiddingUser> results = service.getBiddingUsers(sortField, ascending, likeMap,equalMap);
+
+        paginator.compute(results.size(), pageSize);
+
+        this.setRowCount(results.size());
+
+        return results.subList(paginator.getStartIndex(), paginator.getEndIndex());
     }
 }
 

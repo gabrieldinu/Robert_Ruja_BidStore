@@ -1,8 +1,9 @@
 package ro.fortech.application.bidstore.backend.persistence.dao;
 
+import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
-import org.hibernate.criterion.DetachedCriteria;
-import org.hibernate.criterion.Restrictions;
+import org.hibernate.criterion.*;
+import org.hibernate.sql.JoinType;
 import ro.fortech.application.bidstore.backend.model.AddressType;
 import ro.fortech.application.bidstore.backend.persistence.entity.User;
 import ro.fortech.application.bidstore.backend.persistence.entity.UserAddress;
@@ -205,16 +206,37 @@ public class UserDAOImpl implements UserDAO {
     }
 
     @Override
-    public List<User> getUserList() {
+    public List getUserList(String sortBy, boolean ascending, Map<String, Object> likefilters, Map<String, Object> equalFilters) {
 
-        List<User> list = new ArrayList<>();
-        try {
-               DetachedCriteria detachedCriteria = DetachedCriteria.forClass(User.class);
-               return detachedCriteria.getExecutableCriteria(hibernateProvider.getSession()).list();
-        } catch (HibernateException ex) {
+        Criteria criteria = hibernateProvider.getSession().createCriteria(User.class)
+                .createAlias("placed","pl", JoinType.LEFT_OUTER_JOIN)
+                .createAlias("sold", "s", JoinType.LEFT_OUTER_JOIN)
+                .createAlias("bought", "b", JoinType.LEFT_OUTER_JOIN)
+                .setProjection(Projections.projectionList()
+                        .add(Projections.groupProperty("username"))
+                        .add(Projections.groupProperty("firstName"))
+                        .add(Projections.groupProperty("lastName"))
+                        .add(Projections.groupProperty("email"))
+                        .add(Projections.groupProperty("role"))
+                        .add(Projections.groupProperty("userEnabled"))
+                        .add(Projections.count("pl.id"), "itemsPlaced")
+                        .add(Projections.count("s.sellerId"), "itemsSold")
+                        .add(Projections.count("b.winnerId"), "itemsBought")
+                );
 
-        }
-        return list;
+        //sort
+        if(sortBy != null && !sortBy.isEmpty())
+            criteria.addOrder(ascending? Order.asc(sortBy):Order.desc(sortBy));
+        if(likefilters != null && !likefilters.isEmpty())
+            for(Map.Entry<String,Object> entry: likefilters.entrySet()) {
+                criteria.add(Restrictions.like(entry.getKey(), entry.getValue().toString(), MatchMode.ANYWHERE));
+            }
+        if(equalFilters != null && !equalFilters.isEmpty())
+            for(Map.Entry<String,Object> entry: equalFilters.entrySet()) {
+                criteria.add(Restrictions.eq(entry.getKey(), entry.getValue()));
+            }
+
+        return criteria.list();
     }
 
     public HibernateSessionProvider getHibernateProvider() {

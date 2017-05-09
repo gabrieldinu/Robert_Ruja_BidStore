@@ -12,6 +12,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.sql.Timestamp;
+import java.util.List;
 
 @Entity
 @Table(name = "user")
@@ -70,6 +71,15 @@ public class User implements Serializable {
     @Transient
     @Column(name="enabled")
     private boolean enabled;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "owner")
+    List<Item> placed;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "winnerId")
+    List<ItemSoldBought> bought;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "sellerId")
+    List<ItemSoldBought> sold;
 
     public User(String username, String firstName, String lastName, String email, UserRole role, UserEnabled enabled) {
         this.username = username;
@@ -175,6 +185,30 @@ public class User implements Serializable {
 
     public void setTelephone(Integer telephone) {
         this.telephone = telephone;
+    }
+
+    public List<Item> getPlaced() {
+        return placed;
+    }
+
+    public void setPlaced(List<Item> placed) {
+        this.placed = placed;
+    }
+
+    public List<ItemSoldBought> getBought() {
+        return bought;
+    }
+
+    public void setBought(List<ItemSoldBought> bought) {
+        this.bought = bought;
+    }
+
+    public List<ItemSoldBought> getSold() {
+        return sold;
+    }
+
+    public void setSold(List<ItemSoldBought> sold) {
+        this.sold = sold;
     }
 
     public void setEnabled(boolean enabled) {

@@ -49,7 +49,7 @@
             <p:outputPanel style="width:70px" rendered="#{contentView.paginator.itemCount gt 1}" styleClass="fontStyle">
                 <h:selectOneMenu id="sortBy" value="#{contentView.paginator.sortBy}" style="width:100px;height:30px;">
                     <f:selectItem itemLabel="Name" itemValue="name" />
-                    <f:selectItem itemLabel="Best bid value" itemValue="currentBid" />
+                    <f:selectItem itemLabel="Best bid value" itemValue="bestBid" />
                     <f:selectItem itemLabel="Bid closing" itemValue="closingDate" />
                     <f:selectItem itemLabel="Bid no" itemValue="bidCount" />
                     <f:ajax event="change" execute="@form" render="bidding_content paginator_panel" />

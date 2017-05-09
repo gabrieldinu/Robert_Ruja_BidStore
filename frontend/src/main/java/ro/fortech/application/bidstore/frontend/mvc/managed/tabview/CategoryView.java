@@ -2,7 +2,7 @@ package ro.fortech.application.bidstore.frontend.mvc.managed.tabview;
 
 import ro.fortech.application.bidstore.backend.persistence.entity.Category;
 import ro.fortech.application.bidstore.backend.service.bidding.BiddingService;
-import ro.fortech.application.bidstore.frontend.mvc.managed.Paginator;
+import ro.fortech.application.bidstore.frontend.util.Paginator;
 
 import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
@@ -68,17 +68,9 @@ public class CategoryView implements Serializable {
     }
 
     public List<Category> getCategoryList() {
-
-        List<Category> results = new ArrayList<>();
-        //todo: sorting and filtering for category search
-        if(searchText != null && !searchText.isEmpty()){
-            for(Category searchCategory: allCategories){
-                if(searchCategory.getName().toLowerCase().contains(searchText.toLowerCase()))
-                    results.add(searchCategory);
-            }
-        }
+        List<Category> results  = biddingService.getCategories(paginator.getSortBy(), paginator.isAscending(), searchText);
         paginator.setItemCount(results.size());
-        paginator.calculate();
+        paginator.compute();
         return results.subList(paginator.getStartIndex(),paginator.getEndIndex());
     }
 

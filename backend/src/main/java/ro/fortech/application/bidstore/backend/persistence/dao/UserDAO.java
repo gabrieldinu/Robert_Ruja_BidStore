@@ -42,5 +42,5 @@ public interface UserDAO {
 
     Map<String,UserAddress> getUserAddressDetails(User user);
 
-    List<User> getUserList();
+    List getUserList(String sortBy, boolean ascending, Map<String, Object> likefilters, Map<String, Object> equalFilters);
 }

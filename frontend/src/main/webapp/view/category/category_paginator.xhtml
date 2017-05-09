@@ -50,9 +50,9 @@
             <p:outputPanel style="width:143px;float:left;">
                 <h:selectOneMenu id="sortByCategory" value="#{categoryView.paginator.sortBy}" style="width:100px;height:30px;" rendered="#{categoryView.paginator.itemCount gt 1}">
                     <f:selectItem itemLabel="Name" itemValue="name" />
-                    <f:selectItem itemLabel="Description" itemValue="currentBid" />
-                    <f:selectItem itemLabel="Creation" itemValue="closingDate" />
-                    <f:ajax event="change"  render=":main-tabview:dialog-form:category_results :main-tabview:dialog-form:paginator_panel_category" />
+                    <f:selectItem itemLabel="Description" itemValue="description" />
+                    <f:selectItem itemLabel="Creation" itemValue="creationDate" />
+                    <f:ajax event="change" render=":main-tabview:dialog-form:category_results :main-tabview:dialog-form:paginator_panel_category" />
                 </h:selectOneMenu>
             </p:outputPanel>
             <p:selectBooleanCheckbox value="#{categoryView.paginator.ascending}" style="float:left;margin:5px;" rendered="#{categoryView.paginator.itemCount gt 1}">

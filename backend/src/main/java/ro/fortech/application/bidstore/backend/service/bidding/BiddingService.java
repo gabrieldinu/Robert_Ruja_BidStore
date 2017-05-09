@@ -2,6 +2,7 @@ package ro.fortech.application.bidstore.backend.service.bidding;
 
 import ro.fortech.application.bidstore.backend.exception.bidding.BiddingException;
 import ro.fortech.application.bidstore.backend.model.BiddingUser;
+import ro.fortech.application.bidstore.backend.model.ItemDetails;
 import ro.fortech.application.bidstore.backend.persistence.entity.Bid;
 import ro.fortech.application.bidstore.backend.persistence.entity.Category;
 import ro.fortech.application.bidstore.backend.persistence.entity.Item;
@@ -18,7 +19,7 @@ import java.util.Map;
 @Local
 public interface BiddingService {
 
-    List<BiddingUser> getBiddingUsers(int first, int pageSize, String sortField, String sortOrder, Map<String,Object> filters);
+    List<BiddingUser> getBiddingUsers(String sortField, boolean ascending, Map<String, Object> likeFilters, Map<String, Object> equalFilters);
 
     BiddingUser getSingleBiddingUser(User user);
 
@@ -36,11 +37,17 @@ public interface BiddingService {
 
     List<Item> getFullItemList();
 
-    List<Item> getItems(Category category, int pageSize, String sortBy, boolean ascending, String searchFilter);
+    List<ItemDetails> getItems(Category category, String sortBy, boolean ascending, String searchFilter, Map<String, Object> filterMap);
 
     void saveItem(Item item) throws BiddingException;
 
     void saveBid(Bid bid) throws BiddingException;
 
     void removeBid(Bid bid) throws BiddingException;
+
+    Item getItemWithId(Long itemId);
+
+    Bid getBidForItem(Long itemId, String username);
+
+    List<Category> getCategories(String sortBy, boolean ascending, String searchText);
 }

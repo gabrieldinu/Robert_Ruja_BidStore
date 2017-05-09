@@ -21,13 +21,6 @@
                                         </p:ajax>
                                         <p:treeNode expandedIcon="ui-icon-folder-open" collapsedIcon="ui-icon-folder-collapsed">
                                             <h:outputText styleClass="fontStyle" value="#{category.name}"/>
-                                            <!--<p:commandLink styleClass="fontStyle" value="#{category.name}" update=":main-tabview:main-form:category_description-->
-                                                                                            <!--:main-tabview:main-form:header_bidding-->
-                                                                                            <!--:main-tabview:main-form:bidding_content-->
-                                                                                            <!--:main-tabview:main-form:paginator_panel"-->
-                                                           <!--actionListener="#{categoryView.updateCategoryView(category)}">-->
-                                                <!--<f:setPropertyActionListener value="item_list" target="#{contentView.content}"/>-->
-                                            <!--</p:commandLink>-->
                                         </p:treeNode>
                                     </p:tree>
                             </h:panelGroup>
@@ -51,7 +44,7 @@
                                     <div style="display:block; float:left; margin-left:50px;">
                                         <p:outputLabel value="Search for item: " for="acMaxResults" style="margin-right:30px;" styleClass="fontStyle"/>
                                         <p:autoComplete id="acMaxResults" maxResults="5" value="#{contentView.searchText}" completeMethod="#{contentView.completeText}" style="border-radius:6px;" styleClass="fontStyle" size="60"
-                                                        onkeypress="if (event.keyCode == 13) {onchange(); return false; }">
+                                                        onkeypress="if (event.keyCode == 13) {onchange(); return false; }" placeholder="&#x1F50D; Search">
                                             <f:ajax event="change" render=":main-tabview:main-form:bidding_content :main-tabview:main-form:paginator_panel" listener="#{contentView.renderItemList}"/>
                                         </p:autoComplete>
                                     </div>
@@ -94,7 +87,7 @@
                 <p:layoutUnit position="north" style="border:none;min-height:80px;">
                     <h:panelGroup layout="block" styleClass="fontStyle">
                         <p:autoComplete maxResults="5" value="#{categoryView.searchText}" styleClass="fontStyle" completeMethod="#{categoryView.completeText}" size="120" style="border-radius:6px;float:left; width:80%;"
-                                        onkeypress="if (event.keyCode == 13) {onchange(); return false; }">
+                                        onkeypress="if (event.keyCode == 13) {onchange(); return false; }" placeholder="&#x1F50D; Search">
                             <f:ajax event="change" render=":main-tabview:dialog-form:category_results :main-tabview:dialog-form:paginator_panel_category"/>
                         </p:autoComplete>
                         <h:commandButton value="Cancel" styleClass="btn btn-default fontStyle" style="border-radius:0px;float:right;" onclick="PF('categoryDialog').hide();return false;"/>

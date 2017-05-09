@@ -1,6 +1,7 @@
 package ro.fortech.application.bidstore.frontend.mvc.managed.tabview.bidding;
 
 import ro.fortech.application.bidstore.backend.exception.bidding.BiddingException;
+import ro.fortech.application.bidstore.backend.model.ItemDetails;
 import ro.fortech.application.bidstore.backend.persistence.entity.Bid;
 import ro.fortech.application.bidstore.backend.persistence.entity.Item;
 import ro.fortech.application.bidstore.backend.service.bidding.BiddingService;
@@ -15,9 +16,7 @@ import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import java.io.Serializable;
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.HashMap;
 
 /**
  * Created by robert.ruja on 05-May-17.
@@ -30,6 +29,12 @@ public class BidEditBean implements Serializable {
     private boolean editable;
 
     private String bidValueText;
+
+    private Item selectedItem;
+
+    private ItemDetails selectedItemDetails;
+
+    private Bid currentItemBid;
 
     @ManagedProperty(value = "#{contentView}")
     private ContentView contentView;
@@ -53,41 +58,51 @@ public class BidEditBean implements Serializable {
 
     public void placeBid() {
         if(bidValueText != null){
-            Bid bid = contentView.getCurrentItemBid();
-            Item item = contentView.getSelectedItem();
-            if(bid == null) {
-                bid = new Bid();
-                bid.setItemId(contentView.getSelectedItem().getId());
-                bid.setBidUserId(userAccount.getUser().getUsername());
+
+            if(currentItemBid == null) {
+                currentItemBid = new Bid();
+                currentItemBid.setItemId(selectedItemDetails.getItemId());
+                currentItemBid.setBidUserId(userAccount.getUser().getUsername());
             }
-            bid.setBidValue(Double.parseDouble(bidValueText));
-            bid.setBidDate(new Timestamp(System.currentTimeMillis()));
-            item.addBid(bid);
-            item.setCurrentBid(bid.getBidValue());
+            currentItemBid.setBidValue(Double.parseDouble(bidValueText));
+            currentItemBid.setBidDate(new Timestamp(System.currentTimeMillis()));
             try {
-                //biddingService.saveBid(bid);
-                biddingService.saveItem(item);
+                biddingService.saveBid(currentItemBid);
             } catch(BiddingException ex) {
                 context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Update",
                         "An error occured while trying to update current item. Please try again later!"));
             }
-            contentView.setCurrentItemBid(bid);
+            renderSingleItem(selectedItemDetails.getItemId());
             this.editable = false;
         }
     }
 
     public void removeBid(){
-        Item selectedItem = contentView.getSelectedItem();
-        Bid bid = contentView.getCurrentItemBid();
-        selectedItem.removeBid(bid);
+
         try {
-            //todo: the bid does not remove from db, check why
-            biddingService.saveItem(selectedItem);
+            biddingService.removeBid(currentItemBid);
         } catch(BiddingException ex) {
             context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Update",
-                    "An error occured while trying to update current item. Please try again later!"));
+                    "An error occured while trying to remove current bid. Please try again later!"));
         }
-        contentView.setCurrentItemBid(null);
+        renderSingleItem(selectedItemDetails.getItemId());
+    }
+
+    public void renderSingleItem(Long itemId){
+        this.selectedItemDetails = biddingService.getItems(
+                contentView.getTreeBean().getSelectedCategory(),
+                null,
+                false,
+                null,
+                new HashMap<String,Object>(){
+                    {
+                        put("id",itemId);
+                    }
+                }
+
+        ).get(0);
+        this.currentItemBid = biddingService.getBidForItem(itemId, userAccount.getUser().getUsername());
+
     }
 
     public String getBidValueText() {
@@ -128,5 +143,29 @@ public class BidEditBean implements Serializable {
 
     public void setUserAccount(UserAccount userAccount) {
         this.userAccount = userAccount;
+    }
+
+    public Item getSelectedItem() {
+        return selectedItem;
+    }
+
+    public void setSelectedItem(Item selectedItem) {
+        this.selectedItem = selectedItem;
+    }
+
+    public ItemDetails getSelectedItemDetails() {
+        return selectedItemDetails;
+    }
+
+    public void setSelectedItemDetails(ItemDetails selectedItemDetails) {
+        this.selectedItemDetails = selectedItemDetails;
+    }
+
+    public Bid getCurrentItemBid() {
+        return currentItemBid;
+    }
+
+    public void setCurrentItemBid(Bid currentItemBid) {
+        this.currentItemBid = currentItemBid;
     }
 }

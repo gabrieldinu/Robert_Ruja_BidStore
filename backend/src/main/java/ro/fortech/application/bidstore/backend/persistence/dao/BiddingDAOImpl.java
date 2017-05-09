@@ -1,17 +1,15 @@
 package ro.fortech.application.bidstore.backend.persistence.dao;
 
 import org.hibernate.Criteria;
-import org.hibernate.HibernateException;
 import org.hibernate.criterion.*;
-import ro.fortech.application.bidstore.backend.model.BidStatus;
+import org.hibernate.sql.JoinType;
 import ro.fortech.application.bidstore.backend.model.BiddingUser;
 import ro.fortech.application.bidstore.backend.persistence.entity.*;
 import ro.fortech.application.bidstore.backend.persistence.provider.HibernateSessionProvider;
-import ro.fortech.application.bidstore.backend.util.HibernateUtil;
 
 import javax.inject.Inject;
+import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -28,7 +26,8 @@ public class BiddingDAOImpl implements BiddingDAO {
 
     private List<BiddingUser> temporaryBiddingUserList;
 
-
+    @Inject
+    private EntityManager em;
 
     @Override
     public BiddingUser getSingleBiddingUser(String username) {
@@ -63,7 +62,9 @@ public class BiddingDAOImpl implements BiddingDAO {
 
     @Override
     public List<Category> getAllCategories() {
-        return hibernateProvider.getSession().createCriteria(Category.class).list();
+        return DetachedCriteria.forClass(Category.class)
+            .setResultTransformer (Criteria.DISTINCT_ROOT_ENTITY)
+        .getExecutableCriteria(hibernateProvider.getSession()).list();
     }
 
     public Category getRoot() {
@@ -101,6 +102,7 @@ public class BiddingDAOImpl implements BiddingDAO {
                                 .add(Restrictions.like("name",query, MatchMode.ANYWHERE))
                                 .setMaxResults(6)
                                 .setProjection(Projections.property("name"))
+                                .setResultTransformer (Criteria.DISTINCT_ROOT_ENTITY)
                                 .list();
     }
 
@@ -119,17 +121,30 @@ public class BiddingDAOImpl implements BiddingDAO {
     }
 
     @Override
-    public List<Item> getItems(List<Long> categoryIds, int maxResults, String sortBy, boolean ascending, String searchFilter) {
+    public List getItems(List<Long> categoryIds, String sortBy, boolean ascending, String searchFilter, Map<String, Object> filters) {
         Criteria criteria = hibernateProvider.getSession().createCriteria(Item.class)
-                //.setMaxResults(maxResults)
-                .createAlias("categories","categoriesAlias")
-                .add(Restrictions.in("categoriesAlias.id", categoryIds))
-                .add(Restrictions.eq("status", BidStatus.OPEN))
-                .setResultTransformer (Criteria.DISTINCT_ROOT_ENTITY);
-
+                .createAlias("categories","cat")
+                .createAlias("bids", "b", JoinType.LEFT_OUTER_JOIN)
+                .setProjection(Projections.projectionList()
+                        .add(Projections.groupProperty("id"))
+                        .add(Projections.groupProperty("name"))
+                        .add(Projections.groupProperty("description"))
+                        .add(Projections.groupProperty("openingDate"))
+                        .add(Projections.groupProperty("closingDate"))
+                        .add(Projections.groupProperty("status"))
+                        .add(Projections.groupProperty("initialPrice"))
+                        .add(Projections.count("b.itemId"),"bidCount")
+                        .add(Projections.max("b.bidValue"),"bestBid")
+                )
+                .add(Restrictions.in("cat.id", categoryIds));
         //filter
-        if(searchFilter != null && !searchFilter.isEmpty())
+        for(Map.Entry<String,Object> entry: filters.entrySet()){
+            criteria.add(Restrictions.eq(entry.getKey(), entry.getValue()));
+        }
+        if(searchFilter != null && !searchFilter.isEmpty()) {
             criteria.add(Restrictions.like("name", searchFilter, MatchMode.ANYWHERE));
+        }
+
         //sort
         if(sortBy != null && !sortBy.isEmpty())
             criteria.addOrder(ascending?Order.asc(sortBy):Order.desc(sortBy));
@@ -174,10 +189,45 @@ public class BiddingDAOImpl implements BiddingDAO {
     @Transactional
     public boolean removeBid(Bid bid) {
         try {
-            hibernateProvider.getSession().delete(bid);
+            if (em.contains(bid)) {
+                em.remove(bid);
+            } else {
+                bid = em.getReference(bid.getClass(), bid.getId());
+                em.remove(bid);
+            }
             return true;
         }catch (Exception ex) {
             return false;
         }
+    }
+
+    @Override
+    public Item getItemWithId(Long itemId) {
+        return null;
+    }
+
+    @Override
+    public Bid getBidForItem(Long itemId, String username) {
+        DetachedCriteria criteria = DetachedCriteria.forClass(Bid.class)
+                .add(Restrictions.eq("itemId",itemId))
+                .add(Restrictions.eq("bidUserId",username));
+        List list = criteria.getExecutableCriteria(hibernateProvider.getSession()).list();
+        return list.isEmpty() ? null : (Bid) list.get(0);
+    }
+
+    @Override
+    public List<Category> getCategories(String sortBy, boolean ascending, String searchText) {
+        DetachedCriteria criteria = DetachedCriteria.forClass(Category.class);
+        criteria.add(Restrictions.isNotNull("parentId"));
+        //filtering
+        if(searchText != null && !searchText.isEmpty()) {
+            criteria.add(Restrictions.like("name", searchText, MatchMode.ANYWHERE));
+        }
+
+        //sorting
+        if(sortBy != null && !sortBy.isEmpty())
+            criteria.addOrder(ascending?Order.asc(sortBy):Order.desc(sortBy));
+
+        return criteria.getExecutableCriteria(hibernateProvider.getSession()).list();
     }
 }

@@ -34,7 +34,7 @@ public interface BiddingDAO {
 
     List<String> getCategoriesNameContains(String query);
 
-    List<Item> getItems(List<Long> categoryIds, int maxResults, String sortBy, boolean ascending, String searchFilter);
+    List getItems(List<Long> categoryIds, String sortBy, boolean ascending, String searchText, Map<String, Object> searchFilter);
 
     List<String> getItemsNameContains(String query);
 
@@ -43,4 +43,10 @@ public interface BiddingDAO {
     boolean saveBid(Bid bid);
 
     boolean removeBid(Bid bid);
+
+    Item getItemWithId(Long itemId);
+
+    Bid getBidForItem(Long itemId, String username);
+
+    List<Category> getCategories(String sortBy, boolean ascending, String searchText);
 }

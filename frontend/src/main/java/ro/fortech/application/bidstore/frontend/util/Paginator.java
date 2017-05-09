@@ -1,4 +1,4 @@
-package ro.fortech.application.bidstore.frontend.mvc.managed;
+package ro.fortech.application.bidstore.frontend.util;
 
 public class Paginator {
 
@@ -12,7 +12,7 @@ public class Paginator {
     private int itemCount;
 
 
-    public void calculate() {
+    public void compute() {
         int count = itemCount / pageSize;
         int remainder = itemCount % pageSize;
         pageCount = remainder == 0 ? count:count+1;
@@ -20,6 +20,12 @@ public class Paginator {
         startIndex = (page-1)*pageSize;
         endIndex = startIndex + pageSize <= itemCount ? startIndex + pageSize : startIndex + remainder;
 
+    }
+
+    public void compute(int itemCount, int pageSize) {
+        this.itemCount = itemCount;
+        this.pageSize = pageSize;
+        compute();
     }
 
     public int getPageSize() {

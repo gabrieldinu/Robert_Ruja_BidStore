@@ -11,16 +11,8 @@ public class BiddingUser extends User {
     private long itemsSold;
     private long itemsBought;
 
-    public BiddingUser(User user) {
-        super.setRole(user.getRole());
-        super.setEmail(user.getEmail());
-        super.setEnabled(user.isEnabled());
-        super.setExpiringDate(user.getExpiringDate());
-        super.setFirstName(user.getFirstName());
-        super.setLastName(user.getLastName());
-        super.setTelephone(user.getTelephone());
-        super.setUserEnabled(user.getUserEnabled());
-        super.setUuid(user.getUuid());
+    public BiddingUser() {
+
     }
 
     public long getItemsPlaced() {

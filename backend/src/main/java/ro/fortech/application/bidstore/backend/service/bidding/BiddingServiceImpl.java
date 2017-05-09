@@ -1,7 +1,7 @@
 package ro.fortech.application.bidstore.backend.service.bidding;
 
 import ro.fortech.application.bidstore.backend.exception.bidding.BiddingException;
-import ro.fortech.application.bidstore.backend.model.BiddingUser;
+import ro.fortech.application.bidstore.backend.model.*;
 import ro.fortech.application.bidstore.backend.persistence.dao.BiddingDAO;
 import ro.fortech.application.bidstore.backend.persistence.dao.UserDAO;
 import ro.fortech.application.bidstore.backend.persistence.entity.Bid;
@@ -11,7 +11,9 @@ import ro.fortech.application.bidstore.backend.persistence.entity.User;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
+import java.sql.Date;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -29,26 +31,33 @@ public class BiddingServiceImpl implements BiddingService {
     private UserDAO userDAO;
 
     @Override
-    public List<BiddingUser> getBiddingUsers(int first, int pageSize, String sortField, String sortOrder, Map<String, Object> filters) {
+    public List<BiddingUser> getBiddingUsers(String sortField, boolean ascending, Map<String, Object> likeFilters, Map<String, Object> equalFilters) {
 
-        //todo: deal with sorting and filtering problem
-        List<BiddingUser> biddingUserList = new ArrayList<>();
-
-        for(User user: userDAO.getUserList()) {
-
-            biddingUserList.add(getSingleBiddingUser(user));
+        List<BiddingUser> users = new ArrayList<>();
+        for(Object o: userDAO.getUserList(sortField, ascending, likeFilters, equalFilters)){
+            Object[] columns = (Object[])o;
+            BiddingUser user = new BiddingUser();
+            user.setUsername((String)columns[0]);
+            user.setFirstName((String)columns[1]);
+            user.setLastName((String)columns[2]);
+            user.setEmail((String)columns[3]);
+            user.setRole((UserRole)columns[4]);
+            user.setUserEnabled((UserEnabled)columns[5]);
+            user.setItemsPlaced((Long)columns[6]);
+            user.setItemsSold((Long)columns[7]);
+            user.setItemsBought((Long)columns[8]);
+            users.add(user);
         }
-        return biddingUserList;
-
+        return users;
     }
 
     @Override
     public BiddingUser getSingleBiddingUser(User user) {
-        BiddingUser biddingUser = new BiddingUser(user);
-        biddingUser.setItemsBought(biddingDAO.getBoughtItemCount(user.getUsername()));
-        biddingUser.setItemsSold(biddingDAO.getSoldItemCount(user.getUsername()));
-        biddingUser.setItemsPlaced(biddingDAO.getPlacedItemCount(user.getUsername()));
-        return biddingUser;
+        List<BiddingUser> results = getBiddingUsers(null, false, null, new HashMap<String,Object>(){{put("username",user.getUsername());}});
+        if(!results.isEmpty()) {
+            return results.get(0);
+        }
+        return null;
     }
 
     @Override
@@ -86,11 +95,30 @@ public class BiddingServiceImpl implements BiddingService {
     }
 
     @Override
-    public List<Item> getItems(Category category, int pageSize, String sortBy, boolean ascending, String searchFilter) {
+    public List<ItemDetails> getItems(Category category, String sortBy, boolean ascending, String searchFilter, Map<String, Object> filters) {
         List<Long> categoryIds = new ArrayList<>();
         categoryIds.add(category.getId());
         populateCategoryChildrenIds(categoryIds,category);
-        return biddingDAO.getItems(categoryIds,pageSize,sortBy,ascending,searchFilter);
+
+        List<ItemDetails> itemDetailsList = new ArrayList<>();
+
+        for(Object o: biddingDAO.getItems(categoryIds, sortBy,ascending,searchFilter,filters)) {
+            //build item details
+            Object[] columns = (Object[])o;
+            ItemDetails details = new ItemDetails();
+            details.setItemId((Long)columns[0]);
+            details.setItemName((String)columns[1]);
+            details.setDescription((String)columns[2]);
+            details.setOpeningDate((Date) columns[3]);
+            details.setClosingDate((Date) columns[4]);
+            details.setStatus((BidStatus) columns[5]);
+            details.setInitialPrice((Double)columns[6]);
+            details.setBidCount((Long)columns[7]);
+            details.setBestBid(details.getBidCount() > 0 ? (Double)columns[8]:details.getInitialPrice());
+            itemDetailsList.add(details);
+        }
+
+        return itemDetailsList;
     }
 
     @Override
@@ -109,6 +137,21 @@ public class BiddingServiceImpl implements BiddingService {
     public void removeBid(Bid bid) throws BiddingException{
         if(!biddingDAO.removeBid(bid))
             throw new BiddingException("An error occured while trying to remove the selected bid");
+    }
+
+    @Override
+    public Item getItemWithId(Long itemId) {
+        return biddingDAO.getItemWithId(itemId);
+    }
+
+    @Override
+    public Bid getBidForItem(Long itemId, String username) {
+        return biddingDAO.getBidForItem(itemId,username);
+    }
+
+    @Override
+    public List<Category> getCategories(String sortBy, boolean ascending, String searchText) {
+        return biddingDAO.getCategories(sortBy, ascending, searchText);
     }
 
     private void populateCategoryChildrenIds(List<Long> categoryIds, Category category){
