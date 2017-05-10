@@ -5,7 +5,7 @@ public class Paginator {
     private int pageSize = 10;
     private int pageCount;
     private int page = 1;
-    private String sortBy;
+    private String sortBy = "name";
     private boolean ascending;
     private int startIndex;
     private int endIndex;

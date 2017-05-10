@@ -11,25 +11,28 @@
     <ui:define name="body" styleClass="fontStyle">
         <div class="row" style="width:100%;">
             <div style="position:block; height:100%;width:100%;">
-                <p:tabView id="main-tabview" style="border:none;" styleClass="fontStyle">
-                    <p:tab title="Bidding" style="padding:0px;" styleClass="fontStyle">
+                <p:tabView id="main-tabview" style="border:none;" styleClass="fontStyle" dynamic="true" cache="true" orientation="top">
+                    <p:ajax event="tabChange" listener="#{tabViewBean.onTabChange}" />
+                    <p:tab title="Bidding" style="padding:0px;" styleClass="fontStyle" content="bidding">
                         <ui:include src="/view/bidding/bidding_main.xhtml"/>
                     </p:tab>
-                    <p:tab title="Items">
+                    <p:tab title="Items" content="items">
+                        <h:form id="item-form">
+                            <p:commandButton value="Press" onclick="PF('categoryDialog').show();return false;"/>
+                        </h:form>
                     </p:tab>
-                    <p:tab title="Categories">
+                    <p:tab title="Categories" content="categories">
                         <ui:include src="/view/category/category_main.xhtml"/>
                     </p:tab>
-                    <p:tab title="Users" renedered="#{userAccount.admin}">
+                    <p:tab title="Users" renedered="#{userAccount.admin}" content="users">
                         <ui:include src="/view/account/userManagement.xhtml"/>
                     </p:tab>
-                    <p:tab title="Account">
+                    <p:tab title="Account" content="account">
                         <ui:include src="/view/account/accountManagement.xhtml"/>
                     </p:tab>
                 </p:tabView>
+                <ui:include src="/view/common/category_search_dialog.xhtml"/>
             </div>
         </div>
-
     </ui:define>
-
 </ui:composition>

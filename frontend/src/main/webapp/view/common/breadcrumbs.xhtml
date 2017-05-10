@@ -1,0 +1,29 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets" xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core" xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+    <div style="width:100%;border:none; background-color:#fafafa;display:block;float:left; margin-top:20px;">
+        <ul>
+            <ui:repeat value="#{categoryView.breadcrumbs}" var="category" rendered="#{tabViewBean.content eq 'bidding'}">
+                <li class="ui-breadcrumb-chevron ui-icon ui-icon-triangle-1-e" style="float:left;"/>
+                <li class="menuItem" style="float:left;">
+                    <p:commandLink styleClass="fontStyle" value="#{category.name}"
+                                   update=":main-tabview:main-form"
+                                   actionListener="#{categoryView.updateCategoryView(category)}">
+                        <f:setPropertyActionListener value="item_list" target="#{contentView.content}"/>
+                    </p:commandLink>
+                </li>
+            </ui:repeat>
+            <ui:repeat value="#{categoryView.breadcrumbs}" var="category" rendered="#{tabViewBean.content eq 'categories'}">
+                <li class="ui-breadcrumb-chevron ui-icon ui-icon-triangle-1-e" style="float:left;"/>
+                <li class="menuItem" style="float:left;">
+                    <p:commandLink styleClass="fontStyle" value="#{category.name}"
+                                   update=":main-tabview:main-form"
+                                   actionListener="#{categoryView.updateCategoryView(category)}">
+                        <f:setPropertyActionListener value="item_list" target="#{contentView.content}"/>
+                    </p:commandLink>
+                </li>
+            </ui:repeat>
+        </ul>
+    </div>
+</ui:composition>

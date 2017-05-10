@@ -10,13 +10,13 @@
             <p:outputPanel style="width:45px;margin-right:4px;float:left;">
                 <h:commandButton value="&lt;&lt;" styleClass="btn btn-default" style="border-radius:0px;" rendered="#{categoryView.paginator.page gt 1}">
                     <f:setPropertyActionListener target="#{categoryView.paginator.page}" value="1"/>
-                    <f:ajax render=":main-tabview:dialog-form:category_results :main-tabview:dialog-form:paginator_panel_category"/>
+                    <f:ajax render=":dialog-form:category_results :dialog-form:paginator_panel_category"/>
                 </h:commandButton>
             </p:outputPanel>
             <p:outputPanel style="width:45px;float:left;">
                 <h:commandButton value="&lt;" styleClass="btn btn-default" style="border-radius:0px;" rendered="#{categoryView.paginator.page gt 1}">
                     <f:setPropertyActionListener target="#{categoryView.paginator.page}" value="#{categoryView.paginator.page - 1}" />
-                    <f:ajax render=":main-tabview:dialog-form:category_results :main-tabview:dialog-form:paginator_panel_category"/>
+                    <f:ajax render=":dialog-form:category_results :dialog-form:paginator_panel_category"/>
                 </h:commandButton>
             </p:outputPanel>
             <p:outputPanel style="float:left;margin-top:5px;margin-left:28px;margin-right:35px;">
@@ -25,13 +25,13 @@
             <p:outputPanel style="width:43px;float:left;">
                 <h:commandButton value="&gt;" styleClass="btn btn-default" style="border-radius:0px;" rendered="#{categoryView.paginator.page lt categoryView.paginator.pageCount}">
                     <f:setPropertyActionListener target="#{categoryView.paginator.page}" value="#{categoryView.paginator.page + 1}" />
-                    <f:ajax  render=":main-tabview:dialog-form:category_results :main-tabview:dialog-form:paginator_panel_category"/>
+                    <f:ajax  render=":dialog-form:category_results :dialog-form:paginator_panel_category"/>
                 </h:commandButton>
             </p:outputPanel>
             <p:outputPanel style="width:45px;float:left;">
                 <h:commandButton value="&gt;&gt;" styleClass="btn btn-default" style="border-radius:0px;" rendered="#{categoryView.paginator.page lt categoryView.paginator.pageCount}">
                     <f:setPropertyActionListener target="#{categoryView.paginator.page}" value="#{categoryView.paginator.pageCount}"/>
-                    <f:ajax  render=":main-tabview:dialog-form:category_results :main-tabview:dialog-form:paginator_panel_category"/>
+                    <f:ajax  render=":dialog-form:category_results :dialog-form:paginator_panel_category"/>
                 </h:commandButton>
             </p:outputPanel>
             <p:outputPanel style="float:left;width:83px;margin:5px;">
@@ -43,7 +43,7 @@
                     <f:selectItem itemLabel="10" itemValue="10" />
                     <f:selectItem itemLabel="25" itemValue="25" />
                     <f:selectItem itemLabel="50" itemValue="40" />
-                    <f:ajax event="change"  render=":main-tabview:dialog-form:category_results :main-tabview:dialog-form:paginator_panel_category" />
+                    <f:ajax event="change"  render=":dialog-form:category_results :dialog-form:paginator_panel_category" />
                 </h:selectOneMenu>
             </p:outputPanel>
             <p:outputLabel for="sortByCategory" value="Sort by:" style="width:63px;float:left;margin:5px;" styleClass="fontStyle" rendered="#{categoryView.paginator.itemCount gt 1}"/>
@@ -52,11 +52,11 @@
                     <f:selectItem itemLabel="Name" itemValue="name" />
                     <f:selectItem itemLabel="Description" itemValue="description" />
                     <f:selectItem itemLabel="Creation" itemValue="creationDate" />
-                    <f:ajax event="change" render=":main-tabview:dialog-form:category_results :main-tabview:dialog-form:paginator_panel_category" />
+                    <f:ajax event="change" render=":dialog-form:category_results :dialog-form:paginator_panel_category" />
                 </h:selectOneMenu>
             </p:outputPanel>
             <p:selectBooleanCheckbox value="#{categoryView.paginator.ascending}" style="float:left;margin:5px;" rendered="#{categoryView.paginator.itemCount gt 1}">
-                <p:ajax update=":main-tabview:dialog-form:category_results :main-tabview:dialog-form:paginator_panel_category" />
+                <p:ajax update=":dialog-form:category_results :dialog-form:paginator_panel_category" />
             </p:selectBooleanCheckbox>
             <h:outputLabel value="Sort Ascending" style="float:left;margin:5px;" rendered="#{categoryView.paginator.itemCount gt 1}"/>
     </h:panelGroup>

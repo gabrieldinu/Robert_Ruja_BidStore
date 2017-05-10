@@ -16,7 +16,7 @@ import java.util.List;
  * Created by coco on 05-May-17.
  */
 @ManagedBean(name = "treeBean")
-@SessionScoped
+@ViewScoped
 public class TreeBean implements Serializable {
 
     private TreeNode root;
