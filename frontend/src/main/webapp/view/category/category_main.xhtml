@@ -2,43 +2,58 @@
                 xmlns:ui="http://xmlns.jcp.org/jsf/facelets" xmlns:p="http://primefaces.org/ui"
                 xmlns:f="http://xmlns.jcp.org/jsf/core" xmlns:h="http://xmlns.jcp.org/jsf/html"
                 xmlns:fn="http://java.sun.com/jsp/jstl/functions">
-    <p:layout style="min-width:400px;min-height:200px;">
-        <p:layoutUnit position="west" resizable="true" size="300" minSize="80" maxSize="400">
-
-            <h:panelGroup id="menu" layout="block">
-                <f:facet name="header">
-                    <h:outputText value="Categories"/>
-                </f:facet>
-                <h:form>
-                    <f:ajax render=":content">
-                        <ul>
-                            <li><h:commandLink value="include1" action="#{bean.setPage('include1')}" /></li>
-                            <li><h:commandLink value="include2" action="#{bean.setPage('include2')}" /></li>
-                            <li><h:commandLink value="include3" action="#{bean.setPage('include3')}" /></li>
-                        </ul>
-                    </f:ajax>
-                </h:form>
-            </h:panelGroup>
-        </p:layoutUnit>
-
-        <p:layoutUnit position="center" resizable="true" minSize="120">
-            <ui:include src=""/>
-            <h:panelGroup id="header_category" layout="block">
-                <p:breadCrumb>
-                    <p:menuitem value="Categories" url="#" />
-                    <p:menuitem value="Sports" url="#" />
-                    <p:menuitem value="Basketball" url="#" />
-                    <p:menuitem value="NBA" url="#" />
-                    <p:menuitem value="Teams" url="#" />
-                    <p:menuitem value="L.A. Lakers" url="#" />
-                    <p:menuitem value="Roster" url="#" />
-                    <p:menuitem value="Kobe Bryant" url="#" />
-                </p:breadCrumb>
-            </h:panelGroup>
-        </p:layoutUnit>
-        <ui:include src=""/>
-        <!--<h:panelGroup id="content" layout="block">-->
-            <!--<ui:include src="/WEB-INF/includes/#{naviBean.page}.xhtml" />-->
-        <!--</h:panelGroup>-->
-    </p:layout>
+    <h:form id="category-form" style="display:block;min-width:500px;min-height:630px; overflow:visible;">
+        <p:layout style="min-width:500px;min-height:630px;" styleClass="fontStyle">
+            <p:layoutUnit position="west" resizable="true" size="330" minSize="200" maxSize="500" style="padding:6px;border-right:5px double #dddddd; border-radius:initial;">
+                <ui:include src="/view/common/category_tree.xhtml"/>
+            </p:layoutUnit>
+            <p:layoutUnit position="center" resizable="true" style="border:none;">
+                <p:layout>
+                    <p:layoutUnit position="north" style="border:none;min-height:100px;">
+                        <h:panelGroup layout="block" id="header_categories" style="padding:10px;padding-top:10px;">
+                            <div style="width:100%;">
+                                <p:commandButton value="Search for category" styleClass="btn btn-default fontStyle" style="border-radius:0px;float:left;" onclick="PF('categoryDialog').show();" type="button" />
+                                <div style="display:block; float:left; margin-left:50px;">
+                                    <p:commandButton value="Create new" styleClass="btn btn-default fontStyle" style="border-radius:0px;float:left;" type="button" />
+                                </div>
+                            </div>
+                            <ui:include src="/view/common/breadcrumbs.xhtml"/>
+                        </h:panelGroup>
+                    </p:layoutUnit>
+                    <p:layoutUnit position="center" style="border:none;padding:0px;">
+                        <p:outputPanel deffered="true" id="categories_content" style="width:90%;height:100%;">
+                            <table style="width:100%;height:80%;border:none;">
+                                <tr>
+                                    <td style="width:10%;">
+                                        <p:outputLabel for="inputCategoryName" value="Name:" style="width:90%;"/>
+                                    </td>
+                                    <td>
+                                        <h:inputText id="inputCategoryName" value="#{treeBean.selectedCategory.name}" style="width:70%;"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="width:10%;vertical-align:top;padding-top:55px;">
+                                        <p:outputLabel for="inputCategoryDescription" value="Description:"/>
+                                    </td>
+                                    <td>
+                                        <h:inputTextarea id="inputCategoryDescription" value="#{treeBean.selectedCategory.description}" style="width:70%;height:250px;resize:none;"/>
+                                    </td>
+                                </tr>
+                            </table>
+                            <table style="width:100%;height:20%;">
+                                <tr>
+                                    <td style="padding:5px;width:50%;float:left;padding-left:300px;">
+                                        <p:commandButton value="Save" />
+                                    </td>
+                                    <td style="padding:5px;width:50%;float:right;">
+                                        <p:commandButton value="Remove" />
+                                    </td>
+                                </tr>
+                            </table>
+                        </p:outputPanel>
+                    </p:layoutUnit>
+                </p:layout>
+            </p:layoutUnit>
+        </p:layout>
+    </h:form>
 </ui:composition>

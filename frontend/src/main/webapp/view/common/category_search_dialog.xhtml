@@ -27,7 +27,7 @@
                                                        process="@this"
                                                        onsuccess="PF('categoryDialog').hide();return false;"
                                                        update="main-tabview:main-form"
-                                                       actionListener="#{categoryView.updateCategoryView(category)}">
+                                                       actionListener="#{treeBean.onCategorySelect(category)}">
                                             <f:setPropertyActionListener value="item_list" target="#{contentView.content}"/>
                                         </p:commandLink>
                                     </td>

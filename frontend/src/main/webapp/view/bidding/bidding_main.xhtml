@@ -5,35 +5,7 @@
     <h:form id="main-form" style="overflow:visible;display:block;min-width:500px;min-height:630px;">
         <p:layout style="min-width:500px;min-height:630px;" styleClass="fontStyle">
                 <p:layoutUnit position="west" resizable="true" size="330" minSize="200" maxSize="500" style="padding:6px;border-right:5px double #dddddd; border-radius:initial;">
-                    <p:layout>
-                        <p:layoutUnit position="center" resizable="true" style="border:none;overflow:hidden;" minSize="300" size="350">
-                            <h:panelGroup id="tree-panel" layout="block" style="border:2px solid #dddddd;height:100%;overflow:auto;">
-                                    <p:tree value="#{treeBean.root}" selectionMode="single" var="category" style="border:none;" selection="#{treeBean.selectedNode}" animate="true">
-                                        <p:ajax event="select" update=":main-tabview:main-form:category_description
-                                                                       :main-tabview:main-form:header_bidding
-                                                                       :main-tabview:main-form:bidding_content
-                                                                       :main-tabview:main-form:paginator_panel"
-                                                listener="#{categoryView.updateCategoryView(category)}">
-                                            <f:setPropertyActionListener value="item_list" target="#{contentView.content}"/>
-                                        </p:ajax>
-                                        <p:ajax event="unselect" listener="#{treeBean.onNodeUnselect}" >
-                                            <f:setPropertyActionListener value="item_list" target="#{contentView.content}"/>
-                                        </p:ajax>
-                                        <p:treeNode expandedIcon="ui-icon-folder-open" collapsedIcon="ui-icon-folder-collapsed">
-                                            <h:outputText styleClass="fontStyle" value="#{category.name}"/>
-                                        </p:treeNode>
-                                    </p:tree>
-                            </h:panelGroup>
-                        </p:layoutUnit>
-                        <p:layoutUnit position="south" resizable="true" minSize="100" size="250" style="border-top:5px double #dddddd;border-left:none;border-right:none;border-bottom:none;border-radius:initial;">
-                            <p:outputPanel id="category_description" style="border:2px solid #dddddd;height:100%;margin-top:4px;" styleClass="fontStyle">
-                                <div style="margin-left:10px;margin-top:-15px;position:absolute;background-color:#ffffff;white-space:nowrap;padding:5px;z-index:2;">#{treeBean.selectedCategory.name}</div>
-                                <h:panelGroup layout="block" style="padding:15px;">
-                                    <h:outputText value="#{treeBean.selectedCategory.description}"/>
-                                </h:panelGroup>
-                            </p:outputPanel>
-                        </p:layoutUnit>
-                    </p:layout>
+                    <ui:include src="/view/common/category_tree.xhtml"/>
                 </p:layoutUnit>
                 <p:layoutUnit position="center" resizable="true" style="border:none;">
                     <p:layout>

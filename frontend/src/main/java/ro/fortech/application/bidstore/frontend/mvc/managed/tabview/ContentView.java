@@ -4,6 +4,7 @@ import ro.fortech.application.bidstore.backend.model.BidStatus;
 import ro.fortech.application.bidstore.backend.model.ItemDetails;
 import ro.fortech.application.bidstore.backend.persistence.entity.*;
 import ro.fortech.application.bidstore.backend.service.bidding.BiddingService;
+import ro.fortech.application.bidstore.frontend.mvc.managed.tabview.common.TreeBean;
 import ro.fortech.application.bidstore.frontend.util.Paginator;
 import ro.fortech.application.bidstore.frontend.mvc.managed.account.UserAccount;
 

@@ -1,4 +1,4 @@
-package ro.fortech.application.bidstore.frontend.mvc.managed.tabview;
+package ro.fortech.application.bidstore.frontend.mvc.managed.tabview.common;
 
 import org.primefaces.event.NodeSelectEvent;
 import org.primefaces.model.DefaultTreeNode;
@@ -48,6 +48,13 @@ public class TreeBean implements Serializable {
         }
 
     }
+    public void onBreadcrumbSelect(Category category) {
+        setSelectedCategory(category);
+    }
+
+    public void onCategorySelect(Category category) {
+        setSelectedCategory(category);
+    }
 
     private void expand(TreeNode treeNode){
         if (treeNode.getParent()!=null){
@@ -56,12 +63,12 @@ public class TreeBean implements Serializable {
         }
     }
 
-    private TreeNode searchNodeForCateogory(Category category, TreeNode node) {
+    private TreeNode searchNodeForCategory(Category category, TreeNode node) {
         if(node.getData() != null && node.getData().equals(category)){
             return node;
         }
         for(TreeNode searchNode: node.getChildren()){
-            if((searchNode = searchNodeForCateogory(category,searchNode)) != null)
+            if((searchNode = searchNodeForCategory(category,searchNode)) != null)
                 return searchNode;
         }
         return null;
@@ -115,11 +122,14 @@ public class TreeBean implements Serializable {
     }
 
     public void setSelectedCategory(Category selectedCategory) {
-        TreeNode node = searchNodeForCateogory(selectedCategory,root);
-        if(selectedNode != null)selectedNode.setSelected(false);
+        TreeNode node = searchNodeForCategory(selectedCategory,root);
+        if(selectedNode != null)
+            selectedNode.setSelected(false);
+
         selectedNode = node;
         selectedNode.setSelected(true);
         expand(selectedNode);
+
         this.selectedCategory = selectedCategory;
     }
 
@@ -138,4 +148,5 @@ public class TreeBean implements Serializable {
     public void setRootCategory(Category rootCategory) {
         this.rootCategory = rootCategory;
     }
+
 }

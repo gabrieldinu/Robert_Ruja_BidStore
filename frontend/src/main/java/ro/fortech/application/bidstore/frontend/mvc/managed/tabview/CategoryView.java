@@ -2,6 +2,7 @@ package ro.fortech.application.bidstore.frontend.mvc.managed.tabview;
 
 import ro.fortech.application.bidstore.backend.persistence.entity.Category;
 import ro.fortech.application.bidstore.backend.service.bidding.BiddingService;
+import ro.fortech.application.bidstore.frontend.mvc.managed.tabview.common.TreeBean;
 import ro.fortech.application.bidstore.frontend.util.Paginator;
 
 import javax.annotation.PostConstruct;
@@ -36,31 +37,6 @@ public class CategoryView implements Serializable {
 
     @Inject
     private BiddingService biddingService;
-
-    @PostConstruct
-    public void init(){
-        allCategories = biddingService.getAllCategories();
-    }
-
-    public void updateCategoryView(Category category){
-        treeBean.setSelectedCategory(category);
-        contentView.renderItemList();
-        updateBreadcrumbs(category);
-    }
-
-    private void updateBreadcrumbs(Category category) {
-        breadcrumbs = new ArrayList<>();
-        breadcrumbs.add(category);
-        Category current = category;
-        for(int i = allCategories.size() - 1; i >= 0; i--){
-            Category searchCategory = allCategories.get(i);
-            if(searchCategory.getParentId() != null && searchCategory.getId().equals(current.getParentId())){
-                breadcrumbs.add(searchCategory);
-                current = searchCategory;
-            }
-        }
-        Collections.reverse(breadcrumbs);
-    }
 
     public List<String> completeText(String query) {
 
