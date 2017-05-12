@@ -12,7 +12,7 @@
                         <p:layoutUnit position="north" style="border:none;min-height:100px;">
                             <h:panelGroup id="header_bidding" layout="block" style="padding:10px;padding-top:10px;">
                                 <div style="width:100%;">
-                                    <p:commandButton value="Search for category" styleClass="btn btn-default fontStyle" style="border-radius:0px;float:left;" onclick="PF('categoryDialog').show();" type="button" />
+                                    <p:commandButton value="Search for category" styleClass="btn btn-default fontStyle" style="border-radius:0px;float:left;" onclick="PF('#{tabViewBean.content}-categoryDialog').show();" type="button" />
                                     <div style="display:block; float:left; margin-left:50px;">
                                         <p:outputLabel value="Search for item: " for="acMaxResults" style="margin-right:30px;" styleClass="fontStyle"/>
                                         <p:autoComplete id="acMaxResults" maxResults="5" value="#{contentView.searchText}" completeMethod="#{contentView.completeText}" style="border-radius:6px;" styleClass="fontStyle" size="60"
@@ -35,5 +35,6 @@
                     </p:layout>
                 </p:layoutUnit>
         </p:layout>
+        <ui:include src="/view/common/category_search_dialog.xhtml"/>
     </h:form>
 </ui:composition>

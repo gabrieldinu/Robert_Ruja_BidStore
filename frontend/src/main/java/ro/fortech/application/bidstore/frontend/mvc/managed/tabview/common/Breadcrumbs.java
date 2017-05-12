@@ -21,14 +21,11 @@ import java.util.List;
 @ViewScoped
 public class Breadcrumbs implements Serializable {
 
-    private List<Category> categories;
+    private List<Category> breadcrumbs;
 
     private List<Category> bidding;
 
     private List<Category> allCategories;
-
-    @ManagedProperty(value = "#{tabViewBean}")
-    private TabViewBean tabViewBean;
 
     @ManagedProperty(value = "#{treeBean}")
     private TreeBean treeBean;
@@ -58,11 +55,11 @@ public class Breadcrumbs implements Serializable {
     }
 
     public List<Category> getCategories() {
-        return categories;
+        return breadcrumbs;
     }
 
     public void setCategories(List<Category> categories) {
-        this.categories = categories;
+        this.breadcrumbs = categories;
     }
 
     public List<Category> getBidding() {
@@ -79,14 +76,6 @@ public class Breadcrumbs implements Serializable {
 
     public void setAllCategories(List<Category> allCategories) {
         this.allCategories = allCategories;
-    }
-
-    public TabViewBean getTabViewBean() {
-        return tabViewBean;
-    }
-
-    public void setTabViewBean(TabViewBean tabViewBean) {
-        this.tabViewBean = tabViewBean;
     }
 
     public TreeBean getTreeBean() {

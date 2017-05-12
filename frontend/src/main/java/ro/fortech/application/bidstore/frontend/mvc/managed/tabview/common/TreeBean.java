@@ -32,9 +32,13 @@ public class TreeBean implements Serializable {
 
     @PostConstruct
     public void init() {
-        root = new DefaultTreeNode();
         rootCategory = biddingService.getRoot();
-        buildTree(biddingService.getRoot(), root);
+        initTree();
+    }
+
+    public void initTree() {
+        root = new DefaultTreeNode();
+        buildTree(rootCategory,root);
     }
 
     public void buildTree(Category category, TreeNode parent){
@@ -125,11 +129,11 @@ public class TreeBean implements Serializable {
         TreeNode node = searchNodeForCategory(selectedCategory,root);
         if(selectedNode != null)
             selectedNode.setSelected(false);
-
         selectedNode = node;
-        selectedNode.setSelected(true);
-        expand(selectedNode);
-
+        if(node != null) {
+            selectedNode.setSelected(true);
+            expand(selectedNode);
+        }
         this.selectedCategory = selectedCategory;
     }
 

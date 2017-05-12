@@ -4,14 +4,29 @@
                 xmlns:fn="http://java.sun.com/jsp/jstl/functions">
     <div style="width:100%;border:none; background-color:#fafafa;display:block;float:left; margin-top:20px;">
         <ul>
-            <ui:repeat value="#{breadcrumbs.getBreadcrumbs()}" var="category">
+            <ui:repeat value="#{breadcrumbs.getBreadcrumbs()}" var="category" rendered="#{tabViewBean.content eq 'bidding'}">
                 <li class="ui-breadcrumb-chevron ui-icon ui-icon-triangle-1-e" style="float:left;"/>
                 <li class="menuItem" style="float:left;">
                     <p:commandLink styleClass="fontStyle" value="#{category.name}"
-                                   update=":main-tabview:main-form
-                                            :main-tabview:category-form"
+                                   update=":main-tabview:main-form:tree_bidding
+                                           :main-tabview:main-form:category_description
+                                           :main-tabview:main-form:bidding_content
+                                           :main-tabview:main-form:header_bidding
+                                           :main-tabview:main-form:paginator_panel"
                                    actionListener="#{treeBean.onBreadcrumbSelect(category)}">
                         <f:setPropertyActionListener value="item_list" target="#{contentView.content}"/>
+                    </p:commandLink>
+                </li>
+            </ui:repeat>
+            <ui:repeat value="#{breadcrumbs.getBreadcrumbs()}" var="category" rendered="#{tabViewBean.content eq 'categories'}">
+                <li class="ui-breadcrumb-chevron ui-icon ui-icon-triangle-1-e" style="float:left;"/>
+                <li class="menuItem" style="float:left;">
+                    <p:commandLink styleClass="fontStyle" value="#{category.name}"
+                                   update=":main-tabview:category-form:tree_categories
+                                           :main-tabview:category-form:category_description
+                                           :main-tabview:category-form:header_categories
+                                           :main-tabview:category-form:categories_content"
+                                   actionListener="#{treeBean.onBreadcrumbSelect(category)}">
                     </p:commandLink>
                 </li>
             </ui:repeat>

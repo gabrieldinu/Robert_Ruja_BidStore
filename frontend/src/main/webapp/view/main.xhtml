@@ -11,7 +11,7 @@
     <ui:define name="body" styleClass="fontStyle">
         <div class="row" style="width:100%;">
             <div style="position:block; height:100%;width:100%;">
-                <p:tabView id="main-tabview" style="border:none;" styleClass="fontStyle">
+                <p:tabView id="main-tabview" style="border:none;" styleClass="fontStyle" dynamic="true">
                     <p:ajax event="tabChange" listener="#{tabViewBean.onTabChange}" />
                     <p:tab title="Bidding" style="padding:0px;" styleClass="fontStyle" content="bidding">
                         <ui:include src="/view/bidding/bidding_main.xhtml"/>
@@ -31,7 +31,6 @@
                         <ui:include src="/view/account/accountManagement.xhtml"/>
                     </p:tab>
                 </p:tabView>
-                <ui:include src="/view/common/category_search_dialog.xhtml"/>
             </div>
         </div>
     </ui:define>
