@@ -1,6 +1,7 @@
 package ro.fortech.application.bidstore.backend.model;
 
 import java.sql.Date;
+import java.util.List;
 
 /**
  * Created by robert.ruja on 09-May-17.
@@ -24,6 +25,10 @@ public class ItemDetails {
     private Long bidCount;
 
     private double bestBid;
+
+    private String winner;
+
+    private List<String> categories;
 
     public Long getItemId() {
         return itemId;
@@ -95,5 +100,21 @@ public class ItemDetails {
 
     public void setStatus(BidStatus status) {
         this.status = status;
+    }
+
+    public String getWinner() {
+        return winner;
+    }
+
+    public void setWinner(String winner) {
+        this.winner = winner;
+    }
+
+    public List<String> getCategories() {
+        return categories;
+    }
+
+    public void setCategories(List<String> categories) {
+        this.categories = categories;
     }
 }

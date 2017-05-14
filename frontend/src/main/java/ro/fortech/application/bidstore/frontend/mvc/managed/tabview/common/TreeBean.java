@@ -33,11 +33,7 @@ public class TreeBean implements Serializable {
     @PostConstruct
     public void init() {
         rootCategory = biddingService.getRoot();
-        initTree();
-    }
-
-    public void initTree() {
-        root = new DefaultTreeNode();
+        root = new DefaultTreeNode(rootCategory);
         buildTree(rootCategory,root);
     }
 
@@ -88,18 +84,39 @@ public class TreeBean implements Serializable {
         selectedCategory = rootCategory;
     }
 
-    public void onNodeExpand(NodeSelectEvent event){
-        TreeNode expandedNode = event.getTreeNode();
-        Category category = (Category)expandedNode.getData();
-        addChildren(expandedNode, category.getId());
+    public void mergeNode(Category category) {
+        Category parent = biddingService.getCategoryById(category.getParentId());
+
+        if(parent != null) {
+            TreeNode parentNode = searchNodeForCategory(parent, root);
+            if (parentNode != null) {
+                //check for existing child
+                TreeNode childNode = searchNodeForCategory(category, parentNode);
+                if (childNode != null) {
+                    //replace with new data
+                    parentNode.getChildren().remove(childNode);
+                    parentNode.getChildren().add(new DefaultTreeNode(category));
+                } else {
+                    parentNode.getChildren().add(new DefaultTreeNode(category));
+                    parent.getChildren().add(category);
+                }
+            }
+        } else {
+            throw new RuntimeException("The parent id of the category was not found into db");
+        }
     }
 
-    public void addChildren(TreeNode node, Long parentId){
+    public void removeNode(Category category) {
+        TreeNode node = searchNodeForCategory(category,root);
+        if(node != null) {
+            setSelectedCategory((Category)node.getParent().getData());
+            List<Category> children = ((Category)node.getParent().getData()).getChildren();
+            if(children != null)
+                children.remove(category);
+            node.getParent().getChildren().remove(node);
 
-        List<TreeNode> children = node.getChildren();
-        children.clear();
-        for(Category fetchCategory: biddingService.getCategoriesWithParentId(parentId)){
-            children.add(new DefaultTreeNode(fetchCategory));
+        }else{
+            throw new RuntimeException("The corresponding node for the given category was not found in the tree");
         }
     }
 
@@ -126,6 +143,7 @@ public class TreeBean implements Serializable {
     }
 
     public void setSelectedCategory(Category selectedCategory) {
+
         TreeNode node = searchNodeForCategory(selectedCategory,root);
         if(selectedNode != null)
             selectedNode.setSelected(false);
@@ -133,6 +151,7 @@ public class TreeBean implements Serializable {
         if(node != null) {
             selectedNode.setSelected(true);
             expand(selectedNode);
+
         }
         this.selectedCategory = selectedCategory;
     }

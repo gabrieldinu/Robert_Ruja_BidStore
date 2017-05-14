@@ -44,10 +44,14 @@ public class CategoryView implements Serializable {
     }
 
     public List<Category> getCategoryList() {
-        List<Category> results  = biddingService.getCategories(paginator.getSortBy(), paginator.isAscending(), searchText);
-        paginator.setItemCount(results.size());
-        paginator.compute();
-        return results.subList(paginator.getStartIndex(),paginator.getEndIndex());
+        List<Category> results = new ArrayList<>();
+        if(searchText != null && !searchText.isEmpty()) {
+            results = biddingService.getCategories(paginator.getSortBy(), paginator.isAscending(), searchText);
+            paginator.setItemCount(results.size());
+            paginator.compute();
+            return results.subList(paginator.getStartIndex(), paginator.getEndIndex());
+        }
+        return results;
     }
 
     public List<Category> getBreadcrumbs() {

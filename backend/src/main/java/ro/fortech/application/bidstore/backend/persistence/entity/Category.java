@@ -1,6 +1,8 @@
 package ro.fortech.application.bidstore.backend.persistence.entity;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.sql.Date;
 import java.util.List;
@@ -10,9 +12,11 @@ import java.util.List;
 public class Category implements Serializable {
 
     @Column
+    @NotNull
     private String name;
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "parent_id")
@@ -21,7 +25,8 @@ public class Category implements Serializable {
     @Column(name = "creation_date")
     private Date creationDate;
 
-    @Column
+    @Column(length = 2000)
+    @Size(max = 2000)
     private String description;
 
     public Category() {

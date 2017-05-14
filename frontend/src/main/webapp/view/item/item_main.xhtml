@@ -2,5 +2,10 @@
                 xmlns:ui="http://xmlns.jcp.org/jsf/facelets" xmlns:p="http://primefaces.org/ui"
                 xmlns:f="http://xmlns.jcp.org/jsf/core" xmlns:h="http://xmlns.jcp.org/jsf/html"
                 xmlns:fn="http://java.sun.com/jsp/jstl/functions">
-
+    <div class="row" style="width:100%;">
+        <h:form id="item-form" style="width:100%;">
+            <p:messages id="messages" showDetail="true" closable="true"/>
+            <ui:include src="/view/item/#{itemView.content}.xhtml"/>
+        </h:form>
+    </div>
 </ui:composition>

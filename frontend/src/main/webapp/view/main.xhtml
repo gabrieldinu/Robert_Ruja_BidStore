@@ -11,17 +11,22 @@
     <ui:define name="body" styleClass="fontStyle">
         <div class="row" style="width:100%;">
             <div style="position:block; height:100%;width:100%;">
-                <p:tabView id="main-tabview" style="border:none;" styleClass="fontStyle" dynamic="true">
-                    <p:ajax event="tabChange" listener="#{tabViewBean.onTabChange}" />
+                <p:tabView id="main-tabview" style="border:none;" styleClass="fontStyle" dynamic="true" cache="true">
+                    <p:ajax event="tabChange" listener="#{tabViewBean.onTabChange}" update=":main-tabview:category-form:tree_categories
+                                                            :main-tabview:category-form:category_description
+                                                            :main-tabview:category-form:breadcrumbs
+                                                            :main-tabview:category-form:categories_content
+                                                            :main-tabview:main-form:category_description
+                                                            :main-tabview:main-form:breadcrumbs
+                                                            :main-tabview:main-form:tree_bidding"/>
                     <p:tab title="Bidding" style="padding:0px;" styleClass="fontStyle" content="bidding">
                         <ui:include src="/view/bidding/bidding_main.xhtml"/>
                     </p:tab>
                     <p:tab title="Items" content="items">
-                        <h:form id="item-form">
-                            <p:commandButton value="Press" onclick="PF('categoryDialog').show();return false;"/>
-                        </h:form>
+                        <p:messages id="messages" showDetail="true" closable="true"/>
+                        <ui:include src="/view/item/item_main.xhtml"/>
                     </p:tab>
-                    <p:tab title="Categories" content="categories">
+                    <p:tab title="Categories" content="categories" rendered="#{userAccount.admin}">
                         <ui:include src="/view/category/category_main.xhtml"/>
                     </p:tab>
                     <p:tab title="Users" renedered="#{userAccount.admin}" content="users">

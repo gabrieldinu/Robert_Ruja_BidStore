@@ -6,6 +6,7 @@ import ro.fortech.application.bidstore.backend.persistence.entity.Category;
 import ro.fortech.application.bidstore.backend.persistence.entity.Item;
 import ro.fortech.application.bidstore.backend.persistence.entity.UserAuth;
 
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Map;
 
@@ -23,12 +24,6 @@ public interface BiddingDAO {
     List<Category> getAllCategories();
 
     Category getRoot();
-
-    long getBoughtItemCount(String username);
-
-    long getSoldItemCount(String username);
-
-    long getPlacedItemCount(String username);
 
     List<Item> getFullItemList();
 
@@ -49,4 +44,11 @@ public interface BiddingDAO {
     Bid getBidForItem(Long itemId, String username);
 
     List<Category> getCategories(String sortBy, boolean ascending, String searchText);
+
+    boolean saveCategory(Category category);
+
+    @Transactional
+    boolean removeCategory(Category category);
+
+    Category getCategoryById(Long id);
 }

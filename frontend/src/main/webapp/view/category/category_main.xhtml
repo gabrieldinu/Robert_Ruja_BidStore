@@ -5,23 +5,65 @@
     <h:form id="category-form" style="display:block;min-width:500px;min-height:630px; overflow:visible;">
         <p:layout style="min-width:500px;min-height:630px;" styleClass="fontStyle">
             <p:layoutUnit position="west" resizable="true" size="330" minSize="200" maxSize="500" style="padding:6px;border-right:5px double #dddddd; border-radius:initial;">
-                <ui:include src="/view/common/category_tree.xhtml"/>
+                <p:layout>
+                    <p:layoutUnit position="center" resizable="true" style="border:none;overflow:hidden;" minSize="300" size="350">
+                        <h:panelGroup id="tree_categories" layout="block" style="border:2px solid #dddddd;height:100%;overflow:auto;">
+                            <p:tree value="#{treeBean.root}" selectionMode="single" var="category" style="border:none;" selection="#{treeBean.selectedNode}" animate="true">
+                                <p:ajax event="select" update=":main-tabview:category-form:category_description
+                                       :main-tabview:category-form:breadcrumbs
+                                       :main-tabview:category-form:categories_content"
+                                        listener="#{treeBean.onNodeSelect}">
+                                    <f:setPropertyActionListener value="item_list" target="#{contentView.content}"/>
+                                </p:ajax>
+                                <p:treeNode expandedIcon="ui-icon-folder-open" collapsedIcon="ui-icon-folder-collapsed">
+                                    <h:outputText styleClass="fontStyle" value="#{category.name}"/>
+                                </p:treeNode>
+                            </p:tree>
+                        </h:panelGroup>
+                    </p:layoutUnit>
+                    <p:layoutUnit position="south" resizable="true" minSize="100" size="250" style="border-top:5px double #dddddd;border-left:none;border-right:none;border-bottom:none;border-radius:initial;overflow:hidden;">
+                        <p:outputPanel id="category_description" style="border:2px solid #dddddd;height:100%;margin-top:4px;overflow:hidden;" styleClass="fontStyle">
+                            <div style="margin-left:10px;margin-top:-15px;position:absolute;background-color:#ffffff;white-space:nowrap;padding:5px;z-index:2;">#{treeBean.selectedCategory.name}</div>
+                            <h:panelGroup layout="block" style="padding:15px;font-size:13px;">
+                                <h:outputText value="#{treeBean.selectedCategory.description}"/>
+                            </h:panelGroup>
+                        </p:outputPanel>
+                    </p:layoutUnit>
+                </p:layout>
             </p:layoutUnit>
             <p:layoutUnit position="center" resizable="true" style="border:none;">
                 <p:layout>
                     <p:layoutUnit position="north" style="border:none;min-height:100px;">
-                        <h:panelGroup layout="block" id="header_categories" style="padding:10px;padding-top:10px;">
+                        <h:panelGroup layout="block" style="padding:10px;padding-top:10px;">
                             <div style="width:100%;">
                                 <p:commandButton value="Search for category" styleClass="btn btn-default fontStyle" style="border-radius:0px;float:left;" onclick="PF('#{tabViewBean.content}-categoryDialog').show();" type="button" />
                                 <div style="display:block; float:left; margin-left:50px;">
-                                    <p:commandButton value="Create new" styleClass="btn btn-default fontStyle" style="border-radius:0px;float:left;" type="button" />
+                                    <p:commandButton value="Create new" styleClass="btn btn-default fontStyle" style="border-radius:0px;float:left;" type="button" >
+                                        <p:ajax update="categories_content" listener="#{categoryEdit.createNew}"/>
+                                    </p:commandButton>
                                 </div>
                             </div>
-                            <ui:include src="/view/common/breadcrumbs.xhtml"/>
+                            <h:panelGroup id="breadcrumbs" layout="block" style="width:100%;border:none; background-color:#fafafa;display:block;float:left; margin-top:20px;">
+                                <ul>
+                                    <ui:repeat value="#{breadcrumbs.getBreadcrumbs()}" var="category">
+                                        <li class="ui-breadcrumb-chevron ui-icon ui-icon-triangle-1-e" style="float:left;"/>
+                                        <li class="menuItem" style="float:left;">
+                                            <p:commandLink styleClass="fontStyle" value="#{category.name}"
+                                                           update=":main-tabview:category-form:tree_categories
+                                                                   :main-tabview:category-form:category_description
+                                                                   :main-tabview:category-form:breadcrumbs
+                                                                   :main-tabview:category-form:categories_content"
+                                                           actionListener="#{treeBean.onBreadcrumbSelect(category)}">
+                                            </p:commandLink>
+                                        </li>
+                                    </ui:repeat>
+                                </ul>
+                            </h:panelGroup>
                         </h:panelGroup>
                     </p:layoutUnit>
                     <p:layoutUnit position="center" style="border:none;padding:0px;">
                         <p:outputPanel deffered="true" id="categories_content" style="width:90%;height:100%;">
+                            <p:growl id="growl" showDetail="true" sticky="false" />
                             <table style="width:100%;height:80%;border:none;">
                                 <tr>
                                     <td style="width:10%;">
@@ -43,12 +85,23 @@
                             <table style="width:100%;height:20%;">
                                 <tr>
                                     <td style="padding:5px;width:50%;float:left;padding-left:300px;">
-                                        <p:commandButton value="Save" rendered="#{treeBean.selectedCategory.id != 0}">
-                                            <p:ajax update="" listener="#{}"/>
+                                        <p:commandButton value="Save" rendered="#{treeBean.selectedCategory.id != 1}">
+                                            <p:ajax  process="@form" update=":main-tabview:category-form:tree_categories
+                                                            :main-tabview:category-form:category_description
+                                                            :main-tabview:category-form:breadcrumbs
+                                                            :main-tabview:category-form:categories_content"
+                                                    listener="#{categoryEdit.saveCategory}"/>
                                         </p:commandButton>
                                     </td>
                                     <td style="padding:5px;width:50%;float:right;">
-                                        <p:commandButton value="Remove" rendered="#{treeBean.selectedCategory.id != 0}"/>
+                                        <p:commandButton value="Remove" onclick="if(! confirm('Remove current category ?')) return false;"
+                                                         rendered="#{treeBean.selectedCategory.id != 0 and treeBean.selectedCategory.id != 1}">
+                                            <p:ajax update=":main-tabview:category-form:tree_categories
+                                                            :main-tabview:category-form:category_description
+                                                            :main-tabview:category-form:breadcrumbs
+                                                            :main-tabview:category-form:categories_content"
+                                                    listener="#{categoryEdit.remove}"/>
+                                        </p:commandButton>
                                     </td>
                                 </tr>
                             </table>
@@ -57,6 +110,8 @@
                 </p:layout>
             </p:layoutUnit>
         </p:layout>
+    </h:form>
+    <h:form id="dialog-form-categories">
         <ui:include src="/view/common/category_search_dialog.xhtml"/>
     </h:form>
 </ui:composition>

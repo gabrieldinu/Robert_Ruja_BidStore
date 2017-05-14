@@ -154,6 +154,24 @@ public class BiddingServiceImpl implements BiddingService {
         return biddingDAO.getCategories(sortBy, ascending, searchText);
     }
 
+    @Override
+    public void saveCategory(Category category) throws BiddingException{
+        if(!biddingDAO.saveCategory(category)) {
+            throw new BiddingException("An error occured while trying to save category into db");
+        }
+    }
+    @Override
+    public void remove(Category category) throws BiddingException{
+        if(!biddingDAO.removeCategory(category)) {
+            throw new BiddingException("An error occured while trying to remove category from db");
+        }
+    }
+
+    @Override
+    public Category getCategoryById(Long id) {
+        return biddingDAO.getCategoryById(id);
+    }
+
     private void populateCategoryChildrenIds(List<Long> categoryIds, Category category){
 
         if(category.getChildren() == null)

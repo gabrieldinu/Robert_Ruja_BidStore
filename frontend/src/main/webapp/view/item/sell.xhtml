@@ -1,0 +1,104 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets" xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core" xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+    <div class="row" style="width:100%;">
+
+        <h:panelGroup layout="block">
+            <p:outputPanel style="width:100%;">
+                <p:outputLabel for="content" value="Items to:" style="float:left;position:relative;margin-left:120px;"/>
+                <h:selectOneMenu id="content" value="#{itemView.content}" style="size:40px;float:left;position:relative;margin-left:20px;">
+                    <p:ajax event="change" process="@this" update="@form"/>
+                    <f:selectItem itemLabel="sell" itemValue="sell" />
+                    <f:selectItem itemLabel="buy" itemValue="buy" />
+                </h:selectOneMenu>
+                <h:commandButton styleClass="btn-block" value="Define new item"
+                                 onclick="if(! confirm('Enable selected user ?')) return false"
+                                 action="#{userMgt.enable}" style="position:relative;float:left;width:120px;margin-left:20px;border-radius:0px;" type="button">
+                    <!--<f:setPropertyActionListener target="#{userMgt.managedUsername}" value="#{user.username}"/>-->
+                    <!--<f:ajax execute="@form" render="@form"/>-->
+                </h:commandButton>
+            </p:outputPanel>
+        </h:panelGroup>
+        <p:dataTable var="item" value="#{itemView.getItems()}" paginator="true" rows="10"
+                     paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+                     rowsPerPageTemplate="5,10,15" id="itemTable" lazy="true">
+            <p:column headerText="Name" sortBy="#{item.itemName}" filterBy="#{item.itemName}">
+                <h:outputText value="#{item.itemName}" />
+            </p:column>
+            <p:column headerText="Categories" >
+                <!--<p:selectOneMenu id="categories" value="#{itemView.selectedCategory}">-->
+                    <!--<p:ajax listener="#{itemView.onCountryChange(item.category)}" />-->
+                    <!--<f:selectItems value="#{item.categories}" />-->
+                <!--</p:selectOneMenu>-->
+            </p:column>
+            <p:column headerText="Initial price" sortBy="#{item.initialPrice}" filterBy="#{item.initialPrice}">
+                <h:outputText value="#{item.initialPrice}" />
+            </p:column>
+            <p:column headerText="Best bid" sortBy="#{item.bestBid}" filterBy="#{item.bestBid}">
+                <h:outputText value="#{item.bestBid}" />
+            </p:column>
+            <p:column headerText="# bids" sortBy="#{item.bidCount}" filterBy="#{item.bidCount}">
+                <h:outputText value="#{item.bidCount}" />
+            </p:column>
+            <p:column headerText="opening date" sortBy="#{item.openingDate}" filterBy="#{item.openingDate}">
+                <h:outputText value="#{item.openingDate}" />
+            </p:column>
+            <p:column headerText="closing date" sortBy="#{item.closingDate}" filterBy="#{item.closingDate}">
+                <h:outputText value="#{item.closingDate}" />
+            </p:column>
+            <p:column headerText="Status" sortBy="#{item.status}" filterBy="#{item.status}">
+                <h:outputText value="#{item.status}" />
+            </p:column>
+            <p:column headerText="Winner" sortBy="#{item.winner}" filterBy="#{item.winner}">
+                <h:outputText value="#{item.winner}" />
+            </p:column>
+            <p:column size="200">
+                <h:panelGroup layout="block" style="width:200px;">
+                    <h:commandButton styleClass="btn-block" value="Close"
+                                     onclick="if(! confirm('Disable selected user ?')) return false"
+                                     action="#{userMgt.disable}" style="float:left;width:50px;">
+                        <!--<f:setPropertyActionListener target="#{userMgt.managedUsername}" value="#{user.username}"/>-->
+                        <!--<f:ajax execute="@form" render="@form"/>-->
+                    </h:commandButton>
+                    <h:commandButton styleClass="btn-block" value="Abandon"
+                                     onclick="if(! confirm('Enable selected user ?')) return false"
+                                     action="#{userMgt.enable}" style="float:left;width:70px;">
+                        <!--<f:setPropertyActionListener target="#{userMgt.managedUsername}" value="#{user.username}"/>-->
+                        <!--<f:ajax execute="@form" render="@form"/>-->
+                    </h:commandButton>
+                    <h:commandButton styleClass="btn-block" value="Change"
+                                     onclick="if(! confirm('Enable selected user ?')) return false"
+                                     action="#{userMgt.enable}" style="float:left;width:70px;">
+                        <!--<f:setPropertyActionListener target="#{userMgt.managedUsername}" value="#{user.username}"/>-->
+                        <!--<f:ajax execute="@form" render="@form"/>-->
+                    </h:commandButton>
+                </h:panelGroup>
+            </p:column>
+        </p:dataTable>
+        </div>
+            <!--<p:dialog header="User detail" widgetVar="userDialog" modal="true" showEffect="fade" hideEffect="fade" resizable="false">-->
+                <!--<p:outputPanel id="userDetail" style="text-align:center;">-->
+                    <!--<p:panelGrid  columns="2" rendered="#{not empty userMgt.selectedUser}" columnClasses="label,value">-->
+                        <!--<f:facet name="header">-->
+                            <!--<h:outputText value="#{userMgt.selectedUser.username}"/>-->
+                        <!--</f:facet>-->
+
+                        <!--<h:outputText value="First name:" style="color:black;"/>-->
+                        <!--<h:outputText value="#{userMgt.selectedUser.firstName}" />-->
+
+                        <!--<h:outputText value="Last name:" style="color:black;"/>-->
+                        <!--<h:outputText value="#{userMgt.selectedUser.lastName}" />-->
+
+                        <!--<h:outputText value="Email" style="color:black;"/>-->
+                        <!--<h:outputText value="#{userMgt.selectedUser.email}" />-->
+
+                        <!--<h:outputText value="Enable status" style="color:black;"/>-->
+                        <!--<h:graphicImage value="/resources/true.png" rendered="#{userMgt.selectedUser.enabled}"/>-->
+                        <!--<h:graphicImage value="/resources/false.png" rendered="#{!userMgt.selectedUser.enabled}"/>-->
+
+                    <!--</p:panelGrid>-->
+                <!--</p:outputPanel>-->
+            <!--</p:dialog>-->
+
+</ui:composition>

@@ -4,6 +4,7 @@ import ro.fortech.application.bidstore.backend.model.BidStatus;
 import ro.fortech.application.bidstore.backend.util.Formatter;
 
 import javax.persistence.*;
+import javax.validation.constraints.Size;
 import java.sql.Date;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -21,7 +22,8 @@ public class Item {
     @Column
     private String name;
 
-    @Column
+    @Column(length = 2000)
+    @Size(max = 2000)
     private String description;
 
     @Column(name = "initial_price")
@@ -40,7 +42,7 @@ public class Item {
     @Column(name = "owner_user_id")
     private String owner;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "itemId")
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "itemId")
     private List<Bid> bids;
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
@@ -48,13 +50,6 @@ public class Item {
             joinColumns = {@JoinColumn(name = "item_id")},
             inverseJoinColumns = {@JoinColumn(name = "category_id")})
     private List<Category> categories;
-
-    public void addCategory(Category category) {
-        if(this.categories == null) {
-            categories = new ArrayList<>();
-        }
-        this.categories.add(category);
-    }
 
     public Long getId() {
         return id;

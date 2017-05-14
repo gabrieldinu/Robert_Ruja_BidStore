@@ -50,4 +50,10 @@ public interface BiddingService {
     Bid getBidForItem(Long itemId, String username);
 
     List<Category> getCategories(String sortBy, boolean ascending, String searchText);
+
+    void saveCategory(Category category) throws BiddingException;
+
+    void remove(Category category) throws BiddingException;
+
+    Category getCategoryById(Long id);
 }

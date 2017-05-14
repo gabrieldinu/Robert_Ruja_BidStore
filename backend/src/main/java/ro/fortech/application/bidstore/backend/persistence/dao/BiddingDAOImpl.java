@@ -69,26 +69,8 @@ public class BiddingDAOImpl implements BiddingDAO {
 
     public Category getRoot() {
         DetachedCriteria detachedCriteria = DetachedCriteria.forClass(Category.class);
-        detachedCriteria.add(Restrictions.idEq(0L));
+        detachedCriteria.add(Restrictions.idEq(1L));
         return (Category)detachedCriteria.getExecutableCriteria(hibernateProvider.getSession()).list().get(0);
-    }
-
-    @Override
-    public long getBoughtItemCount(String username) {
-        //todo:
-        return 0;
-    }
-
-    @Override
-    public long getSoldItemCount(String username) {
-        //todo:
-        return 0;
-    }
-
-    @Override
-    public long getPlacedItemCount(String username) {
-        //todo:
-        return 0;
     }
 
     @Override
@@ -229,5 +211,42 @@ public class BiddingDAOImpl implements BiddingDAO {
             criteria.addOrder(ascending?Order.asc(sortBy):Order.desc(sortBy));
 
         return criteria.getExecutableCriteria(hibernateProvider.getSession()).list();
+    }
+
+    @Override
+    @Transactional
+    public boolean saveCategory(Category category) {
+        try {
+            category.setId(((Category)(hibernateProvider.getSession().merge(category))).getId());
+            return true;
+        }catch (Exception ex) {
+            return false;
+        }
+    }
+
+    @Override
+    @Transactional
+    public boolean removeCategory(Category category) {
+        try {
+            if (em.contains(category)) {
+                em.remove(category);
+            } else {
+                category = em.getReference(Category.class, category.getId());
+                em.remove(category);
+            }
+            return true;
+        }catch (Exception ex) {
+            return false;
+        }
+    }
+
+    @Override
+    public Category getCategoryById(Long id) {
+        try {
+            return hibernateProvider.getSession().get(Category.class, id);
+        } catch (Exception ex) {
+            //todo: log.error
+            return null;
+        }
     }
 }

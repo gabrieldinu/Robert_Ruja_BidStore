@@ -29,6 +29,9 @@ public class TabViewBean implements Serializable {
     @ManagedProperty(value = "#{treeBean}")
     private TreeBean treeBean;
 
+    @ManagedProperty(value = "#{breadcrumbs}")
+    private Breadcrumbs breadcrumbs;
+
     public void onTabChange(TabChangeEvent event) {
         //save page state
         PageState pageState = stateMap.get(content);
@@ -36,7 +39,6 @@ public class TabViewBean implements Serializable {
             pageState = new PageState();
         }
         pageState.setSelectedCategory(treeBean.getSelectedCategory());
-        //pageState.setSelectedTreeNode(treeBean.getSelectedNode());
         stateMap.put(content,pageState);
 
         this.content = (String) event.getTab().getAttributes().get("content");
@@ -44,11 +46,15 @@ public class TabViewBean implements Serializable {
         //get new state for next page
         pageState = stateMap.get(content);
         if(pageState != null) {
-            treeBean.setSelectedCategory(pageState.getSelectedCategory());
-            //treeBean.setSelectedNode(pageState.getSelectedTreeNode());
+
+            //look in breadcrumbs to see if the selected category wasn't removed
+            if(breadcrumbs.getAllCategories().contains(pageState.getSelectedCategory()))
+                treeBean.setSelectedCategory(pageState.getSelectedCategory());
+            else
+                treeBean.setSelectedCategory(treeBean.getRootCategory());
         } else {
-            //reinit the tree for first time access of the tab
-            treeBean.initTree();
+            //reinit the tree for first time access of the tab so primefaces won't resize the div container
+            treeBean.init();
             treeBean.setSelectedCategory(treeBean.getRootCategory());
         }
     }
@@ -75,5 +81,13 @@ public class TabViewBean implements Serializable {
 
     public void setTreeBean(TreeBean treeBean) {
         this.treeBean = treeBean;
+    }
+
+    public Breadcrumbs getBreadcrumbs() {
+        return breadcrumbs;
+    }
+
+    public void setBreadcrumbs(Breadcrumbs breadcrumbs) {
+        this.breadcrumbs = breadcrumbs;
     }
 }

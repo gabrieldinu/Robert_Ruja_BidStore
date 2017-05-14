@@ -45,13 +45,17 @@ public class Breadcrumbs implements Serializable {
         Category current = category;
         for(int i = allCategories.size() - 1; i >= 0; i--){
             Category searchCategory = allCategories.get(i);
-            if(searchCategory.getParentId() != null && searchCategory.getId().equals(current.getParentId())){
+            if(searchCategory.getId().equals(current.getParentId())){
                 breadcrumbs.add(searchCategory);
                 current = searchCategory;
             }
         }
         Collections.reverse(breadcrumbs);
         return breadcrumbs;
+    }
+
+    public void updateBreadCrumbs() {
+        this.init();
     }
 
     public List<Category> getCategories() {

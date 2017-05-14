@@ -5,12 +5,37 @@
     <h:form id="main-form" style="overflow:visible;display:block;min-width:500px;min-height:630px;">
         <p:layout style="min-width:500px;min-height:630px;" styleClass="fontStyle">
                 <p:layoutUnit position="west" resizable="true" size="330" minSize="200" maxSize="500" style="padding:6px;border-right:5px double #dddddd; border-radius:initial;">
-                    <ui:include src="/view/common/category_tree.xhtml"/>
+                    <p:layout>
+                        <p:layoutUnit position="center" resizable="true" style="border:none;overflow:hidden;" minSize="300" size="350">
+                            <h:panelGroup id="tree_bidding" layout="block" style="border:2px solid #dddddd;height:100%;overflow:auto;">
+                                <p:tree value="#{treeBean.root}" selectionMode="single" var="category" style="border:none;" selection="#{treeBean.selectedNode}" animate="true">
+                                    <p:ajax event="select" update=":main-tabview:main-form:category_description
+                                                                   :main-tabview:main-form:bidding_content
+                                                                   :main-tabview:main-form:breadcrumbs
+                                                                   :main-tabview:main-form:paginator_panel"
+                                            listener="#{treeBean.onNodeSelect}">
+                                        <f:setPropertyActionListener value="item_list" target="#{contentView.content}"/>
+                                    </p:ajax>
+                                    <p:treeNode expandedIcon="ui-icon-folder-open" collapsedIcon="ui-icon-folder-collapsed">
+                                        <h:outputText styleClass="fontStyle" value="#{category.name}"/>
+                                    </p:treeNode>
+                                </p:tree>
+                            </h:panelGroup>
+                        </p:layoutUnit>
+                        <p:layoutUnit position="south" resizable="true" minSize="100" size="250" style="border-top:5px double #dddddd;border-left:none;border-right:none;border-bottom:none;border-radius:initial;overflow:hidden;">
+                            <p:outputPanel id="category_description" style="border:2px solid #dddddd;height:100%;margin-top:4px;overflow:hidden;" styleClass="fontStyle">
+                                <div style="margin-left:10px;margin-top:-15px;position:absolute;background-color:#ffffff;white-space:nowrap;padding:5px;z-index:2;">#{treeBean.selectedCategory.name}</div>
+                                <h:panelGroup layout="block" style="padding:15px;font-size:13px;">
+                                    <h:outputText value="#{treeBean.selectedCategory.description}"/>
+                                </h:panelGroup>
+                            </p:outputPanel>
+                        </p:layoutUnit>
+                    </p:layout>
                 </p:layoutUnit>
                 <p:layoutUnit position="center" resizable="true" style="border:none;">
                     <p:layout>
                         <p:layoutUnit position="north" style="border:none;min-height:100px;">
-                            <h:panelGroup id="header_bidding" layout="block" style="padding:10px;padding-top:10px;">
+                            <h:panelGroup layout="block" style="padding:10px;padding-top:10px;">
                                 <div style="width:100%;">
                                     <p:commandButton value="Search for category" styleClass="btn btn-default fontStyle" style="border-radius:0px;float:left;" onclick="PF('#{tabViewBean.content}-categoryDialog').show();" type="button" />
                                     <div style="display:block; float:left; margin-left:50px;">
@@ -21,7 +46,24 @@
                                         </p:autoComplete>
                                     </div>
                                 </div>
-                                <ui:include src="/view/common/breadcrumbs.xhtml"/>
+                                <h:panelGroup id="breadcrumbs" layout="block" style="width:100%;border:none; background-color:#fafafa;display:block;float:left; margin-top:20px;">
+                                    <ul>
+                                        <ui:repeat value="#{breadcrumbs.getBreadcrumbs()}" var="category">
+                                            <li class="ui-breadcrumb-chevron ui-icon ui-icon-triangle-1-e" style="float:left;"/>
+                                            <li class="menuItem" style="float:left;">
+                                                <p:commandLink styleClass="fontStyle" value="#{category.name}"
+                                                               update=":main-tabview:main-form:tree_bidding
+                                                                       :main-tabview:main-form:category_description
+                                                                       :main-tabview:main-form:bidding_content
+                                                                       :main-tabview:main-form:breadcrumbs
+                                                                       :main-tabview:main-form:paginator_panel"
+                                                               actionListener="#{treeBean.onBreadcrumbSelect(category)}">
+                                                    <f:setPropertyActionListener value="item_list" target="#{contentView.content}"/>
+                                                </p:commandLink>
+                                            </li>
+                                        </ui:repeat>
+                                    </ul>
+                                </h:panelGroup>
                             </h:panelGroup>
                         </p:layoutUnit>
                         <p:layoutUnit position="center" style="border:none;padding:0px;">
@@ -35,6 +77,8 @@
                     </p:layout>
                 </p:layoutUnit>
         </p:layout>
+    </h:form>
+    <h:form id="dialog-form-bidding">
         <ui:include src="/view/common/category_search_dialog.xhtml"/>
     </h:form>
 </ui:composition>
