@@ -1,6 +1,5 @@
 package ro.fortech.application.bidstore.frontend.mvc.managed.tabview;
 
-import ro.fortech.application.bidstore.backend.model.BidStatus;
 import ro.fortech.application.bidstore.backend.model.ItemDetails;
 import ro.fortech.application.bidstore.backend.persistence.entity.*;
 import ro.fortech.application.bidstore.backend.service.bidding.BiddingService;
@@ -54,7 +53,7 @@ public class ContentView implements Serializable {
                 searchText,
                 new HashMap<String,Object>(){
                     {
-                        put("status", BidStatus.OPEN);
+
                     }
                 });
 

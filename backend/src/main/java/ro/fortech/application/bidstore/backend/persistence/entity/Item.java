@@ -1,14 +1,11 @@
 package ro.fortech.application.bidstore.backend.persistence.entity;
 
-import ro.fortech.application.bidstore.backend.model.BidStatus;
+
 import ro.fortech.application.bidstore.backend.util.Formatter;
 
 import javax.persistence.*;
 import javax.validation.constraints.Size;
 import java.sql.Date;
-import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 @Entity
@@ -34,10 +31,6 @@ public class Item {
 
     @Column(name = "closing_date")
     private Date closingDate;
-
-    @Column(name = "bid_status")
-    @Enumerated
-    private BidStatus status;
 
     @Column(name = "owner_user_id")
     private String owner;
@@ -100,14 +93,6 @@ public class Item {
         this.closingDate = closingDate;
     }
 
-    public BidStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(BidStatus status) {
-        this.status = status;
-    }
-
     public List<Category> getCategories() {
         return categories;
     }
@@ -120,4 +105,11 @@ public class Item {
         return categories.contains(selectedCategory);
     }
 
+    public String getOwner() {
+        return owner;
+    }
+
+    public void setOwner(String owner) {
+        this.owner = owner;
+    }
 }

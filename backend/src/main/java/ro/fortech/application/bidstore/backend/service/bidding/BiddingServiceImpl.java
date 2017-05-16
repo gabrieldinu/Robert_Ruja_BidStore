@@ -111,14 +111,48 @@ public class BiddingServiceImpl implements BiddingService {
             details.setDescription((String)columns[2]);
             details.setOpeningDate((Date) columns[3]);
             details.setClosingDate((Date) columns[4]);
-            details.setStatus((BidStatus) columns[5]);
-            details.setInitialPrice((Double)columns[6]);
-            details.setBidCount((Long)columns[7]);
-            details.setBestBid(details.getBidCount() > 0 ? (Double)columns[8]:details.getInitialPrice());
+            details.setInitialPrice((Double)columns[5]);
+            details.setBidCount((Long)columns[6]);
+            details.setBestBid(details.getBidCount() > 0 ? (Double)columns[7]:details.getInitialPrice());
             itemDetailsList.add(details);
         }
 
         return itemDetailsList;
+    }
+
+    @Override
+    public List<ItemDetails> getItemsToSell(String sortBy, boolean ascending, User user) {
+        List<ItemDetails> result = new ArrayList<>();
+        for(Item item: biddingDAO.getItemsForUserToSell(sortBy,ascending,user.getUsername())){
+            ItemDetails details = new ItemDetails(item);
+            Object[] bidstatus = (Object[])biddingDAO.getBidStatusForItem(item, user.getUsername());
+            if(bidstatus != null) {
+                if(bidstatus[2] != null)
+                    details.setBestBid((Double)bidstatus[2]);
+                else
+                    details.setBestBid(details.getInitialPrice());
+                details.setBidCount((Long)bidstatus[1]);
+                details.setStatus((String)bidstatus[3]);
+                Object[] winner = (Object[]) biddingDAO.getWinnerForItem(item.getOwner(),details.getBestBid());
+                if(winner != null) {
+                    details.setWinner(winner[0] + " " + winner[1]);
+                }
+            }
+            result.add(details);
+        }
+        return result;
+    }
+
+    @Override
+    public List<ItemDetails> getItemsToBuy(String sortBy, boolean ascending, User user) {
+        List<ItemDetails> results = new ArrayList<>();
+            for(Item item: biddingDAO.getItemsForUserToBuy(sortBy,ascending,user.getUsername())){
+                ItemDetails details = new ItemDetails(item);
+
+
+                results.add(details);
+            }
+        return results;
     }
 
     @Override
@@ -177,7 +211,7 @@ public class BiddingServiceImpl implements BiddingService {
         if(category.getChildren() == null)
             return;
         for(Category child: category.getChildren()){
-            categoryIds.add(child.getId());
+                categoryIds.add(child.getId());
             populateCategoryChildrenIds(categoryIds,child);
         }
     }

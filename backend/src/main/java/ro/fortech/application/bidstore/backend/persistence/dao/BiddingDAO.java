@@ -51,4 +51,12 @@ public interface BiddingDAO {
     boolean removeCategory(Category category);
 
     Category getCategoryById(Long id);
+
+    List<Item> getItemsForUserToSell(String sortBy, boolean ascending, String username);
+
+    Object getBidStatusForItem(Item item, String username);
+
+    Object getWinnerForItem(String username, double bidValue);
+
+    List<Item> getItemsForUserToBuy(String sortBy, boolean ascending, String username);
 }

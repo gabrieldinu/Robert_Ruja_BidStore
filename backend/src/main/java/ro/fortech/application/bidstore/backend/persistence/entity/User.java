@@ -23,8 +23,8 @@ import java.util.List;
 @Inheritance(strategy = InheritanceType.JOINED)
 public class User implements Serializable {
 
-    public static final java.lang.String FIND_BY_USERNAME = "User.findByUsername" ;
-    public static final java.lang.String FIND_BY_EMAIL = "User.findByEmail";
+    public static final String FIND_BY_USERNAME = "User.findByUsername" ;
+    public static final String FIND_BY_EMAIL = "User.findByEmail";
     @Id
     @NotNull
     @Size(min = 1, max = 30)

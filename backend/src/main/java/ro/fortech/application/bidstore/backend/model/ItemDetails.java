@@ -1,7 +1,11 @@
 package ro.fortech.application.bidstore.backend.model;
 
+import ro.fortech.application.bidstore.backend.persistence.entity.Category;
+import ro.fortech.application.bidstore.backend.persistence.entity.Item;
+
 import java.sql.Date;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by robert.ruja on 09-May-17.
@@ -18,7 +22,7 @@ public class ItemDetails {
 
     private Date closingDate;
 
-    private BidStatus status;
+    private String status;
 
     private Date openingDate;
 
@@ -26,10 +30,31 @@ public class ItemDetails {
 
     private double bestBid;
 
+    private double yourBid;
+
     private String winner;
 
-    private List<String> categories;
+    private Map<String, Long> categories;
 
+    private String selectedCategory;
+
+    public ItemDetails() {
+    }
+    public ItemDetails(Item item) {
+        this.setOpeningDate(item.getOpeningDate());
+        this.setInitialPrice(item.getInitialPrice());
+        this.setClosingDate(item.getClosingDate());
+        this.setDescription(item.getDescription());
+        this.setItemName(item.getName());
+        this.setItemId(item.getId());
+        if(!item.getCategories().isEmpty()){
+            Map<String,Long> categoriesMap = new HashMap<>();
+            for(Category category: item.getCategories()){
+                categoriesMap.put(category.getName(),category.getId());
+            }
+            this.setCategories(categoriesMap);
+        }
+    }
     public Long getItemId() {
         return itemId;
     }
@@ -94,11 +119,11 @@ public class ItemDetails {
         this.openingDate = openingDate;
     }
 
-    public BidStatus getStatus() {
+    public String getStatus() {
         return status;
     }
 
-    public void setStatus(BidStatus status) {
+    public void setStatus(String status) {
         this.status = status;
     }
 
@@ -110,11 +135,27 @@ public class ItemDetails {
         this.winner = winner;
     }
 
-    public List<String> getCategories() {
+    public double getYourBid() {
+        return yourBid;
+    }
+
+    public void setYourBid(double yourBid) {
+        this.yourBid = yourBid;
+    }
+
+    public Map<String, Long> getCategories() {
         return categories;
     }
 
-    public void setCategories(List<String> categories) {
+    public void setCategories(Map<String, Long> categories) {
         this.categories = categories;
+    }
+
+    public String getSelectedCategory() {
+        return selectedCategory;
+    }
+
+    public void setSelectedCategory(String selectedCategory) {
+        this.selectedCategory = selectedCategory;
     }
 }

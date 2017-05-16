@@ -39,6 +39,10 @@ public interface BiddingService {
 
     List<ItemDetails> getItems(Category category, String sortBy, boolean ascending, String searchFilter, Map<String, Object> filterMap);
 
+    List<ItemDetails> getItemsToSell(String sortBy, boolean ascending, User user);
+
+    List<ItemDetails> getItemsToBuy(String sortBy, boolean ascending, User user);
+
     void saveItem(Item item) throws BiddingException;
 
     void saveBid(Bid bid) throws BiddingException;

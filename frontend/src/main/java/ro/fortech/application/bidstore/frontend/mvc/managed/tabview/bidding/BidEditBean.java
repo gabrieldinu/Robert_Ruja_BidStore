@@ -62,7 +62,7 @@ public class BidEditBean implements Serializable {
             if(currentItemBid == null) {
                 currentItemBid = new Bid();
                 currentItemBid.setItemId(selectedItemDetails.getItemId());
-                currentItemBid.setBidUserId(userAccount.getUser().getUsername());
+                currentItemBid.setBidUser(userAccount.getUser());
             }
             currentItemBid.setBidValue(Double.parseDouble(bidValueText));
             currentItemBid.setBidDate(new Timestamp(System.currentTimeMillis()));
