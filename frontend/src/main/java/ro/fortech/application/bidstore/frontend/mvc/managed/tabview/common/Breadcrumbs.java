@@ -35,13 +35,15 @@ public class Breadcrumbs implements Serializable {
 
     @PostConstruct
     public void init(){
-        allCategories = biddingService.getAllCategories();
+        if(biddingService != null)
+            allCategories = biddingService.getAllCategories();
     }
 
     public List<Category> getBreadcrumbs() {
         List<Category> breadcrumbs  = new ArrayList<>();
         Category category = treeBean.getSelectedCategory();
-        breadcrumbs.add(category);
+        if(!category.equals(treeBean.getRootCategory()))
+            breadcrumbs.add(category);
         Category current = category;
         for(int i = allCategories.size() - 1; i >= 0; i--){
             Category searchCategory = allCategories.get(i);
@@ -50,6 +52,7 @@ public class Breadcrumbs implements Serializable {
                 current = searchCategory;
             }
         }
+        breadcrumbs.add(treeBean.getRootCategory());
         Collections.reverse(breadcrumbs);
         return breadcrumbs;
     }

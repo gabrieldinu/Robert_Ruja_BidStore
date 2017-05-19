@@ -41,8 +41,10 @@ public class ContentView implements Serializable {
 
     @PostConstruct
     public void init(){
-        allItems = biddingService.getFullItemList();
-        renderItemList();
+        if(biddingService != null) {
+            allItems = biddingService.getFullItemList();
+            renderItemList();
+        }
     }
 
     public List<ItemDetails> getItemList() {

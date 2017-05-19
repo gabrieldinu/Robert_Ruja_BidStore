@@ -26,8 +26,8 @@ public class Bid {
     @Column(name = "item_id")
     private Long itemId;
 
-    @JoinColumn(name = "bid_user_id")
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "bid_user_id", referencedColumnName = "username")
+    @ManyToOne(cascade = CascadeType.DETACH, fetch = FetchType.LAZY)
     private User bidUser;
 
     public Long getId() {

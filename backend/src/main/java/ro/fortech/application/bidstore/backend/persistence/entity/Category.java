@@ -33,7 +33,7 @@ public class Category implements Serializable {
 
     }
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "parentId")
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "parentId")
     private List<Category> children;
 
     public Category(String name,Long parentId, Long id, String description) {
@@ -98,14 +98,16 @@ public class Category implements Serializable {
 
         Category category = (Category) o;
 
-        if (!id.equals(category.id)) return false;
-        return parentId != null ? parentId.equals(category.parentId) : category.parentId == null;
+        if (name != null ? !name.equals(category.name) : category.name != null) return false;
+        if (id != null ? !id.equals(category.id) : category.id != null) return false;
+        return description != null ? description.equals(category.description) : category.description == null;
     }
 
     @Override
     public int hashCode() {
-        int result = id.hashCode();
-        result = 31 * result + (parentId != null ? parentId.hashCode() : 0);
+        int result = name != null ? name.hashCode() : 0;
+        result = 31 * result + (id != null ? id.hashCode() : 0);
+        result = 31 * result + (description != null ? description.hashCode() : 0);
         return result;
     }
 }

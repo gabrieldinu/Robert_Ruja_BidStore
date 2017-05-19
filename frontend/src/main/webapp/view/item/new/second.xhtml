@@ -1,0 +1,50 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+    <h:panelGroup layout="block" style="width:100%;height:100%;overflow:auto;" styleClass="fontStyle">
+        <p:outputPanel style="margin-bottom:40px;text-align:center;" styleClass="fontStyle">
+            <h:outputText value="Item properties:" style="font-size:30px;"/>
+        </p:outputPanel>
+        <p:outputPanel>
+            <p:outputPanel style="float:left;">
+                <h:panelGrid columns="1" style="margin-left:auto;margin-right:auto;">
+                    <p:outputPanel style="margin-bottom:15px;">
+                        <p:outputLabel for="nameInput" value="Name: " style="margin-right:30px;"/>
+                        <p:inputText value="#{editItem.item.name}" id="nameInput" size="20" style="float:right;">
+                            <f:ajax/>
+                        </p:inputText>
+                    </p:outputPanel>
+                    <p:outputPanel style="margin-bottom:15px;">
+                        <p:outputLabel for="initialPriceInput" value="Initial price: " style="margin-right:30px;"/>
+                        <p:inputText id="initialPriceInput" value="#{editItem.initialPrice}" style="float:right;">
+                        <f:ajax event="blur" render="inputPriceMessage" />
+                        <f:validator validatorId="initialPriceValidator" />
+                        </p:inputText>
+                    </p:outputPanel>
+                    <p:outputPanel style="margin-bottom:15px;">
+                        <p:outputLabel for="opening" value="Opening date : " style="margin-right:30px;"/>
+                        <p:calendar id="opening" value="#{editItem.opening}" style="float:right;">
+                            <p:ajax event="dateSelect"/>
+                        </p:calendar>
+                    </p:outputPanel>
+                    <p:outputPanel style="margin-bottom:15px;">
+                        <p:outputLabel for="closing" value="Closing date: " style="margin-right:30px;"/>
+                        <p:calendar id="closing" value="#{editItem.closing}" style="float:right;">
+                            <p:ajax event="dateSelect" />
+                        </p:calendar>
+                    </p:outputPanel>
+                </h:panelGrid>
+                <h:message for="initialPriceInput" id="inputPriceMessage" style="color:red" />
+            </p:outputPanel>
+            <p:outputPanel style="float:right;width:50%;height:100%;">
+                <p:outputLabel for="descriptionInput" value="Description: " style="margin-right:30px;"/>
+                <p:inputTextarea value="#{editItem.item.description}" id="descriptionInput" autoResize="false" maxlength="2000" rows="5" style="float:right;width:440px;height:128px !important;resize:none;">
+                    <f:ajax/>
+                </p:inputTextarea>
+            </p:outputPanel>
+        </p:outputPanel>
+    </h:panelGroup>
+</ui:composition>

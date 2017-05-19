@@ -46,12 +46,14 @@ public class AccountManagement implements Serializable {
 
     @PostConstruct
     public void init(){
-        addressMap = userAccountService.getUserAddressMap(account.getUser());
-        if(addressMap.isEmpty()){
-            addressMap.put("homeAddress", new UserAddress(new UserAddressPk(account.getUser().getUsername(), AddressType.HOME)));
-            addressMap.put("billingAddress", new UserAddress(new UserAddressPk(account.getUser().getUsername(), AddressType.BILLING)));
-            addressMap.put("shippingAddress", new UserAddress(new UserAddressPk(account.getUser().getUsername(), AddressType.SHIPPING)));
+        if(userAccountService != null) {
+            addressMap = userAccountService.getUserAddressMap(account.getUser());
+            if (addressMap.isEmpty()) {
+                addressMap.put("homeAddress", new UserAddress(new UserAddressPk(account.getUser().getUsername(), AddressType.HOME)));
+                addressMap.put("billingAddress", new UserAddress(new UserAddressPk(account.getUser().getUsername(), AddressType.BILLING)));
+                addressMap.put("shippingAddress", new UserAddress(new UserAddressPk(account.getUser().getUsername(), AddressType.SHIPPING)));
 
+            }
         }
     }
 

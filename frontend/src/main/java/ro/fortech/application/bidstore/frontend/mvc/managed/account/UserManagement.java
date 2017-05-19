@@ -41,6 +41,7 @@ public class UserManagement implements Serializable {
 
     @PostConstruct
     public void init() {
+
         lazyModel = new LazyUserDataModel(service);
     }
 

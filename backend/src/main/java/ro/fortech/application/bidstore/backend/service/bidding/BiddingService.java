@@ -55,9 +55,13 @@ public interface BiddingService {
 
     List<Category> getCategories(String sortBy, boolean ascending, String searchText);
 
+    Map<Long, Category> getCategoriesAsMap();
+
     void saveCategory(Category category) throws BiddingException;
 
     void remove(Category category) throws BiddingException;
 
     Category getCategoryById(Long id);
+
+    void removeItem(Item item) throws BiddingException;
 }

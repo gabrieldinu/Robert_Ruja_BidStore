@@ -1,6 +1,5 @@
 package ro.fortech.application.bidstore.backend.persistence.dao;
 
-import com.sun.org.apache.xml.internal.utils.ObjectVector;
 import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.criterion.*;
@@ -72,10 +71,10 @@ public class BiddingDAOImpl implements BiddingDAO {
         .getExecutableCriteria(hibernateProvider.getSession()).list();
     }
 
-    public Category getRoot() {
+    public List<Category> getRootCategories() {
         DetachedCriteria detachedCriteria = DetachedCriteria.forClass(Category.class);
-        detachedCriteria.add(Restrictions.idEq(1L));
-        return (Category)detachedCriteria.getExecutableCriteria(hibernateProvider.getSession()).list().get(0);
+        detachedCriteria.add(Restrictions.isNull("parentId"));
+        return detachedCriteria.getExecutableCriteria(hibernateProvider.getSession()).list();
     }
 
     @Override
@@ -108,7 +107,7 @@ public class BiddingDAOImpl implements BiddingDAO {
     }
 
     @Override
-    public List getItems(List<Long> categoryIds, String sortBy, boolean ascending, String searchFilter, Map<String, Object> filters) {
+    public List getItems(Long categoryId, String sortBy, boolean ascending, String searchFilter, Map<String, Object> filters) {
         Date date = new Date(System.currentTimeMillis());
         Criteria criteria = hibernateProvider.getSession().createCriteria(Item.class)
                 .createAlias("categories","cat")
@@ -123,9 +122,10 @@ public class BiddingDAOImpl implements BiddingDAO {
                         .add(Projections.count("b.itemId"),"bidCount")
                         .add(Projections.max("b.bidValue"),"bestBid")
                 )
-                .add(Restrictions.in("cat.id", categoryIds))
                 .add(Restrictions.gt("closingDate",date))
-                .add(Restrictions.lt("openingDate",date));
+                .add(Restrictions.le("openingDate",date));
+        if(categoryId !=null && categoryId > 0)
+            criteria.add(Restrictions.eq("cat.id", categoryId));
         //filter
         for(Map.Entry<String,Object> entry: filters.entrySet()){
             criteria.add(Restrictions.eq(entry.getKey(), entry.getValue()));
@@ -143,8 +143,11 @@ public class BiddingDAOImpl implements BiddingDAO {
 
     @Override
     public List<String> getItemsNameContains(String query) {
+        Date date = new Date(System.currentTimeMillis());
         return hibernateProvider.getSession().createCriteria(Item.class)
                 .add(Restrictions.like("name",query, MatchMode.ANYWHERE))
+                .add(Restrictions.gt("closingDate",date))
+                .add(Restrictions.le("openingDate",date))
                 .setMaxResults(6)
                 .setProjection(Projections.property("name"))
                 .setResultTransformer (Criteria.DISTINCT_ROOT_ENTITY)
@@ -192,14 +195,19 @@ public class BiddingDAOImpl implements BiddingDAO {
 
     @Override
     public Item getItemWithId(Long itemId) {
-        return null;
+        try {
+            return hibernateProvider.getSession().get(Item.class,itemId);
+        }catch (HibernateException ex) {
+            return null;
+        }
     }
 
     @Override
     public Bid getBidForItem(Long itemId, String username) {
         DetachedCriteria criteria = DetachedCriteria.forClass(Bid.class)
+                .createAlias("bidUser","u")
                 .add(Restrictions.eq("itemId",itemId))
-                .add(Restrictions.eq("bidUserId",username));
+                .add(Restrictions.eq("u.username",username));
         List list = criteria.getExecutableCriteria(hibernateProvider.getSession()).list();
         return list.isEmpty() ? null : (Bid) list.get(0);
     }
@@ -207,7 +215,6 @@ public class BiddingDAOImpl implements BiddingDAO {
     @Override
     public List<Category> getCategories(String sortBy, boolean ascending, String searchText) {
         DetachedCriteria criteria = DetachedCriteria.forClass(Category.class);
-        criteria.add(Restrictions.isNotNull("parentId"));
         //filtering
         if(searchText != null && !searchText.isEmpty()) {
             criteria.add(Restrictions.like("name", searchText, MatchMode.ANYWHERE));
@@ -279,9 +286,9 @@ public class BiddingDAOImpl implements BiddingDAO {
                             .add(Projections.count("b.itemId"), "bidCount")
                             .add(Projections.max("b.bidValue"), "bestBid")
                             .add(Projections.sqlProjection("\tcase\n" +
-                                    "\t\twhen closing_date > sysdate() AND opening_date < sysdate() then 'OPEN' \n" +
-                                    "\t\twhen closing_date < sysdate() AND opening_date < closing_date then 'CLOSED'\n" +
-                                    "\t\twhen opening_date > sysdate() then 'NOT YET OPEN'\n" +
+                                    "\t\twhen closing_date > sysdate() AND opening_date <= sysdate() then 'OPEN' \n" +
+                                    "\t\twhen closing_date <= sysdate() AND opening_date <= closing_date then 'CLOSED'\n" +
+                                    "\t\twhen opening_date > sysdate() AND opening_date <= closing_date then 'NOT YET OPEN'\n" +
                                     "        when closing_date < opening_date then 'ABANDONED'\n" +
                                     "\tEND AS STATUS", new String[]{"STATUS"}, new Type[]{new StringType()}))
                     ).add(Restrictions.eq("owner", username))
@@ -296,13 +303,13 @@ public class BiddingDAOImpl implements BiddingDAO {
     public Object getWinnerForItem(String username, double bidValue) {
         try {
             Criteria criteria = hibernateProvider.getSession().createCriteria(Item.class)
-                    .setProjection(Projections.projectionList()
-                            .add(Projections.property("w.firstName"))
-                            .add(Projections.property("w.lastName")))
-                    .add(Restrictions.eq("owner", username));
+                    .add(Restrictions.eq("owner", "gigi"));
             Criteria subCrit = criteria.createCriteria("bids")
-                    .createAlias("winner","w")
-                    .add(Restrictions.eq("bidValue", bidValue));
+                    .createAlias("bidUser", "b")
+                    .add(Restrictions.eq("bidValue", bidValue))
+                    .setProjection(Projections.projectionList()
+                            .add(Projections.property("b.firstName"))
+                            .add(Projections.property("b.lastName")));
             return subCrit.uniqueResult();
         }catch(HibernateException ex){
             return null;
@@ -317,7 +324,22 @@ public class BiddingDAOImpl implements BiddingDAO {
         //sort
         if(sortBy != null && !sortBy.isEmpty())
             criteria.addOrder(ascending?Order.asc(sortBy):Order.desc(sortBy));
-
         return criteria.getExecutableCriteria(hibernateProvider.getSession()).list();
+    }
+
+    @Override
+    @Transactional
+    public boolean removeItem(Item item) {
+        try {
+            if (em.contains(item)) {
+                em.remove(item);
+            } else {
+                item = em.getReference(Item.class, item.getId());
+                em.remove(item);
+            }
+            return true;
+        }catch (Exception ex) {
+            return false;
+        }
     }
 }

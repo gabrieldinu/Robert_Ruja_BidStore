@@ -1,0 +1,46 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+
+    <p:dialog header="Item" widgetVar="defineItemDialog" modal="true" resizeable="false" footer="" height="500" width="1000" styleClass="fontStyle" closable="false" resizable="false">
+        <p:layout style="padding:40px;height:100%">
+            <p:layoutUnit position="north" style="border:none;min-height:350px;">
+                <h:panelGroup layout="block" id="new_item_content" styleClass="fontStyle" style="position:absolute;overflow:auto;width:100%;">
+                    <ui:include src="/view/item/new/#{editItem.content}.xhtml"/>
+                </h:panelGroup>
+            </p:layoutUnit>
+            <p:layoutUnit position="center" style="min-height:80px;bottom:0px;top:initial;padding-top:45px;border-radius:0px;border-top:1px solid; border-left:none;border-right:none;border-bottom:none;">
+                <h:panelGroup  id="footer" layout="block" styleClass="fontStyle">
+                    <table style="width:100%;">
+                        <tr>
+                            <td style="width:25%;">
+                                <p:commandButton value="Next" rendered="#{editItem.content eq 'first'}" update="new_item_content footer">
+                                    <f:setPropertyActionListener value="second" target="#{editItem.content}"/>
+                                </p:commandButton>
+                            </td>
+                            <td style="width:25%;">
+                                <p:commandButton value="Previous" rendered="#{editItem.content eq 'second'}" update="new_item_content footer" immediate="true">
+                                    <f:setPropertyActionListener value="first" target="#{editItem.content}" />
+                                </p:commandButton>
+                            </td>
+                            <td style="width:25%;">
+                                <p:commandButton value = "Save" rendered="#{editItem.content eq 'second'}">
+                                    <p:ajax process="@this" listener="#{editItem.save}" onsuccess="PF('defineItemDialog').hide();return false;" update="new_item_content footer :main-tabview:item-form"/>
+                                </p:commandButton>
+                            </td>
+                            <td style="width:25%;">
+                                <p:commandButton value="Cancel">
+                                    <p:ajax process="@this" listener="#{editItem.cancel}" onsuccess="PF('defineItemDialog').hide();return false;" update="new_item_content footer"/>
+                                    <f:setPropertyActionListener value="first" target="#{editItem.content}"/>
+                                </p:commandButton>
+                            </td>
+                        </tr>
+                    </table>
+                </h:panelGroup>
+            </p:layoutUnit>
+        </p:layout>
+    </p:dialog>
+</ui:composition>

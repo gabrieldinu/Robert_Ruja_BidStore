@@ -25,7 +25,7 @@
                         <p:layoutUnit position="south" resizable="true" minSize="100" size="250" style="border-top:5px double #dddddd;border-left:none;border-right:none;border-bottom:none;border-radius:initial;overflow:hidden;">
                             <p:outputPanel id="category_description" style="border:2px solid #dddddd;height:100%;margin-top:4px;overflow:hidden;" styleClass="fontStyle">
                                 <div style="margin-left:10px;margin-top:-15px;position:absolute;background-color:#ffffff;white-space:nowrap;padding:5px;z-index:2;">
-                                    <h:outputText value="#{treeBean.selectedCategory.name}" rendered="#{treeBean.selectedCategory.id gt 1 }"/>
+                                    <h:outputText value="#{treeBean.selectedCategory.name}" rendered="#{treeBean.selectedCategory.id gt 0 }"/>
                                 </div>
                                 <h:panelGroup layout="block" style="padding:15px;font-size:13px;">
                                     <h:outputText value="#{treeBean.selectedCategory.description}"/>

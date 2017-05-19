@@ -81,21 +81,23 @@ public class UserAccount implements Serializable {
     @PostConstruct
     private void init() {
 
-        //check if the user has remember me cookie
-        String cookieValue = getCookieValue();
-        if (cookieValue == null)
-            return;
-        userAuth = userAccountService.getAuthenticationByUUID(cookieValue);
+        if(userAccountService != null) {
+            //check if the user has remember me cookie
+            String cookieValue = getCookieValue();
+            if (cookieValue == null)
+                return;
+            userAuth = userAccountService.getAuthenticationByUUID(cookieValue);
 
-        if(userAuth !=null) {
-            user.setUsername(userAuth.getUsername());
-            user = userAccountService.getUserDetails(user);
-            if (user.getRole().equals(UserRole.ADMIN))
-                admin = true;
-            // The user is now logged in
-            loggedIn = true;
-        } else {
-            removeCookie();
+            if (userAuth != null) {
+                user.setUsername(userAuth.getUsername());
+                user = userAccountService.getUserDetails(user);
+                if (user.getRole().equals(UserRole.ADMIN))
+                    admin = true;
+                // The user is now logged in
+                loggedIn = true;
+            } else {
+                removeCookie();
+            }
         }
     }
 
@@ -215,8 +217,7 @@ public class UserAccount implements Serializable {
         AlterableContext ctx = (AlterableContext) beanManager.getContext(SessionScoped.class);
         Bean<?> myBean = beanManager.getBeans(UserAccount.class).iterator().next();
         ctx.destroy(myBean);
-        //myBean = beanManager.getBeans(ShoppingCartBean.class).iterator().next();
-        //ctx.destroy(myBean);
+        externalContext.invalidateSession();
     }
 
     public String doLogout() {

@@ -32,9 +32,11 @@ public class TreeBean implements Serializable {
 
     @PostConstruct
     public void init() {
-        rootCategory = biddingService.getRoot();
-        root = new DefaultTreeNode(rootCategory);
-        buildTree(rootCategory,root);
+        if(biddingService != null) {
+            rootCategory = biddingService.getRoot();
+            root = new DefaultTreeNode(rootCategory);
+            buildTree(rootCategory, root);
+        }
     }
 
     public void buildTree(Category category, TreeNode parent){
@@ -114,7 +116,6 @@ public class TreeBean implements Serializable {
             if(children != null)
                 children.remove(category);
             node.getParent().getChildren().remove(node);
-
         }else{
             throw new RuntimeException("The corresponding node for the given category was not found in the tree");
         }

@@ -2,32 +2,40 @@
                 xmlns:ui="http://xmlns.jcp.org/jsf/facelets" xmlns:p="http://primefaces.org/ui"
                 xmlns:f="http://xmlns.jcp.org/jsf/core" xmlns:h="http://xmlns.jcp.org/jsf/html"
                 xmlns:fn="http://java.sun.com/jsp/jstl/functions">
-    <h:panelGroup style="position:absolute;overflow:auto;width:100%">
+    <h:panelGroup layout="block" style="position:absolute;overflow:auto;width:100%;height:98%;">
         <ui:repeat value="#{contentView.getItemList()}" var="item">
-            <p:commandLink update=":main-tabview:main-form:bidding_content :main-tabview:main-form:paginator_panel" value="#{item.itemName}" actionListener="#{bidEditBean.renderSingleItem(item.itemId)}" styleClass="fontStyle" style="color:#3684cb;text-decoration:underline;font-size:17px;">
-                <f:setPropertyActionListener value="false" target="#{bidEditBean.editable}"/>
-                <f:setPropertyActionListener value="single_item" target="#{contentView.content}"/>
-            </p:commandLink>
-            <h:panelGrid columns="3" style="width:100%;border:none;" columnClasses="logo,detail,detail" styleClass="fontStyle">
-                <p:commandLink>
-                    <h:graphicImage value="/resources/forge-logo.png" width="110" height="100"/>
-                    <!--todo: picture needs to be loaded from db or other source, expand functionality-->
+            <h:panelGroup layout="block" style="width:100%;">
+                <p:commandLink update=":main-tabview:main-form:bidding_content :main-tabview:main-form:paginator_panel" value="#{item.itemName}" actionListener="#{bidEditBean.renderSingleItem(item.itemId)}" styleClass="fontStyle" style="color:#3684cb;text-decoration:underline;font-size:17px;">
+                    <f:setPropertyActionListener value="false" target="#{bidEditBean.editable}"/>
+                    <f:setPropertyActionListener value="single_item" target="#{contentView.content}"/>
                 </p:commandLink>
-                <h:outputText value="#{item.description}" />
-
-                <p:outputPanel styleClass="fontStyle">
-                    <div>
-                        <h:outputText value="#{item.bestBid} $" style="font-weight:bold;"/>
-                    </div>
-                    <div>
-                        <h:outputText value="#{item.closingDate}"/>
-                    </div>
-                    <div>
-                        <h:outputText value="#{item.bidCount} bids"/>
-                    </div>
-                </p:outputPanel>
-            </h:panelGrid>
-            <hr />
+                <table style="width:100%" class="fontStyle">
+                    <tr>
+                        <td style="width:15%;">
+                            <p:commandLink>
+                                <h:graphicImage value="/resources/forge-logo.png" width="110" height="100"/>
+                                <!--todo: picture needs to be loaded from db or other source, expand functionality-->
+                            </p:commandLink>
+                        </td>
+                        <td style="width:70%;">
+                            <h:outputText value="#{item.description}" />
+                        </td>
+                        <td style="width:15%;">
+                            <p:outputPanel styleClass="fontStyle">
+                                <div>
+                                    <h:outputText value="#{item.bestBid} $" style="font-weight:bold;"/>
+                                </div>
+                                <div>
+                                    <h:outputText value="#{item.closingDate}"/>
+                                </div>
+                                <div>
+                                    <h:outputText value="#{item.bidCount} bids"/>
+                                </div>
+                            </p:outputPanel>
+                        </td>
+                    </tr>
+                </table>
+            </h:panelGroup>
         </ui:repeat>
     </h:panelGroup>
 </ui:composition>

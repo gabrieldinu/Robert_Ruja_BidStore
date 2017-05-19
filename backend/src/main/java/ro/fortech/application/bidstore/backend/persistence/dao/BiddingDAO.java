@@ -23,13 +23,13 @@ public interface BiddingDAO {
 
     List<Category> getAllCategories();
 
-    Category getRoot();
+    List<Category> getRootCategories();
 
     List<Item> getFullItemList();
 
     List<String> getCategoriesNameContains(String query);
 
-    List getItems(List<Long> categoryIds, String sortBy, boolean ascending, String searchText, Map<String, Object> searchFilter);
+    List getItems(Long categoryId, String sortBy, boolean ascending, String searchFilter, Map<String, Object> filters);
 
     List<String> getItemsNameContains(String query);
 
@@ -59,4 +59,6 @@ public interface BiddingDAO {
     Object getWinnerForItem(String username, double bidValue);
 
     List<Item> getItemsForUserToBuy(String sortBy, boolean ascending, String username);
+
+    boolean removeItem(Item item);
 }

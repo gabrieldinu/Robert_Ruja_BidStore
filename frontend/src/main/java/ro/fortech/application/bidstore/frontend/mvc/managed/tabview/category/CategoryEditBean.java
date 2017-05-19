@@ -58,8 +58,8 @@ public class CategoryEditBean implements Serializable {
     public void createNew() {
         Category parent = treeBean.getSelectedCategory();
         Category category = new Category();
-        category.setId(0L);
-        category.setParentId(parent.getId());
+        if(!parent.getId().equals(0L))
+            category.setParentId(parent.getId());
         category.setCreationDate(new Date(System.currentTimeMillis()));
         category.setDescription("");
         category.setName("New category");

@@ -21,7 +21,9 @@
                     <h:outputText value="#{item.itemName}" />
                 </p:column>
                 <p:column headerText="Categories" >
-                    <p:outputText value="#{item.category}" />
+                    <h:selectOneMenu id="categories" style="width:80%;">
+                        <f:selectItems value="#{item.categories}" />
+                    </h:selectOneMenu>
                 </p:column>
                 <p:column headerText="Initial price" sortBy="#{item.initialPrice}" filterBy="#{item.initialPrice}">
                     <h:outputText value="#{item.initialPrice}" />

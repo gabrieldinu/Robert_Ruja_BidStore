@@ -9,6 +9,7 @@ import ro.fortech.application.bidstore.backend.persistence.entity.Category;
 import ro.fortech.application.bidstore.backend.persistence.entity.Item;
 import ro.fortech.application.bidstore.backend.persistence.entity.User;
 
+import javax.annotation.PostConstruct;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import java.sql.Date;
@@ -29,6 +30,11 @@ public class BiddingServiceImpl implements BiddingService {
 
     @Inject
     private UserDAO userDAO;
+
+    @PostConstruct
+    public void init() {
+
+    }
 
     @Override
     public List<BiddingUser> getBiddingUsers(String sortField, boolean ascending, Map<String, Object> likeFilters, Map<String, Object> equalFilters) {
@@ -82,11 +88,21 @@ public class BiddingServiceImpl implements BiddingService {
 
     @Override
     public List<Category> getAllCategories() {
-        return biddingDAO.getAllCategories();
+        List<Category> result = new ArrayList<Category>(){{
+            add(getRoot());
+            addAll(biddingDAO.getAllCategories());
+        }
+    };
+        return result;
     }
 
     public Category getRoot() {
-        return biddingDAO.getRoot();
+        Category root = new Category();
+        root.setId(0L);
+        root.setParentId(null);
+        root.setName("All");
+        root.setChildren(biddingDAO.getRootCategories());
+        return root;
     }
 
     @Override
@@ -96,13 +112,11 @@ public class BiddingServiceImpl implements BiddingService {
 
     @Override
     public List<ItemDetails> getItems(Category category, String sortBy, boolean ascending, String searchFilter, Map<String, Object> filters) {
-        List<Long> categoryIds = new ArrayList<>();
-        categoryIds.add(category.getId());
-        populateCategoryChildrenIds(categoryIds,category);
+
 
         List<ItemDetails> itemDetailsList = new ArrayList<>();
 
-        for(Object o: biddingDAO.getItems(categoryIds, sortBy,ascending,searchFilter,filters)) {
+        for(Object o: biddingDAO.getItems(category.getId(), sortBy,ascending,searchFilter,filters)) {
             //build item details
             Object[] columns = (Object[])o;
             ItemDetails details = new ItemDetails();
@@ -127,15 +141,17 @@ public class BiddingServiceImpl implements BiddingService {
             ItemDetails details = new ItemDetails(item);
             Object[] bidstatus = (Object[])biddingDAO.getBidStatusForItem(item, user.getUsername());
             if(bidstatus != null) {
-                if(bidstatus[2] != null)
-                    details.setBestBid((Double)bidstatus[2]);
+                if (bidstatus[2] != null)
+                    details.setBestBid((Double) bidstatus[2]);
                 else
                     details.setBestBid(details.getInitialPrice());
-                details.setBidCount((Long)bidstatus[1]);
-                details.setStatus((String)bidstatus[3]);
-                Object[] winner = (Object[]) biddingDAO.getWinnerForItem(item.getOwner(),details.getBestBid());
-                if(winner != null) {
-                    details.setWinner(winner[0] + " " + winner[1]);
+                details.setBidCount((Long) bidstatus[1]);
+                details.setStatus((String) bidstatus[3]);
+                    if (details.getStatus().equals("CLOSED")){
+                        Object[] winner = (Object[]) biddingDAO.getWinnerForItem(item.getOwner(), details.getBestBid());
+                    if (winner != null) {
+                        details.setWinner(winner[0] + " " + winner[1]);
+                    }
                 }
             }
             result.add(details);
@@ -189,6 +205,15 @@ public class BiddingServiceImpl implements BiddingService {
     }
 
     @Override
+    public Map<Long, Category> getCategoriesAsMap() {
+        Map<Long, Category> results = new HashMap<>();
+        for(Category category : biddingDAO.getAllCategories()) {
+            results.put(category.getId(), category);
+        }
+        return results;
+    }
+
+    @Override
     public void saveCategory(Category category) throws BiddingException{
         if(!biddingDAO.saveCategory(category)) {
             throw new BiddingException("An error occured while trying to save category into db");
@@ -203,16 +228,16 @@ public class BiddingServiceImpl implements BiddingService {
 
     @Override
     public Category getCategoryById(Long id) {
-        return biddingDAO.getCategoryById(id);
+        if(id != null && id > 0)
+            return biddingDAO.getCategoryById(id);
+        else
+            return getRoot();
     }
 
-    private void populateCategoryChildrenIds(List<Long> categoryIds, Category category){
-
-        if(category.getChildren() == null)
-            return;
-        for(Category child: category.getChildren()){
-                categoryIds.add(child.getId());
-            populateCategoryChildrenIds(categoryIds,child);
+    @Override
+    public void removeItem(Item item) throws BiddingException {
+        if(!biddingDAO.removeItem(item)) {
+            throw new BiddingException("An error occured while trying to remove category from db");
         }
     }
 }

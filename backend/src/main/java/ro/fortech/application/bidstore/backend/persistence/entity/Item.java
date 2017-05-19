@@ -7,6 +7,7 @@ import javax.persistence.*;
 import javax.validation.constraints.Size;
 import java.sql.Date;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(schema = "bid_app", name = "item")
@@ -35,14 +36,18 @@ public class Item {
     @Column(name = "owner_user_id")
     private String owner;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "itemId")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "itemId")
     private List<Bid> bids;
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "item_category",
             joinColumns = {@JoinColumn(name = "item_id")},
             inverseJoinColumns = {@JoinColumn(name = "category_id")})
-    private List<Category> categories;
+    private Set<Category> categories;
+
+    public boolean hasCategory (Category category) {
+        return this.categories != null && this.categories.contains(category);
+    }
 
     public Long getId() {
         return id;
@@ -93,16 +98,12 @@ public class Item {
         this.closingDate = closingDate;
     }
 
-    public List<Category> getCategories() {
+    public Set<Category> getCategories() {
         return categories;
     }
 
-    public void setCategories(List<Category> categories) {
+    public void setCategories(Set<Category> categories) {
         this.categories = categories;
-    }
-
-    public boolean hasCategory(Category selectedCategory) {
-        return categories.contains(selectedCategory);
     }
 
     public String getOwner() {
