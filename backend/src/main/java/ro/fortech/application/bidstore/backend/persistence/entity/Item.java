@@ -36,6 +36,9 @@ public class Item {
     @Column(name = "owner_user_id")
     private String owner;
 
+    @Column(name = "image_url")
+    private String url;
+
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "itemId")
     private List<Bid> bids;
 
@@ -112,5 +115,13 @@ public class Item {
 
     public void setOwner(String owner) {
         this.owner = owner;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
     }
 }

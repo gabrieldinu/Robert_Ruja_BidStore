@@ -4,17 +4,26 @@
                 xmlns:fn="http://java.sun.com/jsp/jstl/functions"
                 xmlns:c="http://java.sun.com/jstl/core">
     <p:growl id="growl" showDetail="true" sticky="false" style="top:35% !important;z-index:2000 !important;" />
-    <h:panelGroup style="position:absolute;overflow:auto;width:100%" styleClass="fontStyle">
-            <h:outputText value="#{bidEditBean.selectedItemDetails.itemName}" style="color:#3684cb;text-decoration:underline;font-size:17px;"/>
-
-            <h:panelGrid columns="3" style="width:100%;border:none;" columnClasses="logo,detail,detail">
-                <p:commandLink >
-                    <h:graphicImage value="/resources/forge-logo.png" width="140" height="130"/>
-                </p:commandLink>
-                <h:outputText value="#{bidEditBean.selectedItemDetails.description}" />
-                <p:outputPanel>
-                </p:outputPanel>
-            </h:panelGrid>
+    <h:panelGroup layout="block" style="position:absolute;overflow:auto;width:100%" styleClass="fontStyle">
+            <h:outputText value="#{bidEditBean.selectedItemDetails.itemName}" style="color:#3684cb;text-decoration:underline;font-size:20px;"/>
+            <h:panelGroup style="width:100%;border:none;">
+                <table style="width:100%">
+                    <tr>
+                        <td style="width:15%;padding:5px;">
+                            <p:commandLink >
+                                <h:graphicImage value="/images/#{bidEditBean.selectedItemDetails.owner}/#{bidEditBean.selectedItemDetails.imageUrl}" width="110" height="100" rendered="#{not empty bidEditBean.selectedItemDetails.imageUrl}"/>
+                                <h:graphicImage value="/resources/img_not_available.png" width="110" height="100" rendered="#{empty bidEditBean.selectedItemDetails.imageUrl}"/>
+                            </p:commandLink>
+                        </td>
+                        <td style="width:70%;padding-right:20px;">
+                            <h:outputText value="#{bidEditBean.selectedItemDetails.description}" style="font-size:13px;"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="height:15px;"></td>
+                    </tr>
+                </table>
+            </h:panelGroup>
         <p:outputPanel layout="block" styleClass="fontStyle">
             <table style="width:85%">
                 <tr>
@@ -43,19 +52,22 @@
                         <h:outputText value="Your bid value:" rendered="#{bidEditBean.currentItemBid != null}" style="color:red;"/>
                     </td>
                     <td style="padding:5px;width:50%;float:right;">
-                        <p:commandButton value="Place bid" update=":main-tabview:main-form:bidding_content" rendered="#{bidEditBean.currentItemBid == null and !bidEditBean.editable}"
+                        <p:commandButton value="Place bid" update=":main-tabview:main-form:bidding_content" rendered="#{bidEditBean.currentItemBid == null and !bidEditBean.editable and bidEditBean.selectedItemDetails.owner != userAccount.user.username}"
                                          actionListener="#{bidEditBean.editBid}"/>
+                        <h:outputText value="You can not place bids on your own items!" style="color:red;" rendered="#{bidEditBean.selectedItemDetails.owner == userAccount.user.username}"/>
                         <p:inputText value="#{bidEditBean.bidValueText}" id="bidValueInput" size="15" rendered="#{bidEditBean.editable}">
                             <f:ajax event="blur" render="inputBidMessage" />
-                            <f:attribute name="currentValue" value="#{bidEditBean.selectedItemDetails.initialPrice}" />
+                            <f:attribute name="currentValue" value="#{bidEditBean.selectedItemDetails.bestBid}" />
                             <f:validator validatorId="bidInputValidator" />
                         </p:inputText>
                         <h:outputText value="#{bidEditBean.currentItemBid.bidValue} $" rendered="#{bidEditBean.currentItemBid != null and not bidEditBean.editable}" style="margin-right:10px;color:red;"/>
-                        <p:commandButton value="Edit" update=":main-tabview:main-form:bidding_content" rendered="#{bidEditBean.currentItemBid != null and not bidEditBean.editable}" actionListener="#{bidEditBean.editBid}" style="margin-right:10px;"/>
-                        <p:commandButton value="Remove" update=":main-tabview:main-form:bidding_content"
+                        <p:commandButton value="Edit" update=":main-tabview:main-form:bidding_content :main-tabview:item-form" rendered="#{bidEditBean.currentItemBid != null and not bidEditBean.editable}" actionListener="#{bidEditBean.editBid}" style="margin-right:10px;"/>
+                        <p:commandButton value="Remove" update=":main-tabview:main-form:bidding_content :main-tabview:item-form"
                                          onclick="if(! confirm('Remove bid ?')) return false;"
                                          rendered="#{bidEditBean.currentItemBid != null and not bidEditBean.editable}"
-                                         actionListener="#{bidEditBean.removeBid}"/>
+                                         actionListener="#{bidEditBean.removeBid}">
+                            <f:setPropertyActionListener value="item_list" target="#{contentView.content}"/>
+                        </p:commandButton>
                         <h:message for="bidValueInput" id="inputBidMessage" style="color:red" />
                     </td>
                 </tr>
@@ -72,7 +84,7 @@
                 </tr>
                 <tr>
                     <td style="padding:5px;width:50%;float:left;padding-left:300px;">
-                        <p:commandButton value="Submit" update=":main-tabview:main-form:bidding_content :main-tabview:main-form:paginator_panel" actionListener="#{bidEditBean.placeBid}"
+                        <p:commandButton value="Submit" update=":main-tabview:main-form:bidding_content :main-tabview:main-form:paginator_panel main-tabview:item-form" actionListener="#{bidEditBean.placeBid}"
                                          rendered="#{bidEditBean.editable}"/>
                     </td>
                     <td style="padding:5px;width:50%;float:right;">
@@ -84,5 +96,4 @@
         </p:outputPanel>
             <hr />
     </h:panelGroup>
-
 </ui:composition>

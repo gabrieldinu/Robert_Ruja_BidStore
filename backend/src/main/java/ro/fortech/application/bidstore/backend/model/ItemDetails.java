@@ -6,6 +6,7 @@ import ro.fortech.application.bidstore.backend.persistence.entity.Item;
 import java.sql.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by robert.ruja on 09-May-17.
@@ -18,7 +19,7 @@ public class ItemDetails {
 
     private String description;
 
-    private double initialPrice;
+    private Double initialPrice;
 
     private Date closingDate;
 
@@ -28,15 +29,23 @@ public class ItemDetails {
 
     private Long bidCount;
 
-    private double bestBid;
+    private Double bestBid;
 
-    private double yourBid;
+    private Double yourBid;
+
+    private String ownerId;
+
+    private String winnerId;
 
     private String winner;
+
+    private String owner;
 
     private Map<String, Long> categories;
 
     private String selectedCategory;
+
+    private String imageUrl;
 
     public ItemDetails() {
     }
@@ -47,13 +56,6 @@ public class ItemDetails {
         this.setDescription(item.getDescription());
         this.setItemName(item.getName());
         this.setItemId(item.getId());
-        if(!item.getCategories().isEmpty()){
-            Map<String,Long> categoriesMap = new HashMap<>();
-            for(Category category: item.getCategories()){
-                categoriesMap.put(category.getName(),category.getId());
-            }
-            this.setCategories(categoriesMap);
-        }
     }
     public Long getItemId() {
         return itemId;
@@ -79,11 +81,11 @@ public class ItemDetails {
         this.description = description;
     }
 
-    public double getInitialPrice() {
+    public Double getInitialPrice() {
         return initialPrice;
     }
 
-    public void setInitialPrice(double initialPrice) {
+    public void setInitialPrice(Double initialPrice) {
         this.initialPrice = initialPrice;
     }
 
@@ -103,11 +105,11 @@ public class ItemDetails {
         this.bidCount = bidCount;
     }
 
-    public double getBestBid() {
+    public Double getBestBid() {
         return bestBid;
     }
 
-    public void setBestBid(double bestBid) {
+    public void setBestBid(Double bestBid) {
         this.bestBid = bestBid;
     }
 
@@ -135,11 +137,11 @@ public class ItemDetails {
         this.winner = winner;
     }
 
-    public double getYourBid() {
+    public Double getYourBid() {
         return yourBid;
     }
 
-    public void setYourBid(double yourBid) {
+    public void setYourBid(Double yourBid) {
         this.yourBid = yourBid;
     }
 
@@ -157,5 +159,47 @@ public class ItemDetails {
 
     public void setSelectedCategory(String selectedCategory) {
         this.selectedCategory = selectedCategory;
+    }
+
+    public String getOwner() {
+        return owner;
+    }
+
+    public void setOwner(String owner) {
+        this.owner = owner;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
+    public String getOwnerId() {
+        return ownerId;
+    }
+
+    public void setOwnerId(String ownerId) {
+        this.ownerId = ownerId;
+    }
+
+    public String getWinnerId() {
+        return winnerId;
+    }
+
+    public void setWinnerId(String winnerId) {
+        this.winnerId = winnerId;
+    }
+
+    public void setAllCategories(Set<Category> categoriesForItem) {
+        if(!categoriesForItem.isEmpty()){
+            Map<String,Long> categoriesMap = new HashMap<>();
+            for(Category category: categoriesForItem){
+                categoriesMap.put(category.getName(),category.getId());
+            }
+            this.setCategories(categoriesMap);
+        }
     }
 }

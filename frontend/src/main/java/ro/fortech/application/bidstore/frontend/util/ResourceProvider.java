@@ -3,6 +3,7 @@ package ro.fortech.application.bidstore.frontend.util;
 import ro.fortech.application.bidstore.backend.service.mail.ConfiguredMailService;
 import ro.fortech.application.bidstore.backend.service.mail.MailService;
 
+import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.Produces;
@@ -10,7 +11,9 @@ import javax.enterprise.inject.spi.InjectionPoint;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
+import javax.inject.Named;
 import javax.servlet.http.HttpServletResponse;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
@@ -19,6 +22,7 @@ import java.util.logging.Logger;
 /**
  * Created by robert.ruja on 12-Apr-17.
  */
+
 public class ResourceProvider {
 
     @Produces
@@ -45,6 +49,7 @@ public class ResourceProvider {
     }
 
     @Produces
+    @ConfigProperties
     @ApplicationScoped
     private Properties getConfigProperties(){
         Properties properties = new Properties();
@@ -65,4 +70,5 @@ public class ResourceProvider {
         return new MailService(getConfigProperties());
 
     }
+
 }

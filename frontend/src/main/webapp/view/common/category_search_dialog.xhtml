@@ -21,7 +21,7 @@
                     <table style="width:100%">
                         <ui:repeat value="#{categoryView.getCategoryList()}" var="category" rendered="#{tabViewBean.content eq 'bidding'}">
                             <tr style="height:100px;">
-                                <td style="width:30%;">
+                                <td style="width:30%;vertical-align:top;">
                                     <p:commandLink value="#{category.name}" style="color:#3684cb;text-decoration:underline;font-size:25px;"
                                                    styleClass="fontStyle"
                                                    process="@this"
@@ -35,7 +35,7 @@
                                         <f:setPropertyActionListener value="item_list" target="#{contentView.content}"/>
                                     </p:commandLink>
                                 </td>
-                                <td style="width:70%;padding:5px;font-size:15px;">
+                                <td style="width:70%;padding:5px;font-size:15px;vertical-align:top;">
                                     <h:outputText value="#{category.description}" />
                                 </td>
                             </tr>

@@ -4,9 +4,12 @@ import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.criterion.*;
 import org.hibernate.sql.JoinType;
+import org.hibernate.transform.Transformers;
 import org.hibernate.type.StringType;
 import org.hibernate.type.Type;
 import ro.fortech.application.bidstore.backend.model.BiddingUser;
+import ro.fortech.application.bidstore.backend.model.GenericDTO;
+import ro.fortech.application.bidstore.backend.model.ItemDetails;
 import ro.fortech.application.bidstore.backend.persistence.entity.*;
 import ro.fortech.application.bidstore.backend.persistence.provider.HibernateSessionProvider;
 
@@ -16,6 +19,7 @@ import javax.transaction.Transactional;
 import java.sql.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by robert.ruja on 20-Apr-17.
@@ -24,6 +28,9 @@ public class BiddingDAOImpl implements BiddingDAO {
 
     @Inject
     private UserDAO userDAO;
+
+    @Inject
+    private HibernatePaginator<ItemDetails> paginator;
 
     @Inject
     private HibernateSessionProvider hibernateProvider;
@@ -121,15 +128,20 @@ public class BiddingDAOImpl implements BiddingDAO {
                         .add(Projections.groupProperty("initialPrice"))
                         .add(Projections.count("b.itemId"),"bidCount")
                         .add(Projections.max("b.bidValue"),"bestBid")
+                        .add(Projections.groupProperty("url"))
+                        .add(Projections.groupProperty("owner"))
                 )
                 .add(Restrictions.gt("closingDate",date))
                 .add(Restrictions.le("openingDate",date));
         if(categoryId !=null && categoryId > 0)
             criteria.add(Restrictions.eq("cat.id", categoryId));
+        else
+            criteria.add(Restrictions.isNull("cat.parentId"));
         //filter
-        for(Map.Entry<String,Object> entry: filters.entrySet()){
-            criteria.add(Restrictions.eq(entry.getKey(), entry.getValue()));
-        }
+        if(filters != null)
+            for(Map.Entry<String,Object> entry: filters.entrySet()){
+                criteria.add(Restrictions.eq(entry.getKey(), entry.getValue()));
+            }
         if(searchFilter != null && !searchFilter.isEmpty()) {
             criteria.add(Restrictions.like("name", searchFilter, MatchMode.ANYWHERE));
         }
@@ -265,66 +277,78 @@ public class BiddingDAOImpl implements BiddingDAO {
     }
 
     @Override
-    public List<Item> getItemsForUserToSell(String sortBy, boolean ascending, String username) {
-        DetachedCriteria criteria = DetachedCriteria.forClass(Item.class);
-        criteria.add(Restrictions.eq("owner", username));
+    public GenericDTO<ItemDetails> getItemsForUserToSell(GenericDTO<ItemDetails> genericDTO, String username) {
+        DetachedCriteria criteria = DetachedCriteria.forClass(Item.class)
+                .createAlias("bids", "b", JoinType.LEFT_OUTER_JOIN)
+                .setProjection(Projections.projectionList()
+                        .add(Projections.groupProperty("id"),"itemId")
+                        .add(Projections.groupProperty("name"),"itemName")
+                        .add(Projections.groupProperty("description"),"description")
+                        .add(Projections.groupProperty("initialPrice"),"initialPrice")
+                        .add(Projections.groupProperty("openingDate"),"openingDate")
+                        .add(Projections.groupProperty("closingDate"), "closingDate")
+                        .add(Projections.count("b.itemId"), "bidCount")
+                        .add(Projections.max("b.bidValue"), "bestBid")
+                        .add(Projections.sqlProjection("\tcase\n" +
+                                "\t\twhen closing_date > sysdate() AND opening_date <= sysdate() then 'OPEN' \n" +
+                                "\t\twhen closing_date <= sysdate() AND opening_date <= closing_date then 'CLOSED'\n" +
+                                "\t\twhen opening_date > sysdate() AND opening_date <= closing_date then 'NOT YET OPEN'\n" +
+                                "        when closing_date < opening_date then 'ABANDONED'\n" +
+                                "\tEND AS STATUS", new String[]{"STATUS"}, new Type[]{new StringType()}), "status")
+                )
+                .setResultTransformer(Transformers.aliasToBean(ItemDetails.class))
+                .add(Restrictions.eq("owner",username));
 
-        //sort
-        if(sortBy != null && !sortBy.isEmpty())
-            criteria.addOrder(ascending?Order.asc(sortBy):Order.desc(sortBy));
-
-        return criteria.getExecutableCriteria(hibernateProvider.getSession()).list();
+        return paginator.getPaginationResults(criteria.getExecutableCriteria(hibernateProvider.getSession()),genericDTO);
     }
 
     @Override
-    public Object getBidStatusForItem(Item item, String username) {
+    public Object getWinnerForItem(Long itemId, double bidValue) {
         try {
             Criteria criteria = hibernateProvider.getSession().createCriteria(Item.class)
-                    .createAlias("bids", "b", JoinType.LEFT_OUTER_JOIN)
-                    .setProjection(Projections.projectionList()
-                            .add(Projections.groupProperty("id"))
-                            .add(Projections.count("b.itemId"), "bidCount")
-                            .add(Projections.max("b.bidValue"), "bestBid")
-                            .add(Projections.sqlProjection("\tcase\n" +
-                                    "\t\twhen closing_date > sysdate() AND opening_date <= sysdate() then 'OPEN' \n" +
-                                    "\t\twhen closing_date <= sysdate() AND opening_date <= closing_date then 'CLOSED'\n" +
-                                    "\t\twhen opening_date > sysdate() AND opening_date <= closing_date then 'NOT YET OPEN'\n" +
-                                    "        when closing_date < opening_date then 'ABANDONED'\n" +
-                                    "\tEND AS STATUS", new String[]{"STATUS"}, new Type[]{new StringType()}))
-                    ).add(Restrictions.eq("owner", username))
-                    .add(Restrictions.eq("id", item.getId()));
-            return criteria.uniqueResult();
-        }catch(HibernateException ex) {
-            return null;
-        }
-    }
-
-    @Override
-    public Object getWinnerForItem(String username, double bidValue) {
-        try {
-            Criteria criteria = hibernateProvider.getSession().createCriteria(Item.class)
-                    .add(Restrictions.eq("owner", "gigi"));
+                    .add(Restrictions.idEq( itemId));
             Criteria subCrit = criteria.createCriteria("bids")
                     .createAlias("bidUser", "b")
                     .add(Restrictions.eq("bidValue", bidValue))
                     .setProjection(Projections.projectionList()
+                            .add(Projections.property("b.username"))
                             .add(Projections.property("b.firstName"))
                             .add(Projections.property("b.lastName")));
             return subCrit.uniqueResult();
         }catch(HibernateException ex){
+            //todo:log.error
             return null;
         }
     }
 
     @Override
     public List<Item> getItemsForUserToBuy(String sortBy, boolean ascending, String username) {
-        DetachedCriteria criteria = DetachedCriteria.forClass(Item.class);
-
-
-        //sort
-        if(sortBy != null && !sortBy.isEmpty())
-            criteria.addOrder(ascending?Order.asc(sortBy):Order.desc(sortBy));
-        return criteria.getExecutableCriteria(hibernateProvider.getSession()).list();
+        DetachedCriteria filterUsersCriteria = DetachedCriteria.forClass(Item.class)
+                .createAlias("bids","b")
+                .createAlias("b.bidUser", "u")
+                .setProjection(Projections.id()).add(Restrictions.eq("u.username", username));
+        Criteria criteria = hibernateProvider.getSession().createCriteria(Item.class)
+                .createAlias("bids", "b", JoinType.LEFT_OUTER_JOIN)
+                .setProjection(Projections.projectionList()
+                        .add(Projections.groupProperty("id"))
+                        .add(Projections.groupProperty("name"))
+                        .add(Projections.groupProperty("description"))
+                        .add(Projections.groupProperty("initialPrice"))
+                        .add(Projections.groupProperty("openingDate"))
+                        .add(Projections.groupProperty("closingDate"))
+                        .add(Projections.count("b.itemId"), "bidCount")
+                        .add(Projections.max("b.bidValue"), "bestBid")
+                        .add(Projections.property("b.bidValue"))
+                        .add(Projections.sqlProjection("\tcase\n" +
+                                "\t\twhen closing_date > sysdate() AND opening_date <= sysdate() then 'OPEN' \n" +
+                                "\t\twhen closing_date <= sysdate() AND opening_date <= closing_date then 'CLOSED'\n" +
+                                "\t\twhen opening_date > sysdate() AND opening_date <= closing_date then 'NOT YET OPEN'\n" +
+                                "        when closing_date < opening_date then 'ABANDONED'\n" +
+                                "\tEND AS STATUS", new String[]{"STATUS"}, new Type[]{
+                                new StringType()
+                        }))
+                ).add(Subqueries.propertyIn("id",filterUsersCriteria));
+        return criteria.list();
     }
 
     @Override
@@ -339,7 +363,14 @@ public class BiddingDAOImpl implements BiddingDAO {
             }
             return true;
         }catch (Exception ex) {
+            //todo:log.error
             return false;
         }
+    }
+
+    @Override
+    public Set<Category> getCategoriesForItem(Long itemId) {
+
+        return hibernateProvider.getSession().get(Item.class,itemId).getCategories();
     }
 }

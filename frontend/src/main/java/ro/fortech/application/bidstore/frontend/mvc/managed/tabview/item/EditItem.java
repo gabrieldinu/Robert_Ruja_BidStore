@@ -6,14 +6,18 @@ import ro.fortech.application.bidstore.backend.persistence.entity.Category;
 import ro.fortech.application.bidstore.backend.persistence.entity.Item;
 import ro.fortech.application.bidstore.backend.service.bidding.BiddingService;
 import ro.fortech.application.bidstore.frontend.mvc.managed.account.UserAccount;
+import ro.fortech.application.bidstore.frontend.util.ConfigProperties;
 
+import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
-import java.io.Serializable;
+import javax.servlet.http.Part;
+import java.io.*;
+import java.nio.file.Files;
 import java.util.*;
 
 /**
@@ -33,7 +37,17 @@ public class EditItem implements Serializable {
     @ManagedProperty(value = "#{userAccount}")
     private UserAccount userAccount;
 
+    @Inject
+    @ConfigProperties
+    private Properties config;
+
+    private Part part;
+
+    private File file;
+
     private String content = "first";
+
+    private String imagesPath;
 
     private List<String> selectedCategories = new ArrayList<>();
 
@@ -44,6 +58,11 @@ public class EditItem implements Serializable {
     private Date opening;
 
     private Date closing;
+
+    @PostConstruct
+    public void init() {
+        imagesPath = config.getProperty("application.external.resource.path");
+    }
 
     public List<Category> getCategories() {
         return service.getCategories(null,false,null);
@@ -65,6 +84,9 @@ public class EditItem implements Serializable {
 
     public void save() {
         setItemCategories(selectedCategories);
+        if(this.file != null) {
+            item.setUrl(file.getName());
+        }
         try {
             service.saveItem(item);
             context.addMessage("itemMessages", new FacesMessage(FacesMessage.SEVERITY_INFO, "Save item",
@@ -75,6 +97,25 @@ public class EditItem implements Serializable {
                     "There was a problem while trying to save the item into db. Please try again later!"));
             cancel();
         }
+    }
+
+    public void upload() {
+        File dir = new File(imagesPath + File.separator + item.getOwner());
+        if(!dir.exists()) {
+            dir.mkdirs();
+        }
+        try (InputStream input = part.getInputStream()) {
+            this.file = new File( imagesPath + File.separator + item.getOwner() + File.separator + "item_" + UUID.randomUUID() + part.getSubmittedFileName());
+            Files.copy(input, file.toPath());
+        }
+        catch (IOException e) {
+            context.addMessage("itemMessages", new FacesMessage(FacesMessage.SEVERITY_ERROR, "Upload picture",
+                    "There was a problem while trying to upload the item. Please try again later!"));
+        }
+    }
+
+    public void cancelUpload() {
+        this.file = null;
     }
 
     public void edit(ItemDetails item) {
@@ -163,4 +204,14 @@ public class EditItem implements Serializable {
     public void setUserAccount(UserAccount userAccount) {
         this.userAccount = userAccount;
     }
+
+    public Part getFile() {
+        return part;
+    }
+
+    public void setFile(Part file) {
+        this.part = file;
+    }
+
 }
+

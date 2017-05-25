@@ -16,7 +16,7 @@
         <h:panelGroup layout="block" style="margin-top:40px;">
             <p:dataTable var="item" value="#{itemView.getItems()}" paginator="true" rows="10"
                          paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
-                         rowsPerPageTemplate="5,10,15" id="itemTable" lazy="true" styleClass="item-dataTable-buy">
+                         rowsPerPageTemplate="5,10,15" id="itemTable" styleClass="item-dataTable-buy">
                 <p:column headerText="Name" sortBy="#{item.itemName}" filterBy="#{item.itemName}">
                     <h:outputText value="#{item.itemName}" />
                 </p:column>
@@ -31,8 +31,8 @@
                 <p:column headerText="Best bid" sortBy="#{item.bestBid}" filterBy="#{item.bestBid}">
                     <h:outputText value="#{item.bestBid}" />
                 </p:column>
-                <p:column headerText="Your bid:" sortBy="#{item.bestBid}" filterBy="#{item.bestBid}">
-                    <h:outputText value="#{item.bestBid}" />
+                <p:column headerText="Your bid:" sortBy="#{item.yourBid}" filterBy="#{item.yourBid}">
+                    <h:outputText value="#{item.yourBid}" />
                 </p:column>
                 <p:column headerText="# bids" sortBy="#{item.bidCount}" filterBy="#{item.bidCount}">
                     <h:outputText value="#{item.bidCount}" />
@@ -47,16 +47,21 @@
                     <h:outputText value="#{item.status}" />
                 </p:column>
                 <p:column headerText="Winner" sortBy="#{item.winner}" filterBy="#{item.winner}">
-                    <h:outputText value="#{item.winner}" />
+                    <h:outputText value="#{item.winner}" rendered="#{not empty item.winnerId and item.winnerId != userAccount.user.username}" style="color:#3684cb;text-decoration:underline;font-size:15px;"/>
+                    <h:outputText value="You" rendered="#{not empty item.winnerId and item.winnerId == userAccount.user.username}" style="color:#3684cb;text-decoration:underline;font-size:15px;"/>
                 </p:column>
                 <p:column size="200">
                     <h:panelGroup layout="block" style="width:250px;">
-                        <h:commandButton styleClass="btn-block" value="Edit"
-                                         onclick="if(! confirm('Disable selected user ?')) return false"
-                                         action="#{userMgt.disable}" style="float:left;width:60px;margin-top:3px;">
-                            <!--<f:setPropertyActionListener target="#{userMgt.managedUsername}" value="#{user.username}"/>-->
-                            <!--<f:ajax execute="@form" render="@form"/>-->
-                        </h:commandButton>
+                        <p:commandButton styleClass="btn-block" value="Edit"
+                                         update=":main-tabview:main-form:bidding_content :main-tabview:main-form:paginator_panel"
+                                         onclick="if(! confirm('Edit current bid ?')) return false"
+                                         onsuccess="$('.ui-tabs > ul').children().first().click();return false;"
+                                         rendered="#{item.status eq 'OPEN'}"
+                                         actionListener="#{bidEditBean.renderSingleItem(item.itemId)}"
+                                         style="float:left;width:60px;margin-top:3px;">
+                            <f:setPropertyActionListener value="false" target="#{bidEditBean.editable}"/>
+                            <f:setPropertyActionListener value="single_item" target="#{contentView.content}"/>
+                        </p:commandButton>
                     </h:panelGroup>
                 </p:column>
             </p:dataTable>

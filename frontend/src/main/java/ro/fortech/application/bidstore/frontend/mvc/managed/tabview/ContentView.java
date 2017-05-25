@@ -1,5 +1,6 @@
 package ro.fortech.application.bidstore.frontend.mvc.managed.tabview;
 
+import org.primefaces.event.NodeSelectEvent;
 import ro.fortech.application.bidstore.backend.model.ItemDetails;
 import ro.fortech.application.bidstore.backend.persistence.entity.*;
 import ro.fortech.application.bidstore.backend.service.bidding.BiddingService;
@@ -52,12 +53,7 @@ public class ContentView implements Serializable {
                 treeBean.getSelectedCategory(),
                 paginator.getSortBy(),
                 paginator.isAscending(),
-                searchText,
-                new HashMap<String,Object>(){
-                    {
-
-                    }
-                });
+                searchText, null);
 
         //number of pages should be computed from db
 
@@ -71,6 +67,11 @@ public class ContentView implements Serializable {
 
         return biddingService.getItemsNameCointains(query);
 
+    }
+
+    public void onNodeSelect(NodeSelectEvent event) {
+        this.content = "item_list";
+        treeBean.onNodeSelect(event);
     }
 
     public void renderItemList(){

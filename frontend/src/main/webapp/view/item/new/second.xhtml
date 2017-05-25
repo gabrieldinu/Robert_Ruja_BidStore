@@ -36,6 +36,19 @@
                             <p:ajax event="dateSelect" />
                         </p:calendar>
                     </p:outputPanel>
+                    <p:outputPanel style="margin-bottom:15px;">
+                        <h:outputText value="Upload picture (jpg,png,gif) max:" style="margin-right:30px;font-weight:bold;"/>
+                    </p:outputPanel>
+                    <p:outputPanel style="margin-bottom:15px;">
+                        <!--<p:fileUpload value="#{editItem.file}" mode="simple" skinSimple="true"-->
+                                      <!--update="new_item_content" auto="true" sizeLimit="1000000" allowTypes="/(\.|\/)(gif|jpe?g|png)$/" />-->
+                        <h:form enctype="multipart/form-data">
+                            <h:inputFile value="#{editItem.file}">
+                                <f:ajax listener="#{editItem.upload}" update="@form"/>
+                            </h:inputFile>
+                        </h:form>
+                        <p:commandButton listener="#{editItem.cancelUpload}" update="new_item_content" rendered="#{not empty editItem.file}" style="float:right;"/>
+                    </p:outputPanel>
                 </h:panelGrid>
                 <h:message for="initialPriceInput" id="inputPriceMessage" style="color:red" />
             </p:outputPanel>

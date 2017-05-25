@@ -1,6 +1,8 @@
 package ro.fortech.application.bidstore.backend.persistence.dao;
 
 import ro.fortech.application.bidstore.backend.model.BiddingUser;
+import ro.fortech.application.bidstore.backend.model.GenericDTO;
+import ro.fortech.application.bidstore.backend.model.ItemDetails;
 import ro.fortech.application.bidstore.backend.persistence.entity.Bid;
 import ro.fortech.application.bidstore.backend.persistence.entity.Category;
 import ro.fortech.application.bidstore.backend.persistence.entity.Item;
@@ -9,6 +11,7 @@ import ro.fortech.application.bidstore.backend.persistence.entity.UserAuth;
 import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by robert.ruja on 20-Apr-17.
@@ -52,13 +55,13 @@ public interface BiddingDAO {
 
     Category getCategoryById(Long id);
 
-    List<Item> getItemsForUserToSell(String sortBy, boolean ascending, String username);
+    GenericDTO<ItemDetails> getItemsForUserToSell(GenericDTO<ItemDetails> genericDTO, String username);
 
-    Object getBidStatusForItem(Item item, String username);
-
-    Object getWinnerForItem(String username, double bidValue);
+    Object getWinnerForItem(Long username, double bidValue);
 
     List<Item> getItemsForUserToBuy(String sortBy, boolean ascending, String username);
 
     boolean removeItem(Item item);
+
+    Set<Category> getCategoriesForItem(Long itemId);
 }

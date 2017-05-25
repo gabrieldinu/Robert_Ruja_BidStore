@@ -4,21 +4,25 @@
                 xmlns:fn="http://java.sun.com/jsp/jstl/functions">
     <h:panelGroup layout="block" style="position:absolute;overflow:auto;width:100%;height:98%;">
         <ui:repeat value="#{contentView.getItemList()}" var="item">
-            <h:panelGroup layout="block" style="width:100%;">
-                <p:commandLink update=":main-tabview:main-form:bidding_content :main-tabview:main-form:paginator_panel" value="#{item.itemName}" actionListener="#{bidEditBean.renderSingleItem(item.itemId)}" styleClass="fontStyle" style="color:#3684cb;text-decoration:underline;font-size:17px;">
+            <h:panelGroup layout="block" style="width:100%;padding:10px;">
+                <p:commandLink update="@form:bidding_content @form:paginator_panel"
+                               value="#{item.itemName}" actionListener="#{bidEditBean.renderSingleItem(item.itemId)}"
+                               styleClass="fontStyle" style="color:#3684cb;text-decoration:underline;font-size:20px;margin-bottom:5px;">
                     <f:setPropertyActionListener value="false" target="#{bidEditBean.editable}"/>
                     <f:setPropertyActionListener value="single_item" target="#{contentView.content}"/>
                 </p:commandLink>
                 <table style="width:100%" class="fontStyle">
                     <tr>
-                        <td style="width:15%;">
-                            <p:commandLink>
-                                <h:graphicImage value="/resources/forge-logo.png" width="110" height="100"/>
-                                <!--todo: picture needs to be loaded from db or other source, expand functionality-->
+                        <td style="width:15%;padding:5px;">
+                            <p:commandLink update="@form:bidding_content @form:paginator_panel" actionListener="#{bidEditBean.renderSingleItem(item.itemId)}">
+                                <h:graphicImage value="/images/#{item.owner}/#{item.imageUrl}" width="110" height="100" rendered="#{not empty item.imageUrl}"/>
+                                <h:graphicImage value="/resources/img_not_available.png" width="110" height="100" rendered="#{empty item.imageUrl}"/>
+                                <f:setPropertyActionListener value="false" target="#{bidEditBean.editable}"/>
+                                <f:setPropertyActionListener value="single_item" target="#{contentView.content}"/>
                             </p:commandLink>
                         </td>
-                        <td style="width:70%;">
-                            <h:outputText value="#{item.description}" />
+                        <td style="width:70%;padding-right:20px;">
+                            <h:outputText value="#{item.description}" style="font-size:13px;" />
                         </td>
                         <td style="width:15%;">
                             <p:outputPanel styleClass="fontStyle">

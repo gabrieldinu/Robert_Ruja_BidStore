@@ -32,10 +32,10 @@ public class BidInputValidator implements Validator {
             facesMessage = new FacesMessage(FacesMessage.SEVERITY_ERROR,"Please enter a valid value, or discard!",null);
             throw new ValidatorException(facesMessage);
         }
-        double initialPrice = (Double)uiComponent.getAttributes().get("currentValue");
+        double currentPrice = (Double)uiComponent.getAttributes().get("currentValue");
         double inputValue = Double.parseDouble(biddingText);
-        if(initialPrice > inputValue) {
-            facesMessage = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Your bid must be equal or greater than initial price!", null);
+        if(currentPrice >= inputValue) {
+            facesMessage = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Your bid must be greater than current price!", null);
             throw new ValidatorException(facesMessage);
         }
     }

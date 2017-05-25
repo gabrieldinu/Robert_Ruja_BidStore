@@ -1,11 +1,14 @@
 package ro.fortech.application.bidstore.frontend.mvc.managed.tabview.item;
 
+import org.primefaces.model.LazyDataModel;
 import ro.fortech.application.bidstore.backend.exception.bidding.BiddingException;
 import ro.fortech.application.bidstore.backend.model.ItemDetails;
 import ro.fortech.application.bidstore.backend.persistence.entity.Item;
 import ro.fortech.application.bidstore.backend.service.bidding.BiddingService;
 import ro.fortech.application.bidstore.frontend.mvc.managed.account.UserAccount;
+import ro.fortech.application.bidstore.frontend.mvc.model.LazyItemDataModel;
 
+import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
@@ -32,22 +35,19 @@ public class ItemView implements Serializable {
     @Inject
     private FacesContext context;
 
+    @PostConstruct
+    public void init(){
+        this.lazyItemDataModel = new LazyItemDataModel(content);
+        this.lazyItemDataModel.setService(this.service);
+        this.lazyItemDataModel.setContent(this.content);
+        this.lazyItemDataModel.setUserAccount(userAccount);
+    }
+    private LazyItemDataModel lazyItemDataModel;
+
     private String content = "sell";
 
     public BiddingService getService() {
         return service;
-    }
-
-    public List<ItemDetails> getItems() {
-        if(content.equals("sell")){
-            return service.getItemsToSell(null,false,userAccount.getUser());
-        } else {
-            return service.getItemsToBuy(null,false,userAccount.getUser());
-        }
-    }
-
-    public void change(ItemDetails details) {
-
     }
 
     public void abandon(ItemDetails details) {
@@ -94,6 +94,7 @@ public class ItemView implements Serializable {
 
     public void setContent(String content) {
         this.content = content;
+        this.lazyItemDataModel.setContent(content);
     }
 
     public UserAccount getUserAccount() {
@@ -102,5 +103,13 @@ public class ItemView implements Serializable {
 
     public void setUserAccount(UserAccount userAccount) {
         this.userAccount = userAccount;
+    }
+
+    public LazyItemDataModel getLazyItemDataModel() {
+        return lazyItemDataModel;
+    }
+
+    public void setLazyItemDataModel(LazyItemDataModel lazyItemDataModel) {
+        this.lazyItemDataModel = lazyItemDataModel;
     }
 }

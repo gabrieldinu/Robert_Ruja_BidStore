@@ -169,6 +169,10 @@ public class User implements Serializable {
 
     public void setAdmin(boolean admin) {
         this.admin = admin;
+        if(admin)
+            this.role = UserRole.ADMIN;
+        else
+            this.role = UserRole.USER;
     }
 
     public UserEnabled getUserEnabled() {

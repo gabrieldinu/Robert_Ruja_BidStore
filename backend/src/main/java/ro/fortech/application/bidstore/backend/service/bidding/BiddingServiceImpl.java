@@ -4,6 +4,7 @@ import ro.fortech.application.bidstore.backend.exception.bidding.BiddingExceptio
 import ro.fortech.application.bidstore.backend.model.*;
 import ro.fortech.application.bidstore.backend.persistence.dao.BiddingDAO;
 import ro.fortech.application.bidstore.backend.persistence.dao.UserDAO;
+import ro.fortech.application.bidstore.backend.persistence.dao.UserManagementDAO;
 import ro.fortech.application.bidstore.backend.persistence.entity.Bid;
 import ro.fortech.application.bidstore.backend.persistence.entity.Category;
 import ro.fortech.application.bidstore.backend.persistence.entity.Item;
@@ -31,6 +32,9 @@ public class BiddingServiceImpl implements BiddingService {
     @Inject
     private UserDAO userDAO;
 
+    @Inject
+    private UserManagementDAO userManagementDAO;
+
     @PostConstruct
     public void init() {
 
@@ -38,23 +42,7 @@ public class BiddingServiceImpl implements BiddingService {
 
     @Override
     public List<BiddingUser> getBiddingUsers(String sortField, boolean ascending, Map<String, Object> likeFilters, Map<String, Object> equalFilters) {
-
-        List<BiddingUser> users = new ArrayList<>();
-        for(Object o: userDAO.getUserList(sortField, ascending, likeFilters, equalFilters)){
-            Object[] columns = (Object[])o;
-            BiddingUser user = new BiddingUser();
-            user.setUsername((String)columns[0]);
-            user.setFirstName((String)columns[1]);
-            user.setLastName((String)columns[2]);
-            user.setEmail((String)columns[3]);
-            user.setRole((UserRole)columns[4]);
-            user.setUserEnabled((UserEnabled)columns[5]);
-            user.setItemsPlaced((Long)columns[6]);
-            user.setItemsSold((Long)columns[7]);
-            user.setItemsBought((Long)columns[8]);
-            users.add(user);
-        }
-        return users;
+        return userManagementDAO.getUserList();
     }
 
     @Override
@@ -113,7 +101,6 @@ public class BiddingServiceImpl implements BiddingService {
     @Override
     public List<ItemDetails> getItems(Category category, String sortBy, boolean ascending, String searchFilter, Map<String, Object> filters) {
 
-
         List<ItemDetails> itemDetailsList = new ArrayList<>();
 
         for(Object o: biddingDAO.getItems(category.getId(), sortBy,ascending,searchFilter,filters)) {
@@ -128,47 +115,66 @@ public class BiddingServiceImpl implements BiddingService {
             details.setInitialPrice((Double)columns[5]);
             details.setBidCount((Long)columns[6]);
             details.setBestBid(details.getBidCount() > 0 ? (Double)columns[7]:details.getInitialPrice());
+            details.setImageUrl((String)columns[8]);
+            details.setOwner((String)columns[9]);
             itemDetailsList.add(details);
         }
-
         return itemDetailsList;
     }
 
     @Override
-    public List<ItemDetails> getItemsToSell(String sortBy, boolean ascending, User user) {
+    public GenericDTO<ItemDetails> getItemsToSell(GenericDTO<ItemDetails> genericDTO, User user) {
+        for(ItemDetails itemDetails : biddingDAO.getItemsForUserToSell(genericDTO,user.getUsername()).getRows()) {
+            //set best bid as initial price if null
+            if(itemDetails.getBestBid() == null)
+                itemDetails.setBestBid(itemDetails.getInitialPrice());
+
+            //set the winner
+            if (itemDetails.getStatus().equals("CLOSED") && itemDetails.getBidCount() > 0){
+                Object[] winner = (Object[]) biddingDAO.getWinnerForItem(itemDetails.getItemId(), itemDetails.getBestBid());
+                if (winner != null) {
+                    itemDetails.setWinnerId((String)winner[0]);
+                    itemDetails.setWinner(winner[1] + " " + winner[2]);
+                }
+            }
+            //set the categories for item
+            itemDetails.setAllCategories(biddingDAO.getCategoriesForItem(itemDetails.getItemId()));
+        }
+        return genericDTO;
+    }
+
+    @Override
+    public GenericDTO<ItemDetails> getItemsToBuy(GenericDTO<ItemDetails> genericDTO, User user) {
         List<ItemDetails> result = new ArrayList<>();
-        for(Item item: biddingDAO.getItemsForUserToSell(sortBy,ascending,user.getUsername())){
-            ItemDetails details = new ItemDetails(item);
-            Object[] bidstatus = (Object[])biddingDAO.getBidStatusForItem(item, user.getUsername());
-            if(bidstatus != null) {
-                if (bidstatus[2] != null)
-                    details.setBestBid((Double) bidstatus[2]);
-                else
-                    details.setBestBid(details.getInitialPrice());
-                details.setBidCount((Long) bidstatus[1]);
-                details.setStatus((String) bidstatus[3]);
-                    if (details.getStatus().equals("CLOSED")){
-                        Object[] winner = (Object[]) biddingDAO.getWinnerForItem(item.getOwner(), details.getBestBid());
-                    if (winner != null) {
-                        details.setWinner(winner[0] + " " + winner[1]);
-                    }
+        for(Object o: biddingDAO.getItemsForUserToBuy(null,false,user.getUsername())){
+            ItemDetails details = new ItemDetails();
+            Object[] oDetails = (Object[])o;
+            details.setItemId((Long)oDetails[0]);
+            details.setItemName((String)oDetails[1]);
+            details.setDescription((String)oDetails[2]);
+            details.setInitialPrice((Double)oDetails[3]);
+            details.setOpeningDate((Date)oDetails[4]);
+            details.setClosingDate((Date)oDetails[5]);
+            details.setBidCount((Long)oDetails[6]);
+            Double bestBid = (Double)oDetails[7];
+            if(bestBid != null) {
+                details.setBestBid(bestBid);
+            } else {
+                details.setBestBid(details.getInitialPrice());
+            }
+            details.setYourBid((Double)oDetails[8]);
+            details.setStatus((String) oDetails[9]);
+            details.setAllCategories(biddingDAO.getCategoriesForItem(details.getItemId()));
+            if (details.getStatus().equals("CLOSED") && details.getBidCount() > 0){
+                Object[] winner = (Object[]) biddingDAO.getWinnerForItem(details.getItemId(), details.getBestBid());
+                if (winner != null) {
+                    details.setWinnerId((String)winner[0]);
+                    details.setWinner(winner[1] + " " + winner[2]);
                 }
             }
             result.add(details);
         }
-        return result;
-    }
-
-    @Override
-    public List<ItemDetails> getItemsToBuy(String sortBy, boolean ascending, User user) {
-        List<ItemDetails> results = new ArrayList<>();
-            for(Item item: biddingDAO.getItemsForUserToBuy(sortBy,ascending,user.getUsername())){
-                ItemDetails details = new ItemDetails(item);
-
-
-                results.add(details);
-            }
-        return results;
+        return null;
     }
 
     @Override

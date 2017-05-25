@@ -42,6 +42,15 @@
         <param-value>/WEB-INF/resources</param-value>
     </context-param>
 
+    <servlet>
+        <servlet-name>images</servlet-name>
+        <servlet-class>ro.fortech.application.bidstore.frontend.mvc.controller.ImageServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>images</servlet-name>
+        <url-pattern>/images/*</url-pattern>
+    </servlet-mapping>
+
     <filter>
         <filter-name>LoginFilter</filter-name>
         <filter-class>ro.fortech.application.bidstore.frontend.mvc.controller.filter.AuthSecurityFilter</filter-class>

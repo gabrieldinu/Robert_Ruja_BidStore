@@ -13,8 +13,7 @@
                                                                    :main-tabview:main-form:bidding_content
                                                                    :main-tabview:main-form:breadcrumbs
                                                                    :main-tabview:main-form:paginator_panel"
-                                            listener="#{treeBean.onNodeSelect}">
-                                        <f:setPropertyActionListener value="item_list" target="#{contentView.content}"/>
+                                            listener="#{contentView.onNodeSelect}">
                                     </p:ajax>
                                     <p:treeNode expandedIcon="ui-icon-folder-open" collapsedIcon="ui-icon-folder-collapsed">
                                         <h:outputText styleClass="fontStyle" value="#{category.name}"/>
@@ -68,12 +67,12 @@
                                 </h:panelGroup>
                             </h:panelGroup>
                         </p:layoutUnit>
-                        <p:layoutUnit position="center" style="border:none;padding:0px;">
-                            <p:outputPanel deffered="true" id="bidding_content" style="width:100%">
+                        <p:layoutUnit styleClass="cacat" position="center" style="border:none;padding:0px;">
+                            <p:outputPanel deffered="true" id="bidding_content" style="width:100%;">
                                 <ui:include src="/view/bidding/#{contentView.content}.xhtml" />
                             </p:outputPanel>
                         </p:layoutUnit>
-                        <p:layoutUnit position="south" style="border:none;padding:0px;">
+                        <p:layoutUnit position="south" style="border:none;padding:0px;" size="40">
                             <ui:include src="/view/bidding/bidding_paginator.xhtml"/>
                         </p:layoutUnit>
                     </p:layout>

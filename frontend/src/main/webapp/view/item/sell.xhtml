@@ -20,14 +20,14 @@
             </p:outputPanel>
         </h:panelGroup>
         <h:panelGroup layout="block" style="margin-top:40px;">
-            <p:dataTable var="item" value="#{itemView.getItems()}" paginator="true" rows="10"
+            <p:dataTable var="item" value="#{itemView.lazyItemDataModel}" paginator="true" rows="10"
                          paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
-                         rowsPerPageTemplate="5,10,15" id="itemTable" lazy="true" styleClass="item-dataTable-sell">
+                         rowsPerPageTemplate="5,10,15" emptyMessage="No items placed on sell" widgetVar="itemTable" styleClass="item-dataTable-sell" lazy="true">
                 <p:columnGroup type ="header">
                     <p:row>
-                        <p:column headerText="Name" sortBy="#{item.itemName}" filterBy="#{item.itemName}"/>
+                        <p:column headerText="Name" sortBy="#{item.itemName}" filterBy="#{item.itemName}" filterMode="contains"/>
                         <p:column headerText="Categories" />
-                        <p:column  headerText="Initial price" sortBy="#{item.initialPrice}" filterBy="#{item.initialPrice}"/>
+                        <p:column headerText="Initial price" sortBy="#{item.initialPrice}" filterBy="#{item.initialPrice}"/>
                         <p:column headerText="Best bid" sortBy="#{item.bestBid}" filterBy="#{item.bestBid}"/>
                         <p:column headerText="# bids" sortBy="#{item.bidCount}" filterBy="#{item.bidCount}"/>
                         <p:column headerText="opening date" sortBy="#{item.openingDate}" filterBy="#{item.openingDate}"/>
@@ -58,14 +58,15 @@
                     <h:outputText value="#{item.openingDate}" />
                 </p:column>
                 <p:column>
-                    <h:outputText value="#{item.closingDate}" rendered="#{item.status != 'ABANDONED'}"/>
-                    <h:outputText value="N.A." rendered="#{item.status == 'ABANDONED'}"/>
+                    <h:outputText value="#{item.closingDate}" rendered="#{item.status != 'ABANDONED'}" />
+                    <h:outputText value="N.A." rendered="#{item.status == 'ABANDONED'}" />
                 </p:column>
                 <p:column>
                     <h:outputText value="#{item.status}" />
                 </p:column>
                 <p:column>
-                    <h:outputText value="#{item.winner}" />
+                    <h:outputText value="#{item.winner}" rendered="#{not empty item.winnerId and item.winnerId != userAccount.user.username}" style="color:#3684cb;text-decoration:underline;font-size:15px;"/>
+                    <h:outputText value="You" rendered="#{not empty item.winnerId and item.winnerId == userAccount.user.username}" style="color:#3684cb;text-decoration:underline;font-size:15px;"/>
                 </p:column>
                 <p:column>
                     <h:commandButton styleClass="btn-block" value="Close"

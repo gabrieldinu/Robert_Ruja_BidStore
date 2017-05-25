@@ -12,6 +12,7 @@ import ro.fortech.application.bidstore.backend.service.account.UserAccountServic
 import ro.fortech.application.bidstore.backend.service.mail.EmailBuilder;
 import ro.fortech.application.bidstore.backend.service.mail.MailService;
 import ro.fortech.application.bidstore.backend.service.mail.ConfiguredMailService;
+import ro.fortech.application.bidstore.frontend.util.ConfigProperties;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
@@ -63,6 +64,7 @@ public class UserAccount implements Serializable {
     ExternalContext externalContext;
 
     @Inject
+    @ConfigProperties
     Properties configProperties;
 
     @Inject

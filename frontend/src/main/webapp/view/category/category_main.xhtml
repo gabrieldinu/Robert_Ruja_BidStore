@@ -12,8 +12,7 @@
                                 <p:ajax event="select" update=":main-tabview:category-form:category_description
                                        :main-tabview:category-form:breadcrumbs
                                        :main-tabview:category-form:categories_content"
-                                        listener="#{treeBean.onNodeSelect}">
-                                    <f:setPropertyActionListener value="item_list" target="#{contentView.content}"/>
+                                        listener="#{contentView.onNodeSelect}">
                                 </p:ajax>
                                 <p:treeNode expandedIcon="ui-icon-folder-open" collapsedIcon="ui-icon-folder-collapsed">
                                     <h:outputText styleClass="fontStyle" value="#{category.name}"/>
@@ -80,7 +79,7 @@
                                         <p:outputLabel for="inputCategoryDescription" value="Description:"/>
                                     </td>
                                     <td>
-                                        <h:inputTextarea id="inputCategoryDescription" value="#{treeBean.selectedCategory.description}" style="width:70%;height:250px;resize:none;"/>
+                                        <h:inputTextarea maxlength="2000" id="inputCategoryDescription" value="#{treeBean.selectedCategory.description}" style="width:70%;height:250px;resize:none;"/>
                                     </td>
                                 </tr>
                             </table>
